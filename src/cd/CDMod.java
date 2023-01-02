@@ -2,6 +2,7 @@ package cd;
 
 import arc.*;
 import arc.util.*;
+import cd.content.CDItems;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
@@ -28,6 +29,8 @@ public class CDMod extends Mod{
     @Override
     public void loadContent(){
         Log.info("Loading some example content.");
+        CDItems modItem = new CDItems();
+        modItem.load();
     }
 
 }
