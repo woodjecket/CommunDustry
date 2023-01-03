@@ -31,7 +31,8 @@ public class CDBlocks {
                 consumeItems(with(Items.coal, 1, Items.sand, 2));
                 consumePower(0.50f);
                 catalyzer = with(Items.copper,1);
-                catalyzerNecessity = true;
+                catalyzerScale = new float[]{2f};
+                catalyzerNecessity = false;
             }
         };
     }
