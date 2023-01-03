@@ -1,7 +1,9 @@
 package cd.type.blocks;
 
-import mindustry.type.ItemStack;
-import mindustry.world.blocks.production.GenericCrafter;
+import cd.entities.stat.CDStat;
+import mindustry.type.*;
+import mindustry.world.blocks.production.*;
+import mindustry.world.meta.*;
 
 public class CatalyzerCrafter extends GenericCrafter {
 
@@ -36,21 +38,20 @@ public class CatalyzerCrafter extends GenericCrafter {
     @Override
     public void setStats() {
         super.setStats();
-        // TODO for catalyzer
+        // use items(boolean,...)not items(float,...)to let not display time
+        stats.add(CDStat.catalyzer, StatValues.items(true, catalyzer));
     }
 
     public class CatalyzerCrafterBuilding extends GenericCrafterBuild {
 
         @Override
         public boolean shouldConsume() {
-            if (catalyzer != null) {
-                if (catalyzerNecessity) {
+            if (catalyzer != null && catalyzerNecessity) {
                     for (ItemStack i : catalyzer) {
                         if (items.get(i.item) == 0) {
                             return false;
                         }
                     }
-                }
             }
             return super.shouldConsume();
         }
