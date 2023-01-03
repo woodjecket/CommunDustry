@@ -2,7 +2,9 @@ package cd;
 
 import arc.*;
 import arc.util.*;
+import cd.content.CDBlocks;
 import cd.content.CDItems;
+import cd.content.CDLiquids;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
@@ -31,6 +33,10 @@ public class CDMod extends Mod{
         Log.info("Loading some example content.");
         CDItems modItem = new CDItems();
         modItem.load();
+        CDLiquids modLiquids = new CDLiquids();
+        modLiquids.load();
+        CDBlocks modBlocks = new CDBlocks();
+        modBlocks.load();
     }
 
 }
