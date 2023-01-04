@@ -45,6 +45,7 @@ public class CDMod extends Mod{
     @Override
     public void loadContent(){
         Log.info("Loading some example content.");
+        //为什么不是静态方法?
         CDItems modItem = new CDItems();
         modItem.load();
         CDLiquids modLiquids = new CDLiquids();
