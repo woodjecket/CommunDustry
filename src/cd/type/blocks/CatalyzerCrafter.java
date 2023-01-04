@@ -1,7 +1,7 @@
 package cd.type.blocks;
 
-import arc.math.Mathf;
-import cd.entities.stat.CDStat;
+import arc.math.*;
+import cd.entities.stat.*;
 import mindustry.type.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.meta.*;
@@ -21,13 +21,15 @@ public class CatalyzerCrafter extends GenericCrafter {
     public boolean catalyzerNecessity;
 
     /** Base efficiency catalyzer for 100% */
-    public float catalyzerRequirement = 0f;
+    public float baseCatalyzerScale = 1f;
     /** Efficiency that catalyzers increases */
     public float[] catalyzerScale = {1f};
     /** Whether to add or multipily scale */
     public String catalyzerCaculation = "mul";
     /** Maximum possible efficiency after catalyzer. */
     public float maxEfficiency = 4f;
+    /** Chance to consume catalyzer. -1 for disabled */
+    public float catalyzerChance = -1f;
 
     public CatalyzerCrafter(String name) {
         super(name);
@@ -62,7 +64,7 @@ public class CatalyzerCrafter extends GenericCrafter {
         public boolean shouldConsume() {
             if (catalyzer != null && catalyzerNecessity) {
                 for (ItemStack i : catalyzer) {
-                    if (items.get(i.item) == 0) {
+                    if (!items.has(i.item)) {
                         return false;
                     }
                 }
@@ -71,9 +73,17 @@ public class CatalyzerCrafter extends GenericCrafter {
         }
 
         @Override
+        public void updateTile(){
+            super.updateTile();
+            if(Mathf.chanceDelta(catalyzerChance)){
+                items.remove(catalyzer[Mathf.random(catalyzer.length - 1)]);
+            }
+        }
+
+        @Override
         public float efficiencyScale() {
             if (!catalyzerNecessity || catalyzerScale != null) {
-                float result = 1f;
+                float result = baseCatalyzerScale;
                 for (int i = 0; i < catalyzer.length; i++) {
                     ItemStack stack = catalyzer[i];
                     if (items.get(stack.item) >= stack.amount) {
