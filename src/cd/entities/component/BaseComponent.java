@@ -1,6 +1,7 @@
 package cd.entities.component;
 
 import mindustry.gen.Building;
+import mindustry.world.Block;
 
 public class BaseComponent {
 
@@ -18,10 +19,16 @@ public class BaseComponent {
     public void onCreateExplosion(Building b) {
     }
 
-    public void onShouldConsume(Building b) {
+    public boolean onShouldConsume(Building b) { return false;
     }
 
-    public void onEfficiencyScale(Building b) {
+    public float onEfficiencyScale(Building b) { return 1f;
+    }
+
+    public void onInit(Block b) {
+    }
+
+    public void onSetStats(Block b) {
     }
 
 }

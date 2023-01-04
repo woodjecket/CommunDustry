@@ -99,7 +99,7 @@ public class CatalyzerCrafter extends GenericCrafter {
                 }
                 return Math.min(maxEfficiency, result);
             }
-            return 1f;
+            return baseCatalyzerScale;
         }
     }
 

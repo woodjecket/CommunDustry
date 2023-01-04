@@ -2,8 +2,10 @@ package cd.content;
 
 
 import arc.graphics.*;
+import cd.entities.component.CatalyzerComponent;
 import cd.entities.component.PneuComponent;
 import cd.type.blocks.CatalyzerCrafter;
+import cd.type.blocks.ComponentCrafter;
 import cd.type.blocks.pneumatic.PneuBlock;
 import mindustry.content.Fx;
 import mindustry.content.Items;
@@ -16,7 +18,7 @@ import mindustry.world.draw.*;
 import static mindustry.type.ItemStack.*;
 
 public class CDBlocks {
-    public static Block test,basicFreezer,basicDirectlyHydrogenPeroxideCrafter,basicElectrolyzer;
+    public static Block test2,test,basicFreezer,basicDirectlyHydrogenPeroxideCrafter,basicElectrolyzer;
 
     public void load() {
         test = new PneuBlock("test"){{
@@ -24,6 +26,26 @@ public class CDBlocks {
                 visualExplodePressure = 20f;
             }};
             requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        }};
+        test2 = new ComponentCrafter("test2"){{
+            component = new CatalyzerComponent(){{
+                catalyzerNecessity = true;
+                catalyzer = with(CDItems.platinum,2);
+                catalyzerScale = new float[]{1f};
+                catalyzerChance = 0.0001f;
+            }};
+            requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+            craftEffect = Fx.freezing;
+            outputLiquid = new LiquidStack(CDLiquids.hydrogenPeroxide, 0.1f);
+            craftTime = 120f;
+            size = 4;
+            hasPower = true;
+            hasLiquids = false;
+            drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("7666c6")));
+            ambientSound = Sounds.smelter;
+            ambientSoundVolume = 0.07f;
+            consumeLiquids(new LiquidStack[]{new LiquidStack(Liquids.hydrogen, 0.05f),new LiquidStack(Liquids.ozone, 2f / 60f)});
+
         }};
         basicFreezer = new GenericCrafter("basic-freezer"){{
             requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
