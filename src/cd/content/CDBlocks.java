@@ -1,12 +1,7 @@
 package cd.content;
 
-
 import arc.graphics.*;
-import cd.entities.component.CatalyzerComponent;
-import cd.entities.component.PneuComponent;
-import cd.type.blocks.CatalyzerCrafter;
 import cd.type.blocks.ComponentCrafter;
-import cd.type.blocks.pneumatic.PneuBlock;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
@@ -18,35 +13,10 @@ import mindustry.world.draw.*;
 import static mindustry.type.ItemStack.*;
 
 public class CDBlocks {
-    public static Block test2,test,basicFreezer,basicDirectlyHydrogenPeroxideCrafter,basicElectrolyzer;
+    
+    public static Block basicFreezer,basicDirectlyH2O2Crafter,basicElectrolyzer;
 
     public void load() {
-        test = new PneuBlock("test"){{
-            component = new PneuComponent(){{
-                visualExplodePressure = 20f;
-            }};
-            requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
-        }};
-        test2 = new ComponentCrafter("test2"){{
-            component = new CatalyzerComponent(){{
-                catalyzerNecessity = true;
-                catalyzer = with(CDItems.platinum,2);
-                catalyzerScale = new float[]{1f};
-                catalyzerChance = 0.0001f;
-            }};
-            requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
-            craftEffect = Fx.freezing;
-            outputLiquid = new LiquidStack(CDLiquids.hydrogenPeroxide, 0.1f);
-            craftTime = 120f;
-            size = 4;
-            hasPower = true;
-            hasLiquids = false;
-            drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("7666c6")));
-            ambientSound = Sounds.smelter;
-            ambientSoundVolume = 0.07f;
-            consumeLiquids(new LiquidStack[]{new LiquidStack(Liquids.hydrogen, 0.05f),new LiquidStack(Liquids.ozone, 2f / 60f)});
-
-        }};
         basicFreezer = new GenericCrafter("basic-freezer"){{
             requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
             craftEffect = CDFx.iceCraft;
@@ -61,10 +31,10 @@ public class CDBlocks {
             consumeLiquid(Liquids.water, 0.1f);
         }};
 
-        basicDirectlyHydrogenPeroxideCrafter = new CatalyzerCrafter("basic-directly-hydrogen-peroxide-crafter"){{
+        basicDirectlyH2O2Crafter = new ComponentCrafter("basic-directly-h2o2-crafter"){{
             requirements(Category.crafting, with(Items.lead, 20, Items.silicon, 60, Items.titanium, 80, Items.graphite, 100));
             craftEffect = Fx.freezing;
-            outputLiquid = new LiquidStack(CDLiquids.hydrogenPeroxide, 0.1f);
+            outputLiquid = new LiquidStack(CDLiquids.H2O2, 0.1f);
             craftTime = 120f;
             size = 4;
             hasPower = true;
@@ -73,10 +43,7 @@ public class CDBlocks {
             ambientSound = Sounds.smelter;
             ambientSoundVolume = 0.07f;
             consumeLiquids(new LiquidStack[]{new LiquidStack(Liquids.hydrogen, 0.05f),new LiquidStack(Liquids.ozone, 2f / 60f)});
-            catalyzerNecessity = true;
-            catalyzer = with(CDItems.platinum,2);
-            catalyzerScale = new float[]{1f};
-            catalyzerChance = 0.0001f;
+            component = CDComponent.basicDirectlyH2O2CrafterCatalyzerComponent;
         }};
         basicElectrolyzer = new GenericCrafter("basic-electrolyzer"){{
             requirements(Category.crafting, with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
