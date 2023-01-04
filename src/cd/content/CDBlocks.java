@@ -2,7 +2,9 @@ package cd.content;
 
 
 import arc.graphics.*;
+import cd.entities.component.PneuComponent;
 import cd.type.blocks.CatalyzerCrafter;
+import cd.type.blocks.pneumatic.PneuBlock;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
@@ -14,15 +16,21 @@ import mindustry.world.draw.*;
 import static mindustry.type.ItemStack.*;
 
 public class CDBlocks {
-    public static Block basicFreezer,basicDirectlyHydrogenPeroxideCrafter,basicElectrolyzer;
+    public static Block test,basicFreezer,basicDirectlyHydrogenPeroxideCrafter,basicElectrolyzer;
 
     public void load() {
+        test = new PneuBlock("test"){{
+            component = new PneuComponent(){{
+                visualExplodePressure = 20f;
+            }};
+            requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        }};
         basicFreezer = new GenericCrafter("basic-freezer"){{
             requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
             craftEffect = CDFx.iceCraft;
             outputItem = new ItemStack(CDItems.ice, 1);
             craftTime = 60f;
-            size = 2;
+            size = 4;
             hasPower = true;
             hasLiquids = false;
             drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("93ccea")));
@@ -36,7 +44,7 @@ public class CDBlocks {
             craftEffect = Fx.freezing;
             outputLiquid = new LiquidStack(CDLiquids.hydrogenPeroxide, 0.1f);
             craftTime = 120f;
-            size = 3;
+            size = 4;
             hasPower = true;
             hasLiquids = false;
             drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("7666c6")));
@@ -50,7 +58,7 @@ public class CDBlocks {
         }};
         basicElectrolyzer = new GenericCrafter("basic-electrolyzer"){{
             requirements(Category.crafting, with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
-            size = 3;
+            size = 4;
 
             researchCostMultiplier = 1.2f;
             craftTime = 10f;

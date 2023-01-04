@@ -6,6 +6,7 @@ import static arc.math.Angles.randLenVectors;
 import arc.graphics.Color;
 import arc.graphics.g2d.Fill;
 import mindustry.entities.Effect;
+import mindustry.graphics.Pal;
 
 public class CDFx {
     public static final Effect
@@ -15,5 +16,9 @@ public class CDFx {
             color(Color.white, Color.valueOf("93ccea"), e.fin());
             Fill.square(e.x + x, e.y + y, 0.5f + e.fout() * 2f, 45);
         });
+    }),
+    pneuSmoke = new Effect(100, e -> {
+        color(Color.gray, Pal.darkishGray, e.fin());
+        Fill.circle(e.x, e.y, (7f - e.fin() * 7f)/2f);
     });
 }
