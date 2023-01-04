@@ -48,7 +48,6 @@ public class CDBlocks {
             catalyzerScale = new float[]{1f};
             catalyzerChance = 0.0001f;
         }};
-
         basicElectrolyzer = new GenericCrafter("basic-electrolyzer"){{
             requirements(Category.crafting, with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
             size = 3;
