@@ -4,7 +4,7 @@ import cd.entities.component.BaseComponent;
 import mindustry.world.blocks.production.*;
 
 public class ComponentCrafter extends GenericCrafter {
-    public BaseComponent component;    
+    public BaseComponent component;  
 
     public ComponentCrafter(String name) {
         super(name);
@@ -24,7 +24,21 @@ public class ComponentCrafter extends GenericCrafter {
         component.onSetStats(this);
     }
 
-    public class ComponentCrafterBuilding extends GenericCrafterBuild {
+    public class ComponentCrafterBuild extends GenericCrafterBuild {
+        //define pneumatic
+        public float pressure;
+
+        public float pressure() {
+            return pressure;
+        }
+
+        public float getPressure() {
+            return pressure;
+        }
+
+        public void setPressure(float p) {
+            this.pressure = p;
+        }
 
         @Override
         public boolean shouldConsume() {

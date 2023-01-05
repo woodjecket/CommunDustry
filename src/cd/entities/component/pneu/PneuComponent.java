@@ -3,11 +3,18 @@ package cd.entities.component.pneu;
 import arc.audio.Sound;
 import cd.content.CDFx;
 import cd.entities.component.BaseComponent;
+import cd.type.blocks.ComponentBlock;
+import cd.type.blocks.ComponentBlock.ComponentBuild;
+import cd.type.blocks.ComponentCrafter.ComponentCrafterBuild;
 import cd.type.blocks.pneumatic.PneuInterface;
 import mindustry.entities.Damage;
 import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
+import mindustry.ui.Bar;
+import mindustry.world.Block;
+import mindustry.graphics.Pal;
+import arc.Core;
 import static mindustry.Vars.*;
 
 public class PneuComponent extends BaseComponent {
@@ -23,6 +30,21 @@ public class PneuComponent extends BaseComponent {
     public float explosionShake = 6f, explosionShakeDuration = 16f;
 
     public PneuComponent() {
+    }
+
+    @Override
+    public void onSetBar(Block b){
+        if(b instanceof ComponentBlock){
+        b.addBar("pressure",
+                (ComponentCrafterBuild entity) -> new Bar(
+                        () -> Core.bundle.format("bar.pressureamount", entity.getPressure()),
+                        () -> Pal.lightOrange, () -> entity.getPressure() / visualExplodePressure));
+        }else{
+            b.addBar("pressure",
+            (ComponentBuild entity) -> new Bar(
+                    () -> Core.bundle.format("bar.pressureamount", entity.getPressure()),
+                    () -> Pal.lightOrange, () -> entity.getPressure() / visualExplodePressure));      
+        }
     }
 
     @Override

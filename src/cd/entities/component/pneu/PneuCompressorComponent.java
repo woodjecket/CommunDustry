@@ -1,6 +1,5 @@
 package cd.entities.component.pneu;
 
-import arc.util.Log;
 import cd.entities.component.BaseComponent;
 import cd.type.blocks.pneumatic.PneuInterface;
 import mindustry.gen.Building;
@@ -13,7 +12,6 @@ public class PneuCompressorComponent extends BaseComponent{
     public boolean onShouldConsume(Building b){
         PneuInterface bPneu = (PneuInterface)b;
         return bPneu.getPressure() < maxOperatePressure;
-        //return true;
     }
 
     @Override

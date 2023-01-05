@@ -35,7 +35,20 @@ public class ComponentBlock extends Block {
     }
 
     public class ComponentBuild extends Building  {
+        //define pneumatic
         public float pressure;
+
+        public float pressure() {
+            return pressure;
+        }
+
+        public float getPressure() {
+            return pressure;
+        }
+
+        public void setPressure(float p) {
+            this.pressure = p;
+        }
 
         @Override
         public void draw() {

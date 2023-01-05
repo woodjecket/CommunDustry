@@ -5,9 +5,8 @@ import cd.entities.component.MultiComponent;
 import cd.entities.component.pneu.PneuComponent;
 import cd.entities.component.pneu.PneuCompressorComponent;
 import cd.entities.component.pneu.PneuCrafterComponent;
+import cd.type.blocks.ComponentBlock;
 import cd.type.blocks.ComponentCrafter;
-import cd.type.blocks.pneumatic.PneuConduit;
-import cd.type.blocks.pneumatic.PneuCrafter;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
@@ -20,12 +19,13 @@ import static mindustry.type.ItemStack.*;
 
 public class CDBlocks {
 
-    public static Block basicFreezer,
-            basicDirectlyH2O2Crafter,
-            basicElectrolyzer,
-            pneuconduit,
-            pneucrafter,
-            pneucompressor;
+    public static Block 
+        basicFreezer,
+        basicDirectlyH2O2Crafter,
+        basicElectrolyzer,
+        pneuconduit,
+        pneucrafter,
+        pneucompressor;
 
     public void load() {
         basicFreezer = new GenericCrafter("basic-freezer") {
@@ -108,13 +108,12 @@ public class CDBlocks {
                 liquidOutputDirections = new int[] { 1, 3 };
             }
         };
-        pneuconduit = new PneuConduit("conduit") {{
+        pneuconduit = new ComponentBlock("conduit") {{
             requirements(Category.distribution,
             with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
             component = new PneuComponent();
         }};
-
-        pneucrafter = new PneuCrafter("crafter"){{
+        pneucrafter = new ComponentCrafter("crafter"){{
             requirements(Category.crafting,
             with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
             component = new MultiComponent(new PneuComponent(), new PneuCrafterComponent());
@@ -125,8 +124,7 @@ public class CDBlocks {
             hasItems = true;
             consumeItem(Items.coal, 2);
         }};
-
-        pneucompressor = new PneuCrafter("compressor"){{
+        pneucompressor = new ComponentCrafter("compressor"){{
             requirements(Category.crafting,
             with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));

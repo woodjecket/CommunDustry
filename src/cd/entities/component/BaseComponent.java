@@ -34,4 +34,7 @@ public class BaseComponent {
     public void onSetStats(Block b) {
     }
     
+    public void onSetBar(Block b) {
+
+    }
 }

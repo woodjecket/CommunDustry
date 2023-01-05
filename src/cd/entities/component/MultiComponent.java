@@ -63,4 +63,11 @@ public class MultiComponent extends BaseComponent {
         }
     }
 
+    @Override
+    public void onSetBar(Block b) {
+        for(BaseComponent c: components){
+            c.onSetBar(b);
+        }   
+    }
+
 }
