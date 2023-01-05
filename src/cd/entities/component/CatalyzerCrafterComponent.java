@@ -7,7 +7,7 @@ import mindustry.type.ItemStack;
 import mindustry.world.Block;
 import mindustry.world.meta.StatValues;
 
-public class CatalyzerComponent extends BaseComponent {
+public class CatalyzerCrafterComponent extends BaseComponent {
         /**
      * The catalyzer of the crafter. if exists, the efficiency will increase or it
      * can only work with catalyzer.

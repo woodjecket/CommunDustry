@@ -24,7 +24,7 @@ public class ComponentCrafter extends GenericCrafter {
         component.onSetStats(this);
     }
 
-    public class CatalyzerCrafterBuilding extends GenericCrafterBuild {
+    public class ComponentCrafterBuilding extends GenericCrafterBuild {
 
         @Override
         public boolean shouldConsume() {
@@ -40,6 +40,12 @@ public class ComponentCrafter extends GenericCrafter {
         @Override
         public float efficiencyScale() {
             return component.onEfficiencyScale(this);
+        }
+
+        @Override
+        public void craft(){
+            super.craft();
+            component.onCraft(this);
         }
     }
 

@@ -33,7 +33,7 @@ public class CDMod extends Mod{
             //show dialog upon startup
             Time.runTask(10f, () -> {
                 BaseDialog dialog = new BaseDialog("frog");
-                dialog.cont.add("You have just saved the load.").row();
+                dialog.cont.add("You have just loaded the save.").row();
                 //mod sprites are prefixed with the mod name (this mod is called 'example-java-mod' in its config)
                 dialog.cont.image(Core.atlas.find("commumdustry-cerium")).pad(20f).row();
                 dialog.cont.button("No", dialog::hide).size(100f, 50f);
@@ -47,7 +47,7 @@ public class CDMod extends Mod{
     @Override
     public void loadContent(){
         Log.info("Loading some example content.");
-        //why not ues static?
+        //why not ues static? Yes
         modItems = new CDItems();
         modItems.load();
         modLiquids = new CDLiquids();

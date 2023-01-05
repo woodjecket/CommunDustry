@@ -1,7 +1,8 @@
-package cd.entities.component;
+package cd.entities.component.pneu;
 
 import arc.audio.Sound;
 import cd.content.CDFx;
+import cd.entities.component.BaseComponent;
 import cd.type.blocks.pneumatic.PneuInterface;
 import mindustry.entities.Damage;
 import mindustry.entities.Effect;
@@ -12,8 +13,6 @@ import static mindustry.Vars.*;
 public class PneuComponent extends BaseComponent {
 
     public float visualExplodePressure = 15f;
-    public float visualMaxOperatePressure = 10f;
-    public float visualMinOperatePressure = 2f;
     public float leakPointPressure = 1f;
 
     public int explosionRadius = 3;
@@ -26,10 +25,15 @@ public class PneuComponent extends BaseComponent {
     public PneuComponent() {
     }
 
+    @Override
+    public void onUpdateTile(Building b){
+        calculatePressure(b);
+
+    }
     public void calculatePressure(Building b) {
         PneuInterface bPneu = (PneuInterface) b;
         for (Building other : b.proximity) {
-            if (other.block != b.block)
+            if (!(other instanceof PneuInterface))
                 continue;
             PneuInterface otherPneu = (PneuInterface) other;
             float thisP = bPneu.getPressure();

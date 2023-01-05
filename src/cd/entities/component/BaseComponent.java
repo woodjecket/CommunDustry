@@ -5,7 +5,7 @@ import mindustry.world.Block;
 
 public class BaseComponent {
 
-    public float visualExplodePressure, visualMaxOperatePressure, visualMinOperatePressure, leakPointPressure;
+    public float visualExplodePressure, maxOperatePressure, minOperatePressure, leakPointPressure;
 
     public BaseComponent() {
     }
@@ -19,7 +19,10 @@ public class BaseComponent {
     public void onCreateExplosion(Building b) {
     }
 
-    public boolean onShouldConsume(Building b) { return false;
+    public void onCraft(Building b) {
+    }
+
+    public boolean onShouldConsume(Building b) { return true;
     }
 
     public float onEfficiencyScale(Building b) { return 1f;
@@ -30,5 +33,5 @@ public class BaseComponent {
 
     public void onSetStats(Block b) {
     }
-
+    
 }
