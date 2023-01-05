@@ -4,15 +4,25 @@ import arc.math.Mathf;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.defense.Wall;
+import mindustry.world.meta.Stat;
+import mindustry.world.meta.StatUnit;
 
 public class FragileWall extends Wall {
     public float brokenThreshold = 100;
-    public float damageMultiple = 0.9f;
+    public float damagedMultiple = 0.9f;
     public float regainSpeed = 0.1f;
 
     public FragileWall(String name) {
         super(name);
         update = true;
+    }
+
+    @Override
+    public void setStats() {
+        super.setStats();
+        stats.add(new Stat("brokenThreshold"), brokenThreshold, new StatUnit("damage", false));
+        stats.add(new Stat("regainSpeed"), regainSpeed * 60, StatUnit.perSecond);
+        stats.add(new Stat("damagedMultiple"), (1 - damagedMultiple) * 100, StatUnit.percent);
     }
 
     @Override
@@ -31,9 +41,9 @@ public class FragileWall extends Wall {
 
         @Override
         public float handleDamage(float amount) {
-            damagedAmount += amount * damageMultiple;
+            damagedAmount += amount * damagedMultiple;
             if (damagedAmount > brokenThreshold) kill();
-            return super.handleDamage(amount) * damageMultiple;
+            return super.handleDamage(amount) * damagedMultiple;
         }
     }
 }
