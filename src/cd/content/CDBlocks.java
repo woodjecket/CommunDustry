@@ -112,6 +112,8 @@ public class CDBlocks {
             requirements(Category.distribution,
             with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
             component = new PneuComponent();
+            hasPressure = true;
+            visualExplodePressure = 15f;
         }};
         pneucrafter = new ComponentCrafter("crafter"){{
             requirements(Category.crafting,
@@ -123,6 +125,8 @@ public class CDBlocks {
             size = 2;
             hasItems = true;
             consumeItem(Items.coal, 2);
+            hasPressure = true;
+            visualExplodePressure = 15f;
         }};
         pneucompressor = new ComponentCrafter("compressor"){{
             requirements(Category.crafting,
@@ -134,6 +138,8 @@ public class CDBlocks {
             hasItems = true;
             consumeItem(Items.coal, 2);
             component = new MultiComponent(new PneuComponent(), new PneuCompressorComponent());
+            hasPressure = true;
+            visualExplodePressure = 15f;
         }};
     }
 }

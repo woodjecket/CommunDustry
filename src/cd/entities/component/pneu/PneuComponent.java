@@ -11,15 +11,11 @@ import mindustry.entities.Damage;
 import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
-import mindustry.ui.Bar;
-import mindustry.world.Block;
-import mindustry.graphics.Pal;
-import arc.Core;
 import static mindustry.Vars.*;
 
 public class PneuComponent extends BaseComponent {
 
-    public float visualExplodePressure = 15f;
+    public float explodePressure = 15f;
     public float leakPointPressure = 1f;
 
     public int explosionRadius = 3;
@@ -32,20 +28,7 @@ public class PneuComponent extends BaseComponent {
     public PneuComponent() {
     }
 
-    @Override
-    public void onSetBar(Block b){
-        if(b instanceof ComponentBlock){
-        b.addBar("pressure",
-                (ComponentCrafterBuild entity) -> new Bar(
-                        () -> Core.bundle.format("bar.pressureamount", entity.getPressure()),
-                        () -> Pal.lightOrange, () -> entity.getPressure() / visualExplodePressure));
-        }else{
-            b.addBar("pressure",
-            (ComponentBuild entity) -> new Bar(
-                    () -> Core.bundle.format("bar.pressureamount", entity.getPressure()),
-                    () -> Pal.lightOrange, () -> entity.getPressure() / visualExplodePressure));      
-        }
-    }
+
 
     @Override
     public void onUpdateTile(Building b){
@@ -70,7 +53,7 @@ public class PneuComponent extends BaseComponent {
             bPneu.setPressure((bPneu.getPressure() + leakPointPressure) / 2f + leakPointPressure / 10f);
         }
 
-        if (bPneu.getPressure() > visualExplodePressure) {
+        if (bPneu.getPressure() > explodePressure) {
             b.kill();
         }
     }
@@ -78,7 +61,7 @@ public class PneuComponent extends BaseComponent {
     @Override
     public void onCreateExplosion(Building b){
         PneuInterface bPneu = (PneuInterface) b;
-        if (bPneu.getPressure() > visualExplodePressure) {
+        if (bPneu.getPressure() > explodePressure) {
             if (explosionDamage > 0) {
                 Damage.damage(b.x, b.y, explosionRadius * tilesize, explosionDamage);
             }

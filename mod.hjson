@@ -1,17 +1,17 @@
 #the mod name as displayed in-game
-displayName: "联合工业"
+displayName: "<Restart Require>"
 
 #the internal name of your mod
 name: "commumdustry"
 
 #your name
-author: "联合工业组"
+author: "<Restart Require>"
 
 #the fully qualified main class of the mod
 main: "cd.CDMod"
 
 #the mod description as seen in the mod dialog
-description: "暂缺"
+description: "<Restart Require>"
 
 #the mod version
 version: 1.0
