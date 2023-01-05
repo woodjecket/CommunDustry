@@ -10,7 +10,9 @@ import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
 
 public class CDMod extends Mod{
-
+    public static CDBlocks modBlocks;
+    public static CDItems modItems;
+    public static CDLiquids modLiquids;
     public CDMod(){
         Log.info("Loaded CDMod constructor.");
 
@@ -46,11 +48,11 @@ public class CDMod extends Mod{
     public void loadContent(){
         Log.info("Loading some example content.");
         //why not ues static?
-        CDItems modItem = new CDItems();
-        modItem.load();
-        CDLiquids modLiquids = new CDLiquids();
+        modItems = new CDItems();
+        modItems.load();
+        modLiquids = new CDLiquids();
         modLiquids.load();
-        CDBlocks modBlocks = new CDBlocks();
+        modBlocks = new CDBlocks();
         modBlocks.load();
     }
 
