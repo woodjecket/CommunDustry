@@ -1,34 +1,32 @@
 package cd.content;
 
 import arc.graphics.*;
-import cd.entities.component.MultiComponent;
-import cd.entities.component.pneu.PneuComponent;
-import cd.entities.component.pneu.PneuCompressorComponent;
-import cd.entities.component.pneu.PneuCrafterComponent;
-import cd.type.blocks.ComponentBlock;
-import cd.type.blocks.ComponentCrafter;
-import mindustry.content.Fx;
-import mindustry.content.Items;
-import mindustry.content.Liquids;
+import cd.entities.component.*;
+import cd.entities.component.pneu.*;
+import cd.type.blocks.*;
+import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.world.*;
-import mindustry.world.blocks.production.GenericCrafter;
+import mindustry.world.blocks.production.*;
 import mindustry.world.draw.*;
-import static mindustry.type.ItemStack.*;
 
-public class CDBlocks {
+import static mindustry.type.ItemStack.with;
 
-    public static Block 
-        basicFreezer,
-        basicDirectlyH2O2Crafter,
-        basicElectrolyzer,
-        pneuconduit,
-        pneucrafter,
-        pneucompressor;
+public class CDBlocks{
 
-    public void load() {
-        basicFreezer = new GenericCrafter("basic-freezer") {
+    public static Block
+    basicFreezer,
+    basicDirectlyH2O2Crafter,
+    basicElectrolyzer,
+    pneuConduit,
+    pneuCrafter,
+    pneuCompressor,
+
+    pneuAndcataCrafter;
+
+    public void load(){
+        basicFreezer = new GenericCrafter("basic-freezer"){
             {
                 requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
                 craftEffect = CDFx.iceCraft;
@@ -43,10 +41,10 @@ public class CDBlocks {
                 consumeLiquid(Liquids.water, 0.1f);
             }
         };
-        basicDirectlyH2O2Crafter = new ComponentCrafter("basic-directly-h2o2-crafter") {
+        basicDirectlyH2O2Crafter = new ComponentCrafter("basic-directly-h2o2-crafter"){
             {
                 requirements(Category.crafting,
-                        with(Items.lead, 20, Items.silicon, 60, Items.titanium, 80, Items.graphite, 100));
+                with(Items.lead, 20, Items.silicon, 60, Items.titanium, 80, Items.graphite, 100));
                 craftEffect = Fx.freezing;
                 outputLiquid = new LiquidStack(CDLiquids.H2O2, 0.1f);
                 craftTime = 120f;
@@ -56,15 +54,15 @@ public class CDBlocks {
                 drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("7666c6")));
                 ambientSound = Sounds.smelter;
                 ambientSoundVolume = 0.07f;
-                consumeLiquids(new LiquidStack[] { new LiquidStack(Liquids.hydrogen, 0.05f),
-                        new LiquidStack(Liquids.ozone, 2f / 60f) });
+                consumeLiquids(new LiquidStack(Liquids.hydrogen, 0.05f),
+                new LiquidStack(Liquids.ozone, 2f / 60f));
                 component = CDComponent.basicDirectlyH2O2CrafterCatalyzerComponent;
             }
         };
-        basicElectrolyzer = new GenericCrafter("basic-electrolyzer") {
+        basicElectrolyzer = new GenericCrafter("basic-electrolyzer"){
             {
                 requirements(Category.crafting,
-                        with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
+                with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
                 size = 4;
 
                 researchCostMultiplier = 1.2f;
@@ -78,46 +76,43 @@ public class CDBlocks {
                 consumePower(1f);
 
                 drawer = new DrawMulti(
-                        new DrawRegion("-bottom"),
-                        new DrawLiquidTile(Liquids.water, 2f),
-                        new DrawBubbles(Color.valueOf("7693e3")) {
-                            {
-                                sides = 10;
-                                recurrence = 3f;
-                                spread = 6;
-                                radius = 1.5f;
-                                amount = 20;
-                            }
-                        },
-                        new DrawRegion(),
-                        new DrawLiquidOutputs(),
-                        new DrawGlowRegion() {
-                            {
-                                alpha = 0.7f;
-                                color = Color.valueOf("c4bdf3");
-                                glowIntensity = 0.3f;
-                                glowScale = 6f;
-                            }
-                        });
+                new DrawRegion("-bottom"),
+                new DrawLiquidTile(Liquids.water, 2f),
+                new DrawBubbles(Color.valueOf("7693e3")){
+                    {
+                        sides = 10;
+                        recurrence = 3f;
+                        spread = 6;
+                        radius = 1.5f;
+                        amount = 20;
+                    }
+                },
+                new DrawRegion(),
+                new DrawLiquidOutputs(),
+                new DrawGlowRegion(){
+                    {
+                        alpha = 0.7f;
+                        color = Color.valueOf("c4bdf3");
+                        glowIntensity = 0.3f;
+                        glowScale = 6f;
+                    }
+                });
 
                 ambientSound = Sounds.electricHum;
                 ambientSoundVolume = 0.08f;
 
                 regionRotated1 = 3;
                 outputLiquids = LiquidStack.with(Liquids.ozone, 4f / 60, Liquids.hydrogen, 6f / 60);
-                liquidOutputDirections = new int[] { 1, 3 };
+                liquidOutputDirections = new int[]{1, 3};
             }
         };
-        pneuconduit = new ComponentBlock("conduit") {{
+        pneuConduit = new ComponentBlock("conduit"){{
             requirements(Category.distribution,
             with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
             component = new PneuComponent();
             hasPressure = true;
-            visualExplodePressure = 15f;
         }};
-        pneucrafter = new ComponentCrafter("crafter"){{
-            requirements(Category.crafting,
-            with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
+        pneuCrafter = new ComponentCrafter("crafter"){{
             component = new MultiComponent(new PneuComponent(), new PneuCrafterComponent());
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
             outputItem = new ItemStack(Items.graphite, 1);
@@ -126,11 +121,8 @@ public class CDBlocks {
             hasItems = true;
             consumeItem(Items.coal, 2);
             hasPressure = true;
-            visualExplodePressure = 15f;
         }};
-        pneucompressor = new ComponentCrafter("compressor"){{
-            requirements(Category.crafting,
-            with(Items.copper, 50, Items.lead, 40, Items.silicon, 130, Items.graphite, 80));
+        pneuCompressor = new ComponentCrafter("compressor"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
             outputItem = new ItemStack(Items.graphite, 1);
             craftTime = 90f;
@@ -139,7 +131,24 @@ public class CDBlocks {
             consumeItem(Items.coal, 2);
             component = new MultiComponent(new PneuComponent(), new PneuCompressorComponent());
             hasPressure = true;
-            visualExplodePressure = 15f;
+        }};
+        pneuAndcataCrafter = new ComponentCrafter("multi-crafter"){{
+            requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
+            outputItem = new ItemStack(Items.graphite, 1);
+            craftTime = 90f;
+            size = 2;
+            hasItems = true;
+            consumeItem(Items.coal, 2);
+            component = new MultiComponent(
+            new PneuComponent(),
+            new PneuCrafterComponent(),
+            new CatalyzerCrafterComponent(){{
+                catalyzer = with(CDItems.platinum,1, Items.lead,1);
+                catalyzerScale = new float[]{2f,3f};
+                maxEfficiency = 5f;
+                catalyzerNecessity = false;
+            }});
+            hasPressure = true;
         }};
     }
 }

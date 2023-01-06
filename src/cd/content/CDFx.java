@@ -1,14 +1,14 @@
 package cd.content;
 
+import arc.graphics.*;
+import arc.graphics.g2d.*;
+import mindustry.entities.*;
+import mindustry.graphics.*;
+
 import static arc.graphics.g2d.Draw.color;
 import static arc.math.Angles.randLenVectors;
 
-import arc.graphics.Color;
-import arc.graphics.g2d.Fill;
-import mindustry.entities.Effect;
-import mindustry.graphics.Pal;
-
-public class CDFx {
+public class CDFx{
     public static final Effect
 
     iceCraft = new Effect(15, e -> {
@@ -19,6 +19,6 @@ public class CDFx {
     }),
     pneuSmoke = new Effect(100, e -> {
         color(Color.gray, Pal.darkishGray, e.fin());
-        Fill.circle(e.x, e.y, (7f - e.fin() * 7f)/2f);
+        Fill.circle(e.x, e.y, (7f - e.fin() * 7f) / 2f);
     });
 }

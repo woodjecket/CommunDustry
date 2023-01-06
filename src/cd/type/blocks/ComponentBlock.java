@@ -1,96 +1,100 @@
 package cd.type.blocks;
 
-import arc.graphics.g2d.TextureRegion;
-import arc.util.Eachable;
-import cd.entities.component.BaseComponent;
-import cd.type.blocks.pneumatic.PneuInterface;
-import mindustry.entities.units.BuildPlan;
-import mindustry.gen.Building;
-import mindustry.ui.Bar;
-import mindustry.world.Block;
-import mindustry.world.draw.DrawBlock;
-import mindustry.world.draw.DrawDefault;
+import arc.*;
+import arc.graphics.g2d.*;
+import arc.util.*;
+import cd.entities.component.*;
+import cd.type.blocks.pneumatic.*;
+import mindustry.entities.units.*;
+import mindustry.gen.*;
+import mindustry.graphics.*;
+import mindustry.ui.*;
+import mindustry.world.*;
+import mindustry.world.draw.*;
 
-import mindustry.graphics.Pal;
-import arc.Core;
-
-public class ComponentBlock extends Block {
-    public float visualExplodePressure = 15f;
+public class ComponentBlock extends Block{
     public BaseComponent component;
     public boolean hasPressure;
     public DrawBlock drawer = new DrawDefault();
 
-    public ComponentBlock(String name) {
+    public ComponentBlock(String name){
         super(name);
         update = true;
     }
 
     @Override
-    public void load() {
+    public void load(){
         super.load();
         drawer.load(this);
     }
 
     @Override
-    public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list) {
+    public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list){
         drawer.drawPlan(this, plan, list);
     }
 
     @Override
-    public TextureRegion[] icons() {
+    public TextureRegion[] icons(){
         return drawer.finalIcons(this);
     }
 
     @Override
     public void setBars(){
         if(hasPressure){
-        addBar("pressure",
-                (ComponentBuild entity) -> new Bar(
-                        () -> Core.bundle.format("bar.pressureamount", entity.pressure),
-                        () -> Pal.lightOrange, () -> entity.pressure / visualExplodePressure));}
+            addBar("pressure",
+            (ComponentBuild entity) -> new Bar(
+            () -> Core.bundle.format("bar.pressure-amount", entity.pressure),
+            () -> Pal.lightOrange, () -> entity.pressure / component.getVisualExplodePressure()));
+        }
     }
 
-    public class ComponentBuild extends Building implements PneuInterface {
+    @Override
+    public void setStats(){
+        super.setStats();
+        component.onSetStats(this);
+    }
+
+    public class ComponentBuild extends Building implements PneuInterface{
         //define pneumatic
         public float pressure;
 
-        public float pressure() {
+        public float pressure(){
             return pressure;
         }
 
-        public float getPressure() {
+        public float getPressure(){
             return pressure;
         }
 
-        public void setPressure(float p) {
+        public void setPressure(float p){
             this.pressure = p;
         }
 
         @Override
-        public void draw() {
+        public void draw(){
             drawer.draw(this);
         }
 
         @Override
-        public void drawLight() {
+        public void drawLight(){
             super.drawLight();
             drawer.drawLight(this);
         }
 
         @Override
-        public void updateTile() {
+        public void updateTile(){
             super.updateTile();
             component.onUpdateTile(this);
         }
 
 
         @Override
-        public void onDestroyed() {
+        public void onDestroyed(){
             super.onDestroyed();
             component.onDestroyed(this);
         }
 
-        public void createExplosion() {
+        public void createExplosion(){
             component.onCreateExplosion(this);
         }
 

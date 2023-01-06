@@ -1,11 +1,6 @@
 package cd.type.valence;
 
-import cd.content.CDItems;
-import mindustry.content.Items;
-
-import static cd.type.valence.ItemsValence.setValence;
-
-public class ItemValenceLoader {
+public class ItemValenceLoader{
     public static void load(){
         //测试用
         //setValence(CDItems.cerium,3);

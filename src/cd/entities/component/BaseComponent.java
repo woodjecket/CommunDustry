@@ -1,40 +1,55 @@
 package cd.entities.component;
 
-import mindustry.gen.Building;
-import mindustry.world.Block;
+import mindustry.gen.*;
+import mindustry.world.*;
 
-public class BaseComponent {
-
+public abstract class BaseComponent{
+    public MultiComponent parentComponent;
     public float visualExplodePressure, maxOperatePressure, minOperatePressure, leakPointPressure;
 
-    public BaseComponent() {
+    public BaseComponent(){
     }
 
-    public void onUpdateTile(Building b) {
+    public float getVisualExplodePressure(){
+        return -1f;
     }
 
-    public void onDestroyed(Building b) {
+    public float getMaxOperatePressure(){
+        return -1f;
     }
 
-    public void onCreateExplosion(Building b) {
+    public float getMinOperatePressure(){
+        return -1f;
     }
 
-    public void onCraft(Building b) {
+    public float getLeakPointPressure(){
+        return -1f;
     }
 
-    public boolean onShouldConsume(Building b) { return true;
+    public void onUpdateTile(Building b){
     }
 
-    public float onEfficiencyScale(Building b) { return 1f;
+    public void onDestroyed(Building b){
     }
 
-    public void onInit(Block b) {
+    public void onCreateExplosion(Building b){
     }
 
-    public void onSetStats(Block b) {
+    public void onCraft(Building b){
     }
-    
-    public void onSetBar(Block b) {
 
+    public boolean onShouldConsume(Building b){
+        return true;
     }
+
+    public float onEfficiencyScale(Building b){
+        return 1f;
+    }
+
+    public void onInit(Block b){
+    }
+
+    public void onSetStats(Block b){
+    }
+
 }

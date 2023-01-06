@@ -1,15 +1,15 @@
 package cd.entities.component;
 
-import arc.math.Mathf;
-import cd.entities.stat.CDStat;
-import mindustry.gen.Building;
-import mindustry.type.ItemStack;
-import mindustry.world.Block;
-import mindustry.world.meta.StatValues;
+import arc.math.*;
+import cd.entities.stat.*;
+import mindustry.gen.*;
+import mindustry.type.*;
+import mindustry.world.*;
+import mindustry.world.meta.*;
 
-public class CatalyzerCrafterComponent extends BaseComponent {
-        /**
-     * The catalyzer of the crafter. if exists, the efficiency will increase or it
+public class CatalyzerCrafterComponent extends BaseComponent{
+    /**
+     * The catalyzer of the crafter. if exists, the efficiency will increase ,or it
      * can only work with catalyzer.
      */
     public ItemStack[] catalyzer;
@@ -24,8 +24,8 @@ public class CatalyzerCrafterComponent extends BaseComponent {
     public float baseCatalyzerScale = 1f;
     /** Efficiency that catalyzers increases */
     public float[] catalyzerScale = {1f};
-    /** Whether to add or multipily scale */
-    public String catalyzerCaculation = "mul";
+    /** Whether to add or multiply scale */
+    public String catalyzerCalculation = "mul";
     /** Maximum possible efficiency after catalyzer. */
     public float maxEfficiency = 4f;
     /** Chance to consume catalyzer. -1 for disabled */
@@ -33,23 +33,23 @@ public class CatalyzerCrafterComponent extends BaseComponent {
 
     @Override
     public void onInit(Block b){
-        if (catalyzer != null) {
-            for (ItemStack i : catalyzer) {
+        if(catalyzer != null){
+            for(ItemStack i : catalyzer){
                 b.itemFilter[i.item.id] = true;
             }
-        }     
+        }
     }
 
     @Override
     public void onSetStats(Block b){
-        b.stats.add(CDStat.catalyzer, StatValues.items(true, catalyzer));   
+        b.stats.add(CDStat.catalyzer, StatValues.items(true, catalyzer));
     }
 
     @Override
     public boolean onShouldConsume(Building b){
-        if (catalyzer != null && catalyzerNecessity) {
-            for (ItemStack i : catalyzer) {
-                if (!b.items.has(i.item)) {
+        if(catalyzer != null && catalyzerNecessity){
+            for(ItemStack i : catalyzer){
+                if(!b.items.has(i.item)){
                     return false;
                 }
             }
@@ -66,18 +66,14 @@ public class CatalyzerCrafterComponent extends BaseComponent {
 
     @Override
     public float onEfficiencyScale(Building b){
-        if (!catalyzerNecessity || catalyzerScale != null) {
+        if(!catalyzerNecessity || catalyzerScale != null){
             float result = baseCatalyzerScale;
-            for (int i = 0; i < catalyzer.length; i++) {
+            for(int i = 0; i < catalyzer.length; i++){
                 ItemStack stack = catalyzer[i];
-                if (b.items.get(stack.item) >= stack.amount) {
-                    switch (catalyzerCaculation) {
-                        case "mul":
-                            result *= catalyzerScale[i];
-                            break;
-                        case "add":
-                            result += catalyzerScale[i];
-                            break;
+                if(b.items.get(stack.item) >= stack.amount){
+                    switch(catalyzerCalculation){
+                        case "mul" -> result *= catalyzerScale[i];
+                        case "add" -> result += catalyzerScale[i];
                     }
                 }
             }
