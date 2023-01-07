@@ -1,17 +1,17 @@
 #the mod name as displayed in-game
-displayName: "<Restart Require>"
+displayName: "CommunDustry"
 
 #the internal name of your mod
 name: "commumdustry"
 
 #your name
-author: "<Restart Require>"
+author: "The Juniors"
 
 #the fully qualified main class of the mod
 main: "cd.CDMod"
 
 #the mod description as seen in the mod dialog
-description: "<Restart Require>"
+description: "WIP"
 
 #the mod version
 version: 1.0

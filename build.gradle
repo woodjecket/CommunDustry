@@ -1,3 +1,4 @@
+//file:noinspection ConfigurationAvoidance
 apply plugin: "java"
 
 version '1.0'
@@ -34,12 +35,13 @@ dependencies{
 
 //force arc version
 configurations.all{
-    resolutionStrategy.eachDependency { details ->
+    resolutionStrategy.eachDependency{ details ->
         if(details.requested.group == 'com.github.Anuken.Arc'){
             details.useVersion "$mindustryVersion"
         }
     }
 }
+
 
 task jarAndroid{
     dependsOn "jar"
@@ -47,7 +49,7 @@ task jarAndroid{
     doLast{
         if(!sdkRoot || !new File(sdkRoot).exists()) throw new GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
 
-        def platformRoot = new File("$sdkRoot/platforms/").listFiles().sort().reverse().find{ f -> new File(f, "android.jar").exists()}
+        def platformRoot = new File("$sdkRoot/platforms/").listFiles().sort().reverse().find{ f -> new File(f, "android.jar").exists() }
 
         if(!platformRoot) throw new GradleException("No android.jar found. Ensure that you have an Android platform installed.")
 
@@ -56,7 +58,7 @@ task jarAndroid{
 
         //dex and desugar files - this requires d8 in your PATH
         "d8 $dependencies --min-api 14 --output ${project.archivesBaseName}Android.jar ${project.archivesBaseName}Desktop.jar"
-            .execute(null, new File("$buildDir/libs")).waitForProcessOutput(System.out, System.err)
+                .execute(null, new File("$buildDir/libs")).waitForProcessOutput(System.out, System.err)
     }
 }
 
@@ -74,6 +76,15 @@ jar{
     from("assets/"){
         include "**"
     }
+
+}
+
+task game{
+    dependsOn jar
+    doLast{
+        "mv -f $buildDir/libs/${project.archivesBaseName}Desktop.jar $buildDir/libs/mindustry_mod".execute().waitForProcessOutput(System.out, System.err)
+        "/Users/abc/Mindustry.app/Contents/MacOS/Mindustry ; exit".execute().waitForProcessOutput(System.out, System.err)
+    }
 }
 
 task deploy(type: Jar){
@@ -81,7 +92,7 @@ task deploy(type: Jar){
     dependsOn jar
     archiveFileName = "${project.archivesBaseName}.jar"
 
-    from{ [zipTree("$buildDir/libs/${project.archivesBaseName}Desktop.jar"), zipTree("$buildDir/libs/${project.archivesBaseName}Android.jar")] }
+    from{ [zipTree("$buildDir/libs/${project.archivesBaseName}Desktop.jar"), zipTree("$buildDir/libs/${project.archivesBaseName}Android.jar")].waitForProcessOutput(System.out, System.err) }
 
     doLast{
         delete{

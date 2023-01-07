@@ -11,12 +11,10 @@ import static arc.math.Angles.randLenVectors;
 public class CDFx{
     public static final Effect
 
-    iceCraft = new Effect(15, e -> {
-        randLenVectors(e.id, 6, 4f + e.fin() * 5f, (x, y) -> {
-            color(Color.white, Color.valueOf("93ccea"), e.fin());
-            Fill.square(e.x + x, e.y + y, 0.5f + e.fout() * 2f, 45);
-        });
-    }),
+    iceCraft = new Effect(15, e -> randLenVectors(e.id, 6, 4f + e.fin() * 5f, (x, y) -> {
+        color(Color.white, Color.valueOf("93ccea"), e.fin());
+        Fill.square(e.x + x, e.y + y, 0.5f + e.fout() * 2f, 45);
+    })),
     pneuSmoke = new Effect(100, e -> {
         color(Color.gray, Pal.darkishGray, e.fin());
         Fill.circle(e.x, e.y, (7f - e.fin() * 7f) / 2f);

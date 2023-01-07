@@ -4,6 +4,7 @@ import arc.graphics.*;
 import cd.entities.component.*;
 import cd.entities.component.pneu.*;
 import cd.type.blocks.*;
+import cd.type.blocks.laser.*;
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -22,8 +23,10 @@ public class CDBlocks{
     pneuConduit,
     pneuCrafter,
     pneuCompressor,
-
-    pneuAndcataCrafter;
+    pneuAndcataCrafter,
+    dLP,
+    dLR,
+    dLE;
 
     public void load(){
         basicFreezer = new GenericCrafter("basic-freezer"){
@@ -143,12 +146,21 @@ public class CDBlocks{
             new PneuComponent(),
             new PneuCrafterComponent(),
             new CatalyzerCrafterComponent(){{
-                catalyzer = with(CDItems.platinum,1, Items.lead,1);
-                catalyzerScale = new float[]{2f,3f};
+                catalyzer = with(CDItems.platinum, 1, Items.lead, 1);
+                catalyzerScale = new float[]{2f, 3f};
                 maxEfficiency = 5f;
                 catalyzerNecessity = false;
             }});
             hasPressure = true;
+        }};
+        dLP = new DirectLaserProvider("dLP"){{
+            requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
+        }};
+        dLR = new DirectLaserRepeater("dLR"){{
+            requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
+        }};
+        dLE = new DirectLaserEnd("dLE"){{
+            requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
         }};
     }
 }
