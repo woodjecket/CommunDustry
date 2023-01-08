@@ -1,24 +1,19 @@
 package cd.content;
 
-import cd.type.blocks.valence.*;
-import cd.type.valence.*;
+import cd.type.valence.ResultMap;
+import mindustry.content.Items;
 
 public class ResultMaps{
-    public static ResultMap todo1;
-    public static ValenceCrafter todo2;
+    public static ResultMap map1;
 
     public static void load(){
-        //map1 = new ResultMap(12);
-        //map2 = new ResultMap(40, true);
-        //aCrafter = new ValenceCrafter("aCrafter", ResultMaps.map1);
-        //bCrafter = new ValenceCrafter("bCrafter", ResultMaps.map2);
+        map1 = new ResultMap(30, true);
         loadResult();
     }
 
     public static void loadResult(){
-        //map1.putResult(Items.beryllium, new int[]{8, 9, 12});
-        //map1.putResult(Items.coal, new int[]{2, 3, 6, 7});
-        //map1.putResult(Items.blastCompound, new int[]{10, 11});
-        //map2.putResult(Items.phaseFabric, new int[]{-32, -33, -34});
+        map1.putResult(Items.phaseFabric, new int[]{-8, 3, 1}, new int[]{3, 2, 1});
+        map1.putResult(Items.surgeAlloy, new int[]{10, 11, 13});
+        map1.putResult(CDItems.platinum, new int[]{24, 25});
     }
 }

@@ -1,114 +1,163 @@
 package cd.type.blocks.valence;
 
-import arc.math.*;
-import arc.struct.*;
+import arc.scene.ui.layout.*;
+import arc.util.*;
+import arc.util.io.*;
 import cd.type.valence.*;
+import cd.ui.*;
 import mindustry.gen.*;
-import mindustry.graphics.*;
 import mindustry.type.*;
-import mindustry.ui.*;
-import mindustry.world.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.consumers.*;
 
-import java.util.concurrent.atomic.*;
-
-import static mindustry.Vars.content;
+import static cd.type.valence.ItemsValence.ValenceModule;
 
 //TODO 完善
-public class ValenceCrafter extends GenericCrafter{
+public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
     public ResultMap resultMap;
 
     public ValenceCrafter(String name, ResultMap resultMap){
         super(name);
         this.resultMap = resultMap;
-        consume(new ConsumeValenceItem());
-        buildType = ValenceCrafterBuild::new;
+        this.buildType = ValenceCrafterBuild::new;
+        configurable = true;
+        consume(new ConsumeItemValence());
+        config(Integer.class, (build, index) -> {
+            ValenceCrafterBuild vBuild = (ValenceCrafterBuild)build;
+            switch(index){
+                case 0 -> vBuild.formula.subFormulaItem();
+                case 1 -> vBuild.updateDialog();
+                case 2 -> {
+                    vBuild.formula = vBuild.dialog.formula;
+                    vBuild.updateDialog();
+                }
+            }
+        });
+        config(Item.class, (build, item) -> ((ValenceCrafterBuild)build).formula.putFormulaItem(item));
+        config(Float.class, ValenceCrafterBuild::setHeat);
+        configClear(build -> ((ValenceCrafterBuild)build).formula.clear());
     }
 
     @Override
-    public void setBars(){
-        super.setBars();
-        addBar("valence", entity -> new Bar(
-        () -> "valence:" + ((ValenceCrafterBuild)entity).getItemsValence(),
-        () -> Pal.ammo,
-        () -> (float)((ValenceCrafterBuild)entity).getItemsValence() / resultMap.mapKeys.size
-        ));
+    public ResultMap getMap(){
+        return resultMap;
     }
 
-    static class ConsumeValenceItem extends ConsumeItemFilter{
-        public Seq<Item> items = new Seq<>();
-
-        public ConsumeValenceItem(){
+    public static class ConsumeItemValence extends ConsumeItemFilter{
+        public ConsumeItemValence(){
             this.filter = ItemsValence::hasValence;
-            content.items().each(filter, item -> items.add(item));
-        }
-
-        @Override
-        public void apply(Block block){
-            block.hasItems = true;
-            block.acceptsItems = true;
-            items.each(item -> block.itemFilter[item.id] = true);
         }
 
         @Override
         public void trigger(Building build){
-            items.each(item -> build.items.remove(item, build.items.get(item)));
+            ValenceBuild vBuild = (ValenceBuild)build;
+            vBuild.getFormula().toStack().each(i -> build.items.remove(i));
+            vBuild.getFormula().clear();
         }
     }
 
-    public class ValenceCrafterBuild extends GenericCrafterBuild{
-        public float heat;
-
-        @Override
-        public void updateTile(){
-            super.updateTile();
-            heat = Mathf.approach(heat, 0, 0.001f);
-        }
-
-        @Override
-        public void tapped(){
-            heat += 0.2;
-        }
-
-        @Override
-        public boolean acceptItem(Building source, Item item){
-            return ItemsValence.hasValence(item) && this.items.get(item) < this.getMaximumAccepted(item);
-        }
-
-        public int getItemsValence(){
-            AtomicInteger itemsValence = new AtomicInteger();
-            this.items.each((Item item, int amount) -> itemsValence.addAndGet(ItemsValence.getValence(item, items) * amount));
-            return itemsValence.get();
-        }
-
-        public Item output(){
-            return resultMap.getResult(getItemsValence());
-        }
-
-        public boolean canMakeItem(){
-            return output() != null;
-        }
-
-        @Override
-        public void craft(){
-            if(canMakeItem()) offload((output()));
-            if(wasVisible){
-                craftEffect.at(x, y);
-            }
-            progress %= 1f;
-            heat = 0;
-            consume();
-        }
-
-        @Override
-        public void dumpOutputs(){
-            if(canMakeItem()) dump(output());
-        }
+    public class ValenceCrafterBuild extends GenericCrafterBuild implements ValenceBuild{
+        public ItemStack output;
+        public float heat = 0;
+        public Formula formula = new Formula();
+        public ValenceMapDialog dialog = new ValenceMapDialog(this);
+        public ValenceModule module = new ValenceModule(getFormula().valenceAtomicInteger, null, 0);
 
         @Override
         public float getProgressIncrease(float baseTime){
             return super.getProgressIncrease(baseTime) * heat;
         }
+
+        @Override
+        public void buildConfiguration(Table table){
+            table.button(Tex.button, () -> dialog.show());
+        }
+
+        @Override
+        public float getHeat(){
+            return heat;
+        }
+
+        @Override
+        public void setHeat(float amount){
+            heat = amount;
+        }
+
+        @Override
+        public Formula getFormula(){
+            return formula;
+        }
+
+        @Override
+        public ValenceModule getModule(){
+            return module;
+        }
+
+        @Override
+        public ResultMap getMap(){
+            return resultMap;
+        }
+
+        @Override
+        public int getValence(){
+            return getFormula().getValence();
+        }
+
+        @Override
+        public void updateDialog(){
+            if(!dialog.isShown()) return;
+            dialog.formula = formula;
+            dialog.allValence = formula.getValence();
+            dialog.updateFormula();
+            dialog.updateItem();
+            Log.info(dialog.allValence);
+        }
+
+        @Override
+        public void updateValence(){
+            output = resultMap.getResult(formula.getValence());
+            updateDialog();
+        }
+
+        @Override
+        public void dumpOutputs(){
+            if(output != null) dump(output.item);
+        }
+
+        @Override
+        public void craft(){
+            heat = 0;
+            updateValence();
+            if(output != null){
+                for(int i = 0; i < output.amount; i++) offload(output.item);
+                if(wasVisible){
+                    craftEffect.at(x, y);
+                }
+            }
+            progress %= 1f;
+            consume();
+            updateDialog();
+        }
+
+        @Override
+        public Object config(){
+            return getFormula();
+        }
+
+        @Override
+        public void write(Writes write){
+            super.write(write);
+            write.i(formula.items.size);
+            write.b(formula.toBytes());
+        }
+
+        @Override
+        public void read(Reads read, byte revision){
+            super.read(read, revision);
+            int length = read.i();
+            formula = Formula.readFromBytes(read.b(length));
+        }
     }
 }
+
+
