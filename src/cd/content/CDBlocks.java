@@ -2,7 +2,6 @@ package cd.content;
 
 import arc.graphics.*;
 import cd.entities.component.*;
-import cd.entities.component.pneu.*;
 import cd.type.blocks.*;
 import cd.type.blocks.laser.*;
 import mindustry.content.*;
@@ -116,7 +115,9 @@ public class CDBlocks{
             hasPressure = true;
         }};
         pneuCrafter = new ComponentCrafter("crafter"){{
-            component = new MultiComponent(new PneuComponent(), new PneuCrafterComponent());
+            component = new PneuComponent(){{
+                canConsumePressure = true;
+            }};
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
             outputItem = new ItemStack(Items.graphite, 1);
             craftTime = 90f;
@@ -132,7 +133,9 @@ public class CDBlocks{
             size = 2;
             hasItems = true;
             consumeItem(Items.coal, 2);
-            component = new MultiComponent(new PneuComponent(), new PneuCompressorComponent());
+            component = new PneuComponent(){{
+                canProvidePressure = true;
+            }};
             hasPressure = true;
         }};
         pneuAndcataCrafter = new ComponentCrafter("multi-crafter"){{
@@ -143,8 +146,9 @@ public class CDBlocks{
             hasItems = true;
             consumeItem(Items.coal, 2);
             component = new MultiComponent(
-            new PneuComponent(),
-            new PneuCrafterComponent(),
+            new PneuComponent(){{
+                canConsumePressure = true;
+            }},
             new CatalyzerCrafterComponent(){{
                 catalyzer = with(CDItems.platinum, 1, Items.lead, 1);
                 catalyzerScale = new float[]{2f, 3f};
@@ -153,14 +157,18 @@ public class CDBlocks{
             }});
             hasPressure = true;
         }};
-        dLP = new DirectLaserProvider("dLP"){{
+        dLP = new DirectLaserBlock("dLP"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
+            provideLaserEnergy = true;
         }};
-        dLR = new DirectLaserRepeater("dLR"){{
+        dLR = new DirectLaserBlock("dLR"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
+            provideLaserEnergy = true;
+            acceptLaserEnergy = true;
         }};
-        dLE = new DirectLaserEnd("dLE"){{
+        dLE = new DirectLaserBlock("dLE"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
+            acceptLaserEnergy = true;
         }};
     }
 }

@@ -9,14 +9,15 @@ public interface LaserInterface{
 
     void removeLaserParent(Building b);
 
-    void changeLaserEnergy(float c);
-
-    boolean isAbsorbLaserEnergy(int bx, int by);
-
-
     Building getLaserChild();
 
     void setLaserChild(Building b);
 
-    boolean canProvide(int bx, int by);
+    void changeLaserEnergy(float c);
+
+    boolean isAcceptLaserEnergy(int bx, int by);
+
+    boolean isProvideLaserEnergy(int bx, int by);
+
+
 }

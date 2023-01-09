@@ -1,6 +1,7 @@
 package cd.type.blocks;
 
 import arc.*;
+import arc.util.io.*;
 import cd.entities.component.*;
 import cd.type.blocks.pneumatic.*;
 import mindustry.graphics.*;
@@ -13,13 +14,14 @@ public class ComponentCrafter extends GenericCrafter{
 
     public ComponentCrafter(String name){
         super(name);
-
+        sync = true;
     }
 
     @Override
     public void init(){
         super.init();
         component.onInit(this);
+        hasPressure = component.hasPneu;
 
     }
 
@@ -29,7 +31,7 @@ public class ComponentCrafter extends GenericCrafter{
             addBar("pressure",
             (ComponentCrafterBuild entity) -> new Bar(
             () -> Core.bundle.format("bar.pressure-amount", entity.pressure),
-            () -> Pal.lightOrange, () -> entity.pressure / component.getVisualExplodePressure()));
+            () -> Pal.lightOrange, () -> entity.pressure / component.getExplodePressure()));
         }
     }
 
@@ -38,6 +40,7 @@ public class ComponentCrafter extends GenericCrafter{
         super.setStats();
         component.onSetStats(this);
     }
+
 
     public class ComponentCrafterBuild extends GenericCrafterBuild implements PneuInterface{
         //define pneumatic
@@ -76,7 +79,23 @@ public class ComponentCrafter extends GenericCrafter{
             super.craft();
             component.onCraft(this);
         }
+
+        @Override
+        public void read(Reads read, byte revision){
+            super.read(read, revision);
+            var buildNumber = read.i();
+            if(buildNumber < 0) return;
+            if(hasPressure) pressure = read.f();
+        }
+
+        @Override
+        public void write(Writes write){
+            super.write(write);
+            write.i(1);
+            if(hasPressure) write.f(pressure);
+        }
     }
+
 
 }
 

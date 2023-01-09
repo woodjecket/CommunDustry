@@ -3,6 +3,7 @@ package cd.type.blocks;
 import arc.*;
 import arc.graphics.g2d.*;
 import arc.util.*;
+import arc.util.io.*;
 import cd.entities.component.*;
 import cd.type.blocks.pneumatic.*;
 import mindustry.entities.units.*;
@@ -13,7 +14,7 @@ import mindustry.world.*;
 import mindustry.world.draw.*;
 
 public class ComponentBlock extends Block{
-    public BaseComponent component;
+    public BaseComponent component = new BaseComponent();
     public boolean hasPressure;
     public DrawBlock drawer = new DrawDefault();
 
@@ -39,12 +40,19 @@ public class ComponentBlock extends Block{
     }
 
     @Override
+    public void init(){
+        super.init();
+        component.onInit(this);
+        hasPressure = component.hasPneu;
+    }
+
+    @Override
     public void setBars(){
         if(hasPressure){
             addBar("pressure",
             (ComponentBuild entity) -> new Bar(
             () -> Core.bundle.format("bar.pressure-amount", entity.pressure),
-            () -> Pal.lightOrange, () -> entity.pressure / component.getVisualExplodePressure()));
+            () -> Pal.lightOrange, () -> entity.pressure / component.getExplodePressure()));
         }
     }
 
@@ -57,10 +65,6 @@ public class ComponentBlock extends Block{
     public class ComponentBuild extends Building implements PneuInterface{
         //define pneumatic
         public float pressure;
-
-        public float pressure(){
-            return pressure;
-        }
 
         public float getPressure(){
             return pressure;
@@ -96,6 +100,21 @@ public class ComponentBlock extends Block{
 
         public void createExplosion(){
             component.onCreateExplosion(this);
+        }
+
+        @Override
+        public void read(Reads read, byte revision){
+            super.read(read, revision);
+            var buildNumber = read.i();
+            if(buildNumber < 0) return;
+            if(hasPressure) pressure = read.f();
+        }
+
+        @Override
+        public void write(Writes write){
+            super.write(write);
+            write.i(1);
+            if(hasPressure) write.f(pressure);
         }
 
     }

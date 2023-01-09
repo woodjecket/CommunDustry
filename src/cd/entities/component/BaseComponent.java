@@ -3,27 +3,10 @@ package cd.entities.component;
 import mindustry.gen.*;
 import mindustry.world.*;
 
-public abstract class BaseComponent{
-    public MultiComponent parentComponent;
-    public float visualExplodePressure, maxOperatePressure, minOperatePressure, leakPointPressure;
+public class BaseComponent{
+    public boolean hasPneu = false;
 
     public BaseComponent(){
-    }
-
-    public float getVisualExplodePressure(){
-        return -1f;
-    }
-
-    public float getMaxOperatePressure(){
-        return -1f;
-    }
-
-    public float getMinOperatePressure(){
-        return -1f;
-    }
-
-    public float getLeakPointPressure(){
-        return -1f;
     }
 
     public void onUpdateTile(Building b){
@@ -36,6 +19,10 @@ public abstract class BaseComponent{
     }
 
     public void onCraft(Building b){
+    }
+
+    public void onPlace(Building b){
+
     }
 
     public boolean onShouldConsume(Building b){
@@ -52,4 +39,7 @@ public abstract class BaseComponent{
     public void onSetStats(Block b){
     }
 
+    public float getExplodePressure(){
+        return -1f;
+    }
 }

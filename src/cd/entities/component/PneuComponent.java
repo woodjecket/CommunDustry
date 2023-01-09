@@ -1,9 +1,8 @@
-package cd.entities.component.pneu;
+package cd.entities.component;
 
 import arc.*;
 import arc.audio.*;
 import cd.content.*;
-import cd.entities.component.*;
 import cd.entities.stat.*;
 import cd.type.blocks.pneumatic.*;
 import mindustry.entities.*;
@@ -13,42 +12,74 @@ import mindustry.world.*;
 import static mindustry.Vars.*;
 
 public class PneuComponent extends BaseComponent{
+    // For crafter
 
-    public float explodePressure = 15f;
-    public float leakPointPressure = 1f;
-    public float maxOperatePressure = 10f;
+    /** Whether the building can provide pressure. */
+    public boolean canProvidePressure;
+
+    /** Pressure output per consume. */
+    public float outputPressure = 1f;
+
+    /** Whether the building can consume pressure. */
+    public boolean canConsumePressure;
+
+    /** Pressure consume per consume */
+    public float pressureConsume = 0.1f;
+
+    /** If pressure is lower than this point, the crafter will nor work. */
     public float minOperatePressure = 2f;
+
+
+    //for all block
+
+    /** When the pressure approach this point it will explode. */
+    public float explodePressure = 15f;
+
+    /** The default pressure when building */
+    public float standardPressure = 1f;
+
+    /** If pressure is over this point, the building will not work. */
+    public float maxOperatePressure = 10f;
+
+    //For explosion
 
     public int explosionRadius = 3;
     public int explosionDamage = 50;
     public Effect explodeEffect = CDFx.pneuSmoke;
     public Sound explodeSound = Sounds.explosion;
-
     public float explosionShake = 6f, explosionShakeDuration = 16f;
 
+
     public PneuComponent(){
+        hasPneu = true;
     }
 
-    public float getVisualExplodePressure(){
+    public float getExplodePressure(){
         return explodePressure;
     }
 
-    public float getMaxOperatePressure(){
-        return maxOperatePressure;
+    @Override
+    public boolean onShouldConsume(Building b){
+        PneuInterface bPneu = (PneuInterface)b;
+        return bPneu.getPressure() < maxOperatePressure && (!canConsumePressure || bPneu.getPressure() > minOperatePressure);
     }
 
-    public float getMinOperatePressure(){
-        return minOperatePressure;
+    @Override
+    public void onCraft(Building b){
+        PneuInterface bPneu = (PneuInterface)b;
+        if(canProvidePressure) bPneu.setPressure(bPneu.getPressure() + outputPressure);
+        if(canConsumePressure) bPneu.setPressure(bPneu.getPressure() - pressureConsume);
     }
 
-    public float getLeakPointPressure(){
-        return leakPointPressure;
+    @Override
+    public void onPlace(Building b){
+        PneuInterface bPneu = (PneuInterface)b;
+        bPneu.setPressure(standardPressure);
     }
 
     @Override
     public void onUpdateTile(Building b){
         calculatePressure(b);
-
     }
 
     public void calculatePressure(Building b){
@@ -59,13 +90,13 @@ public class PneuComponent extends BaseComponent{
             float thisP = bPneu.getPressure();
             float otherP = otherPneu.getPressure();
             float arrangeP = (thisP + otherP) / 2f;
-            if(thisP > otherP && thisP > leakPointPressure && otherP > leakPointPressure){
+            if(thisP > otherP && thisP > standardPressure && otherP > standardPressure){
                 bPneu.setPressure(arrangeP);
                 otherPneu.setPressure(arrangeP);
             }
         }
-        if(bPneu.getPressure() < leakPointPressure){
-            bPneu.setPressure((bPneu.getPressure() + leakPointPressure) / 2f + leakPointPressure / 10f);
+        if(bPneu.getPressure() < standardPressure){
+            bPneu.setPressure((bPneu.getPressure() + standardPressure) / 2f + standardPressure / 10f);
         }
 
         if(bPneu.getPressure() > explodePressure){
@@ -101,5 +132,7 @@ public class PneuComponent extends BaseComponent{
     @Override
     public void onSetStats(Block b){
         b.stats.add(CDStat.pressureRange, Core.bundle.get("stat.pressure-range-format"), minOperatePressure, maxOperatePressure, explodePressure);
+        if(canProvidePressure) b.stats.add(CDStat.pressureOutput, outputPressure, CDStat.perConsume);
+        if(canConsumePressure) b.stats.add(CDStat.pressureConsume, pressureConsume, CDStat.perConsume);
     }
 }

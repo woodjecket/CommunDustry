@@ -1,52 +1,29 @@
 package cd.entities.component;
 
-import cd.entities.component.pneu.*;
 import mindustry.gen.*;
 import mindustry.world.*;
 
 public class MultiComponent extends BaseComponent{
     BaseComponent[] components;
-    boolean hasPneu = false;
 
     public MultiComponent(BaseComponent... components){
         this.components = components;
         for(var c : components){
-            c.parentComponent = this;
-            if(c instanceof PneuComponent) hasPneu = true;
+            if(c instanceof PneuComponent){
+                hasPneu = true;
+                break;
+            }
         }
     }
 
-    public float getVisualExplodePressure(){
+    public float getExplodePressure(){
         if(!hasPneu) return -1f;
         for(var c : components){
-            if(c instanceof PneuComponent) return c.getVisualExplodePressure();
+            if(c instanceof PneuComponent) return c.getExplodePressure();
         }
         return -1f;
     }
 
-    public float getMaxOperatePressure(){
-        if(!hasPneu) return -1f;
-        for(var c : components){
-            if(c instanceof PneuComponent) return c.getMaxOperatePressure();
-        }
-        return -1f;
-    }
-
-    public float getMinOperatePressure(){
-        if(!hasPneu) return -1f;
-        for(var c : components){
-            if(c instanceof PneuComponent) return c.getMinOperatePressure();
-        }
-        return -1f;
-    }
-
-    public float getLeakPointPressure(){
-        if(!hasPneu) return -1f;
-        for(var c : components){
-            if(c instanceof PneuComponent) return c.getLeakPointPressure();
-        }
-        return -1f;
-    }
 
     @Override
     public void onUpdateTile(Building b){

@@ -6,17 +6,21 @@ import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
 import arc.struct.*;
+import cd.type.blocks.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
-import mindustry.world.*;
+import mindustry.ui.*;
 
 import static arc.math.Mathf.sign;
 import static mindustry.Vars.*;
 
-@SuppressWarnings("ALL")
-public class DirectLaserRepeater extends Block{
+public class DirectLaserBlock extends ComponentBlock{
+    public boolean acceptLaserEnergy;
+    public boolean provideLaserEnergy;
+
+    public float maxLaserEnergy = 10f;
 
     public int range = 5;
     public float laserBaseEnergy = 10f;
@@ -28,9 +32,10 @@ public class DirectLaserRepeater extends Block{
     public float pulseScl = 7, pulseMag = 0.05f;
     public float laserBaseWidth = 0.4f;
 
-    public TextureRegion laser, laserEnd;
+    public String laserType;
+    public TextureRegion laser, laserStart, laserEnd;
 
-    public DirectLaserRepeater(String name){
+    public DirectLaserBlock(String name){
         super(name);
         allowDiagonal = false;
         drawArrow = true;
@@ -42,57 +47,34 @@ public class DirectLaserRepeater extends Block{
     @Override
     public void load(){
         super.load();
-        laser = Core.atlas.find(content.transformName(name) + "-beam", "power-beam");
-        laserEnd = Core.atlas.find(content.transformName(name) + "-beam-end", "power-beam-end");
+        laser = Core.atlas.find(content.transformName(laserType) + "-laser", "power-beam");
+        laserEnd = Core.atlas.find(content.transformName(laserType) + "-laser-start", "power-beam-end");
+        laserStart = Core.atlas.find(content.transformName(laserType) + "-laser-end", "power-beam-end");
 
     }
 
     @Override
     public void drawPlace(int x, int y, int rotation, boolean valid){
-        int maxLen = range + size / 2;
-        Building dest = null;
-        var dir = Geometry.d4[rotation];
-        int dx = dir.x, dy = dir.y;
-        int offset = size / 2;
-        for(int j = 1 + offset; j <= range + offset; j++){
-            var other = world.build(x + j * dir.x, y + j * dir.y);
-            if(other != null && other.team == player.team() && other instanceof LaserInterface && ((LaserInterface)other).isAbsorbLaserEnergy(x, y)){
-                maxLen = j;
-                dest = other;
-                break;
-            }
-            if(other != null && !(other instanceof LaserInterface)){
-                break;
-            }
-        }
-        Drawf.dashLine(Pal.placing,
-        x * tilesize + dx * (tilesize * size / 2f + 2),
-        y * tilesize + dy * (tilesize * size / 2f + 2),
-        x * tilesize + dx * (maxLen) * tilesize,
-        y * tilesize + dy * (maxLen) * tilesize
-        );
+        if(provideLaserEnergy) drawLaserDestination(x, y, rotation);
+        if(acceptLaserEnergy) drawLaserFrom(x, y, rotation);
+    }
 
-
-        if(dest != null){
-            Drawf.square(dest.x, dest.y, dest.block.size * tilesize / 2f + 2.5f, 0f);
-        }
-
+    private void drawLaserFrom(int x, int y, int rotation){
         for(int i = 0; i < 4; i++){
+            if(rotation == i) continue;
             int len = 0;
             Building from = null;
-            dir = Geometry.d4[i];
-            dx = dir.x;
-            dy = dir.y;
-            offset = size / 2;
+            var dir = Geometry.d4[i];
+            int dx = dir.x;
+            int dy = dir.y;
+            int offset = size / 2;
             for(int j = 1 + offset; j <= range + offset; j++){
                 var other = world.build(x + j * dir.x, y + j * dir.y);
-
-                //hit insulated wall
-                if(other != null && !(other instanceof LaserInterface)){
+                if(other != null && !(other instanceof LaserInterface || other.block.underBullets)){
                     break;
                 }
 
-                if(other != null && other.team == player.team() && ((LaserInterface)other).canProvide(x, y)){
+                if(other instanceof LaserInterface && other.team == player.team() && ((LaserInterface)other).isProvideLaserEnergy(x, y)){
                     len = j;
                     from = other;
                     break;
@@ -111,25 +93,64 @@ public class DirectLaserRepeater extends Block{
         }
     }
 
+    private void drawLaserDestination(int x, int y, int rotation){
+        int maxLen = range + size / 2;
+        Building dest = null;
+        var dir = Geometry.d4[rotation];
+        int dx = dir.x, dy = dir.y;
+        int offset = size / 2;
+        for(int j = 1 + offset; j <= range + offset; j++){
+            var other = world.build(x + j * dir.x, y + j * dir.y);
+            if(other != null && !((other instanceof LaserInterface) || other.block.underBullets)){
+                break;
+            }
+            if(other instanceof LaserInterface && other.team == player.team() && ((LaserInterface)other).isAcceptLaserEnergy(x, y)){
+                maxLen = j;
+                dest = other;
+                break;
+            }
+        }
+        Drawf.dashLine(Pal.placing,
+        x * tilesize + dx * (tilesize * size / 2f + 2),
+        y * tilesize + dy * (tilesize * size / 2f + 2),
+        x * tilesize + dx * (maxLen) * tilesize,
+        y * tilesize + dy * (maxLen) * tilesize
+        );
+        if(dest != null){
+            Drawf.square(dest.x, dest.y, dest.block.size * tilesize / 2f + 2.5f, 0f);
+        }
+    }
+
     @Override
     public void setBars(){
         super.setBars();
-        //addBar("batteries", PowerNode.makeBatteryBalance());
+        addBar("laser-energy", (DirectLaserBuild entity) -> new Bar(
+        () -> Core.bundle.format("bar.laser-energy", entity.laserEnergy),
+        () -> laserColor2,
+        () -> entity.laserEnergy / maxLaserEnergy
+        ));
     }
 
     @Override
     public void init(){
         super.init();
-
         updateClipRadius((range + 1) * tilesize);
     }
 
-    public class DirectLaserProviderBuild extends Building implements LaserInterface{
+    public class DirectLaserBuild extends ComponentBuild implements LaserInterface{
+        /** A laser building might have one or more parents who give laser energy. */
         public Seq<Building> laserParent = new Seq<>();
+        /** But it can only have one child who can be given laser energy to. */
         public Building laserChild;
-        public Tile laserChildTile;
+        /** The laser energy now */
         public float laserEnergy;
+        /** To make the laser block connect automatically. The working way seen below. */
         public int lastChange = -2;
+
+        @Override
+        public int laserRange(){
+            return range;
+        }
 
         @Override
         public void addLaserParent(Building b){
@@ -147,10 +168,24 @@ public class DirectLaserRepeater extends Block{
         }
 
         @Override
-        public boolean isAbsorbLaserEnergy(int bx, int by){
-            return true;
+        public boolean isProvideLaserEnergy(int bx, int by){
+            if(provideLaserEnergy){
+                var dir = Geometry.d4[rotation];
+                if(!(((tile.x == bx) ? 0 : sign(bx - tile.x)) == dir.x && ((tile.y == by) ? 0 : sign(by - tile.y)) == dir.y)) return false;
+                if(laserChild == null) return true;
+                int nowDst = Math.max(Math.abs(bx - tile.x), Math.abs(by - tile.y));
+                int dst = Math.max(Math.abs(laserChild.tile.x - tile.x), Math.abs(laserChild.tile.y - tile.y));
+                return nowDst < dst;
+            }else{
+                return false;
+            }
         }
 
+        @Override
+        public boolean isAcceptLaserEnergy(int bx, int by){
+            //Anyway, if them face the energy will attenuate.
+            return acceptLaserEnergy;
+        }
 
         @Override
         public Building getLaserChild(){
@@ -163,19 +198,9 @@ public class DirectLaserRepeater extends Block{
         }
 
         @Override
-        public boolean canProvide(int bx, int by){
-            var dir = Geometry.d4[rotation];
-            if(!(((tile.x == bx) ? 0 : sign(bx - tile.x)) == dir.x && ((tile.y == by) ? 0 : sign(by - tile.y)) == dir.y)) return false;
-            if(laserChildTile == null) return true;
-            int nowDst = Math.max(Math.abs(bx - tile.x), Math.abs(by - tile.y));
-            int dst = Math.max(Math.abs(laserChildTile.x - tile.x), Math.abs(laserChildTile.y - tile.y));
-            return nowDst < dst;
-        }
-
-        @Override
         public void updateTile(){
             //世界每次有方块更新就让world.tileChanges变化，此处达到每次更新才重新计算的效果
-            if(lastChange != world.tileChanges){
+            if(lastChange != world.tileChanges && provideLaserEnergy){
                 lastChange = world.tileChanges;
                 updateChild();
             }
@@ -196,13 +221,12 @@ public class DirectLaserRepeater extends Block{
                 //开启遍历，坐标x是此方块x+距离*方向乘数，y同理
                 var other = world.build(tile.x + j * dir.x, tile.y + j * dir.y);
 
-                if(other instanceof LaserInterface && !((LaserInterface)other).isAbsorbLaserEnergy(tile.x, tile.y)){
+                if(other instanceof LaserInterface && !((LaserInterface)other).isAcceptLaserEnergy(tile.x, tile.y)){
                     break;
                 }
 
-                if(other != null && other.team == Vars.player.team() && other instanceof LaserInterface && ((LaserInterface)other).isAbsorbLaserEnergy(tile.x, tile.y)){
+                if(other != null && other.team == Vars.player.team() && other instanceof LaserInterface && ((LaserInterface)other).isAcceptLaserEnergy(tile.x, tile.y)){
                     laserChild = other;
-                    laserChildTile = world.tile(tile.x + j * dir.x, tile.y + j * dir.y);
                     break;
                 }
                 if(other != null && !(other instanceof LaserInterface) && !other.block.underBullets){
@@ -217,24 +241,17 @@ public class DirectLaserRepeater extends Block{
                 if(prev != null){
                     //不是没有还换了，原来的连接叫它把本方块的记录删了
                     ((LaserInterface)prev).removeLaserParent(this);
-                    //然后自己也删了它的记录，双向删好友
-                    removeLaserParent(prev);
                 }
 
                 //要是有现在的连接的话
                 if(next != null){
-                    //PowerModule记下他
+                    //记下他
                     setLaserChild(next);
                     //叫他也记下我
                     ((LaserInterface)next).addLaserParent(this);
                 }
             }
 
-        }
-
-        @Override
-        public int laserRange(){
-            return range;
         }
 
         @Override
@@ -256,7 +273,7 @@ public class DirectLaserRepeater extends Block{
             (laserChild.tileX() != tileX() && laserChild.tileY() != tileY()) ||
             (laserChild.id > id && range >= node.laserRange()) || range > node.laserRange())){
                 //我和他之间，是x轴距离更长还是y轴，挑个长的赋值给dst
-                int dst = Math.max(Math.abs(laserChildTile.x - tile.x), Math.abs(laserChildTile.y - tile.y));
+                int dst = Math.max(Math.abs(laserChild.tile.x - tile.x), Math.abs(laserChild.tile.y - tile.y));
                 //距离还不到两人1/2，就是贴贴状态，就不发激光了
                 if(dst > 1 + size / 2){
                     //还没贴贴，先看看方向乘数
@@ -264,22 +281,15 @@ public class DirectLaserRepeater extends Block{
                     //算算一半的格子宽
                     float poff = tilesize / 2f;
                     //第一个贴图是激光中间，第二个是头尾两边，从自己对应方向的边缘，到对方的边缘，宽度取刚才算的。就可以激光贴贴了
-                    Drawf.laser(laser, laserEnd, x + poff * size * point.x, y + poff * size * point.y, laserChildTile.worldx() - poff * point.x, laserChildTile.worldy() - poff * point.y, w);
+                    Drawf.laser(laser, laserStart, laserEnd, x + poff * size * point.x, y + poff * size * point.y, laserChild.tile.worldx() - poff * point.x, laserChild.tile.worldy() - poff * point.y, w);
                 }
             }
-
-
             Draw.reset();
-
-
         }
 
         @Override
         public void pickedUp(){
             laserChild = null;
-            laserChildTile = null;
         }
-
-
     }
 }
