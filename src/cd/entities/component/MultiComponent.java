@@ -13,6 +13,10 @@ public class MultiComponent extends BaseComponent{
                 hasPneu = true;
                 break;
             }
+            if(c instanceof LaserEnergyComponent){
+                hasLaser = true;
+                break;
+            }
         }
     }
 
@@ -22,6 +26,14 @@ public class MultiComponent extends BaseComponent{
             if(c instanceof PneuComponent) return c.getExplodePressure();
         }
         return -1f;
+    }
+
+    public int getLaserRange(){
+        if(!hasLaser) return -1;
+        for(var c : components){
+            if(c instanceof LaserEnergyComponent) return c.getLaserRange();
+        }
+        return -1;
     }
 
 
@@ -85,5 +97,49 @@ public class MultiComponent extends BaseComponent{
         }
     }
 
+    @Override
+    public void onPlace(Building b){
+        for(BaseComponent c : components){
+            c.onPlace(b);
+        }
+    }
 
+    @Override
+    public void onLoad(){
+        for(BaseComponent c : components){
+            c.onLoad();
+        }
+    }
+
+    @Override
+    public void onDrawPlace(Block b, int x, int y, int rotation, boolean valid){
+        for(BaseComponent c : components){
+            c.onDrawPlace(b, x, y, rotation, valid);
+        }
+    }
+
+    @Override
+    public boolean isProvideLaserEnergy(Building b, int bx, int by){
+        boolean result = false;
+        for(BaseComponent c : components){
+            result |= c.isProvideLaserEnergy(b, bx, by);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean isAcceptLaserEnergy(Building b, int bx, int by){
+        boolean result = false;
+        for(BaseComponent c : components){
+            result |= c.isAcceptLaserEnergy(b, bx, by);
+        }
+        return result;
+    }
+
+    @Override
+    public void onEntityDraw(Building b){
+        for(BaseComponent c : components){
+            c.onEntityDraw(b);
+        }
+    }
 }

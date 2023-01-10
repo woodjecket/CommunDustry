@@ -182,6 +182,21 @@ public class DirectLaserBlock extends ComponentBlock{
         }
 
         @Override
+        public int getLastChange(){
+            return lastChange;
+        }
+
+        @Override
+        public void setLastChange(int t){
+            lastChange = t;
+        }
+
+        @Override
+        public float getLaserEnergy(){
+            return laserEnergy;
+        }
+
+        @Override
         public boolean isAcceptLaserEnergy(int bx, int by){
             //Anyway, if them face the energy will attenuate.
             return acceptLaserEnergy;

@@ -3,7 +3,6 @@ package cd.content;
 import arc.graphics.*;
 import cd.entities.component.*;
 import cd.type.blocks.*;
-import cd.type.blocks.laser.*;
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -157,18 +156,42 @@ public class CDBlocks{
             }});
             hasPressure = true;
         }};
-        dLP = new DirectLaserBlock("dLP"){{
+        dLP = new ComponentBlock("dLP2"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
-            provideLaserEnergy = true;
+            component = new LaserEnergyComponent(){{
+                provideLaserEnergy = true;
+            }};
+            hasLaser = true;
+            allowDiagonal = false;
+            drawArrow = true;
+            update = true;
+            rotate = true;
+            rotateDraw = true;
         }};
-        dLR = new DirectLaserBlock("dLR"){{
+        dLR = new ComponentBlock("dLR2"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
-            provideLaserEnergy = true;
-            acceptLaserEnergy = true;
+            component = new LaserEnergyComponent(){{
+                provideLaserEnergy = true;
+                acceptLaserEnergy = true;
+            }};
+            hasLaser = true;
+            allowDiagonal = false;
+            drawArrow = true;
+            update = true;
+            rotate = true;
+            rotateDraw = true;
         }};
-        dLE = new DirectLaserBlock("dLE"){{
+        dLE = new ComponentBlock("dLE2"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
-            acceptLaserEnergy = true;
+            component = new LaserEnergyComponent(){{
+                acceptLaserEnergy = true;
+            }};
+            hasLaser = true;
+            allowDiagonal = false;
+            drawArrow = true;
+            update = true;
+            rotate = true;
+            rotateDraw = true;
         }};
     }
 }

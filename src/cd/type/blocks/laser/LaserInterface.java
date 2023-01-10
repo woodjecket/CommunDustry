@@ -20,4 +20,9 @@ public interface LaserInterface{
     boolean isProvideLaserEnergy(int bx, int by);
 
 
+    int getLastChange();
+
+    void setLastChange(int t);
+
+    float getLaserEnergy();
 }
