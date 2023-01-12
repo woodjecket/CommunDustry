@@ -5,12 +5,12 @@ import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
-import arc.util.*;
 import cd.type.blocks.laser.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.ui.*;
 import mindustry.world.*;
 
 import static arc.math.Mathf.sign;
@@ -44,7 +44,7 @@ public class LaserEnergyComponent extends BaseComponent{
     }
 
     @Override
-    public void onDrawPlace(Block b, int x, int y, int rotation, boolean valid){
+    public void onDrawPlace(Block b, int x, int y, int rotation){
         if(provideLaserEnergy) drawLaserDestination(b, x, y, rotation);
         if(acceptLaserEnergy) drawLaserFrom(b, x, y, rotation);
     }
@@ -94,7 +94,7 @@ public class LaserEnergyComponent extends BaseComponent{
             if(other != null && !((other instanceof LaserInterface) || other.block.underBullets)){
                 break;
             }
-            if(other instanceof LaserInterface && other.team == player.team() && ((LaserInterface)other).isAcceptLaserEnergy(x, y)){
+            if(other instanceof LaserInterface && other.team == player.team() && ((LaserInterface)other).isAcceptLaserEnergy()){
                 maxLen = j;
                 dest = other;
                 break;
@@ -116,7 +116,6 @@ public class LaserEnergyComponent extends BaseComponent{
         b.updateClipRadius((range + 1) * tilesize);
     }
 
-    @Override
     public boolean isProvideLaserEnergy(Building b, int bx, int by){
         if(provideLaserEnergy){
             var dir = Geometry.d4[b.rotation];
@@ -130,8 +129,7 @@ public class LaserEnergyComponent extends BaseComponent{
         }
     }
 
-    @Override
-    public boolean isAcceptLaserEnergy(Building b, int bx, int by){
+    public boolean isAcceptLaserEnergy(){
         //Anyway, if them face the energy will attenuate.
         return acceptLaserEnergy;
     }
@@ -161,15 +159,11 @@ public class LaserEnergyComponent extends BaseComponent{
         for(int j = 1 + offset; j <= range + offset; j++){
             //开启遍历，坐标x是此方块x+距离*方向乘数，y同理
             var other = world.build(b.tile.x + j * dir.x, b.tile.y + j * dir.y);
-            if(other != null){
-
-                Log.info("x:@ y:@ if:@", other.tile.x, other.tile.y, other.team == Vars.player.team() && other instanceof LaserInterface && ((LaserInterface)other).isAcceptLaserEnergy(b.tile.x, b.tile.y));
-            }
-            if(other instanceof LaserInterface && !((LaserInterface)other).isAcceptLaserEnergy(b.tile.x, b.tile.y)){
+            if(other instanceof LaserInterface && !((LaserInterface)other).isAcceptLaserEnergy()){
                 break;
             }
 
-            if(other != null && other.team == Vars.player.team() && other instanceof LaserInterface && ((LaserInterface)other).isAcceptLaserEnergy(b.tile.x, b.tile.y)){
+            if(other != null && other.team == Vars.player.team() && other instanceof LaserInterface && ((LaserInterface)other).isAcceptLaserEnergy()){
                 bLaser.setLaserChild(other);
                 break;
             }
@@ -232,8 +226,16 @@ public class LaserEnergyComponent extends BaseComponent{
         Draw.reset();
     }
 
-    @Override
     public int getLaserRange(){
         return range;
+    }
+
+    @Override
+    public void onSetBars(Block b){
+        b.addBar("laser-energy", (entity) -> new Bar(
+        () -> Core.bundle.format("bar.laser-energy", ((LaserInterface)entity).getLaserEnergy()),
+        () -> laserColor2,
+        () -> ((LaserInterface)entity).getLaserEnergy() / maxLaserEnergy
+        ));
     }
 }

@@ -1,13 +1,11 @@
 package cd.type.valence;
 
-import arc.struct.Seq;
+import arc.struct.*;
 import arc.util.serialization.*;
 import mindustry.*;
-import mindustry.type.Item;
-import mindustry.type.ItemStack;
+import mindustry.type.*;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import static cd.type.valence.ItemsValence.*;
 
@@ -21,6 +19,32 @@ public class Formula{
 
     public Formula(Seq<Item> seq){
         items = seq;
+    }
+
+    public static Formula readFromBytes(byte[] bytes){
+        Seq<Item> seq = new Seq<>();
+        for(byte i : bytes){
+            seq.add(Vars.content.item(i));
+        }
+        return new Formula(seq);
+    }
+
+    public static Formula readFromBase64(String string){
+        if(!string.startsWith("Zm9ybXVsYSA=")){
+            Vars.ui.showErrorMessage("it is not a formula");
+            return null;
+        }
+        String tmpString = string.replace("Zm9ybXVsYSA=", "");
+        Seq<Item> seq = new Seq<>();
+        String decode = Base64Coder.decodeString(tmpString);
+        for(String i : decode.substring(1, decode.length() - 1).split(", ")){
+            if(i.isEmpty()){
+                Vars.ui.showErrorMessage("got clipboard formula is empty!");
+                return null;
+            }
+            seq.add(Vars.content.item(Integer.parseInt(i)));
+        }
+        return new Formula(seq);
     }
 
     public Formula copy(){
@@ -101,35 +125,9 @@ public class Formula{
         return result;
     }
 
-    public static Formula readFromBytes(byte[] bytes){
-        Seq<Item> seq = new Seq<>();
-        for(byte i : bytes){
-            seq.add(Vars.content.item(i));
-        }
-        return new Formula(seq);
-    }
-
     public String toBase64(){
         Seq<Short> ids = new Seq<>();
         items.each(i -> ids.add(i.id));
         return "Zm9ybXVsYSA=" + Base64Coder.encodeString(ids.toString());
-    }
-
-    public static Formula readFromBase64(String string){
-        if(!string.startsWith("Zm9ybXVsYSA=")){
-            Vars.ui.showErrorMessage("it is not a formula");
-            return null;
-        }
-        String tmpString = string.replace("Zm9ybXVsYSA=", "");
-        Seq<Item> seq = new Seq<>();
-        String decode = Base64Coder.decodeString(tmpString);
-        for(String i : decode.substring(1, decode.length() - 1).split(", ")){
-            if(i.isEmpty()){
-                Vars.ui.showErrorMessage("got clipboard formula is empty!");
-                return null;
-            }
-            seq.add(Vars.content.item(Integer.parseInt(i)));
-        }
-        return new Formula(seq);
     }
 }

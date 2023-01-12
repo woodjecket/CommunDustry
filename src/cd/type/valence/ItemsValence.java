@@ -1,11 +1,11 @@
 package cd.type.valence;
 
-import arc.func.Func;
+import arc.func.*;
 import arc.struct.*;
-import arc.util.Nullable;
-import mindustry.type.Item;
+import arc.util.*;
+import mindustry.type.*;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 public class ItemsValence{
     public static ObjectMap<Item, ValenceMap> map = new ObjectMap<>();

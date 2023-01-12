@@ -1,6 +1,5 @@
 package cd.type.blocks;
 
-import arc.*;
 import arc.graphics.g2d.*;
 import arc.struct.*;
 import arc.util.io.*;
@@ -8,12 +7,13 @@ import cd.entities.component.*;
 import cd.type.blocks.laser.*;
 import cd.type.blocks.pneumatic.*;
 import mindustry.gen.*;
-import mindustry.graphics.*;
-import mindustry.ui.*;
 import mindustry.world.blocks.production.*;
 
-public class ComponentCrafter extends GenericCrafter{
-    public BaseComponent component;
+import java.util.*;
+import java.util.concurrent.atomic.*;
+@SuppressWarnings("unchecked")
+public class ComponentCrafter extends GenericCrafter implements ComponentInterface{
+    private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
     public boolean hasPressure, hasLaser;
 
     public ComponentCrafter(String name){
@@ -24,21 +24,22 @@ public class ComponentCrafter extends GenericCrafter{
     @Override
     public void init(){
         super.init();
-        component.onInit(this);
-        hasPressure = component.hasPneu;
+        listComps().forEach(c -> c.onInit(this));
+        hasPressure = (getComp(PneuComponent.class) != null);
+        hasLaser = (getComp(LaserEnergyComponent.class) != null);
 
     }
 
     @Override
     public void load(){
         super.load();
-        component.onLoad();
+        listComps().forEach(BaseComponent::onLoad);
     }
 
     @Override
     public void drawPlace(int x, int y, int rotation, boolean valid){
         super.drawPlace(x, y, rotation, valid);
-        component.onDrawPlace(this, x, y, rotation, valid);
+        listComps().forEach(c -> c.onDrawPlace(this, x, y, rotation));
     }
 
     @Override
@@ -49,18 +50,37 @@ public class ComponentCrafter extends GenericCrafter{
 
     @Override
     public void setBars(){
-        if(hasPressure){
-            addBar("pressure",
-            (ComponentCrafterBuild entity) -> new Bar(
-            () -> Core.bundle.format("bar.pressure-amount", entity.pressure),
-            () -> Pal.lightOrange, () -> entity.pressure / component.getExplodePressure()));
-        }
+        super.setBars();
+        listComps().forEach(c -> c.onSetBars(this));
     }
 
     @Override
     public void setStats(){
         super.setStats();
-        component.onSetStats(this);
+        listComps().forEach(c -> c.onSetStats(this));
+    }
+
+    public <C extends BaseComponent> C getComp(Class<C> type){
+        if(!comps.containsKey(type)) return null;
+        return (comps.get(type) != null) ? (C)comps.get(type) : null;
+    }
+
+    public void addComp(BaseComponent... c){
+        Arrays.stream(c).forEach(sc -> {
+            var type = sc.getClass();
+            if(type.isAnonymousClass()){
+                type = (Class<? extends BaseComponent>)type.getSuperclass();
+            }
+            comps.put(type, sc);
+        });
+    }
+
+    public <T extends BaseComponent> void removeComp(Class<T> type){
+        comps.remove(type);
+    }
+
+    public Iterable<BaseComponent> listComps(){
+        return comps.values();
     }
 
 
@@ -87,24 +107,42 @@ public class ComponentCrafter extends GenericCrafter{
 
         @Override
         public boolean shouldConsume(){
-            return super.shouldConsume() && component.onShouldConsume(this);
+            AtomicBoolean atomicBoolean = new AtomicBoolean(super.shouldConsume());
+            listComps().forEach(c -> atomicBoolean.set(atomicBoolean.get() && c.onShouldConsume(this)));
+
+            return atomicBoolean.get();
         }
 
         @Override
         public void updateTile(){
             super.updateTile();
-            component.onUpdateTile(this);
+            listComps().forEach(c -> c.onUpdateTile(this));
+        }
+
+        @Override
+        public void placed(){
+            super.placed();
+            listComps().forEach(c -> c.onPlace(this));
+        }
+
+
+        @Override
+        public void draw(){
+            drawer.draw(this);
+            listComps().forEach(c -> c.onEntityDraw(this));
         }
 
         @Override
         public float efficiencyScale(){
-            return component.onEfficiencyScale(this);
+            final float[] result = {1f};
+            listComps().forEach(c -> result[0] *= c.onEfficiencyScale(this));
+            return result[0];
         }
 
         @Override
         public void craft(){
             super.craft();
-            component.onCraft(this);
+            listComps().forEach(c -> c.onCraft(this));
         }
 
         @Override
@@ -125,61 +163,50 @@ public class ComponentCrafter extends GenericCrafter{
             if(hasLaser) write.f(laserEnergy);
         }
 
-        @Override
         public int laserRange(){
-            return component.getLaserRange();
+            return getComp(LaserEnergyComponent.class).getLaserRange();
         }
 
 
-        @Override
-        public void addLaserParent(Building b){
-            laserParent.add(b);
+        public boolean isAcceptLaserEnergy(){
+            return getComp(LaserEnergyComponent.class).isAcceptLaserEnergy();
         }
 
-        @Override
-        public void removeLaserParent(Building b){
-            laserParent.remove(b);
-        }
-
-        @Override
-        public Building getLaserChild(){
-            return laserChild;
-        }
-
-        @Override
-        public void setLaserChild(Building b){
-            laserChild = b;
-        }
-
-        @Override
-        public void changeLaserEnergy(float c){
-            laserEnergy += c;
-        }
-
-        @Override
-        public boolean isAcceptLaserEnergy(int bx, int by){
-            return component.isAcceptLaserEnergy(this, bx, by);
-        }
-
-        @Override
         public boolean isProvideLaserEnergy(int bx, int by){
-            return component.isProvideLaserEnergy(this, bx, by);
+            return getComp(LaserEnergyComponent.class).isProvideLaserEnergy(this, bx, by);
         }
 
-        @Override
         public int getLastChange(){
             return lastChange;
         }
 
-        @Override
         public void setLastChange(int t){
             lastChange = t;
         }
 
-        @Override
+        public void addLaserParent(Building b){
+           laserParent.add(b);
+       }
+
+        public void removeLaserParent(Building b){
+           laserParent.remove(b);
+       }
+
+        public Building getLaserChild(){
+           return laserChild;
+       }
+
+        public void setLaserChild(Building b){
+           laserChild = b;
+       }
+
+        public void changeLaserEnergy(float c){
+           laserEnergy += c;
+       }
+
         public float getLaserEnergy(){
-            return laserEnergy;
-        }
+           return laserEnergy;
+       }
     }
 
 

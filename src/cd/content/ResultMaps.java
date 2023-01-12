@@ -1,7 +1,7 @@
 package cd.content;
 
-import cd.type.valence.ResultMap;
-import mindustry.content.Items;
+import cd.type.valence.*;
+import mindustry.content.*;
 
 public class ResultMaps{
     public static ResultMap map1;

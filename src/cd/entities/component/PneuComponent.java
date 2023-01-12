@@ -7,6 +7,8 @@ import cd.entities.stat.*;
 import cd.type.blocks.pneumatic.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
+import mindustry.graphics.*;
+import mindustry.ui.*;
 import mindustry.world.*;
 
 import static mindustry.Vars.*;
@@ -51,7 +53,6 @@ public class PneuComponent extends BaseComponent{
 
 
     public PneuComponent(){
-        hasPneu = true;
     }
 
     public float getExplodePressure(){
@@ -61,7 +62,7 @@ public class PneuComponent extends BaseComponent{
     @Override
     public boolean onShouldConsume(Building b){
         PneuInterface bPneu = (PneuInterface)b;
-        return bPneu.getPressure() < maxOperatePressure && (!canConsumePressure || bPneu.getPressure() > minOperatePressure);
+        return bPneu.getPressure() < maxOperatePressure && (canProvidePressure || bPneu.getPressure() > minOperatePressure);
     }
 
     @Override
@@ -85,12 +86,11 @@ public class PneuComponent extends BaseComponent{
     public void calculatePressure(Building b){
         PneuInterface bPneu = (PneuInterface)b;
         for(Building other : b.proximity){
-            if(!(other instanceof PneuInterface otherPneu))
-                continue;
+            if(!(other instanceof PneuInterface otherPneu)) continue;
             float thisP = bPneu.getPressure();
             float otherP = otherPneu.getPressure();
             float arrangeP = (thisP + otherP) / 2f;
-            if(thisP > otherP && thisP > standardPressure && otherP > standardPressure){
+            if(thisP > otherP && thisP >= standardPressure && otherP >= standardPressure){
                 bPneu.setPressure(arrangeP);
                 otherPneu.setPressure(arrangeP);
             }
@@ -134,5 +134,13 @@ public class PneuComponent extends BaseComponent{
         b.stats.add(CDStat.pressureRange, Core.bundle.get("stat.pressure-range-format"), minOperatePressure, maxOperatePressure, explodePressure);
         if(canProvidePressure) b.stats.add(CDStat.pressureOutput, outputPressure, CDStat.perConsume);
         if(canConsumePressure) b.stats.add(CDStat.pressureConsume, pressureConsume, CDStat.perConsume);
+    }
+
+    @Override
+    public void onSetBars(Block b){
+        b.addBar("pressure",
+        (entity) -> new Bar(
+        () -> Core.bundle.format("bar.pressure-amount", ((PneuInterface)entity).getPressure()),
+        () -> Pal.lightOrange, () -> ((PneuInterface)entity).getPressure() / explodePressure));
     }
 }

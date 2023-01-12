@@ -1,16 +1,14 @@
 package cd.type.blocks.valence;
 
-import cd.type.valence.Formula;
-import cd.type.valence.ResultMap;
-import cd.ui.ValenceMapDialog;
+import cd.type.valence.*;
 
-import static cd.type.valence.ItemsValence.*;
+import static cd.type.valence.ItemsValence.ValenceModule;
 
 public interface ValenceBuild{
 
-    void setHeat(float amount);
-
     float getHeat();
+
+    void setHeat(float amount);
 
     Formula getFormula();
 

@@ -4,8 +4,6 @@ import mindustry.gen.*;
 import mindustry.world.*;
 
 public class BaseComponent{
-    public boolean hasPneu = false;
-    public boolean hasLaser = false;
 
     public BaseComponent(){
     }
@@ -22,10 +20,6 @@ public class BaseComponent{
     public void onCraft(Building b){
     }
 
-    public void onPlace(Building b){
-
-    }
-
     public boolean onShouldConsume(Building b){
         return true;
     }
@@ -40,31 +34,19 @@ public class BaseComponent{
     public void onSetStats(Block b){
     }
 
-    public float getExplodePressure(){
-        return -1f;
-    }
-
-    public int getLaserRange(){
-        return -1;
-    }
-
     public void onLoad(){
+    }
+
+    public void onPlace(Building b){
 
     }
 
-    public void onDrawPlace(Block b, int x, int y, int rotation, boolean valid){
-
-    }
-
-    public boolean isProvideLaserEnergy(Building b, int bx, int by){
-        return false;
-    }
-
-    public boolean isAcceptLaserEnergy(Building b, int bx, int by){
-        return false;
+    public void onDrawPlace(Block b, int x, int y, int rotation){
     }
 
     public void onEntityDraw(Building b){
     }
 
+    public void onSetBars(Block b){
+    }
 }

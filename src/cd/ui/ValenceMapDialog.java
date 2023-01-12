@@ -21,8 +21,8 @@ public class ValenceMapDialog extends BaseDialog{
     public Formula formula;
     public ResultMap resultMap;
     public Table itemsTable, formulaTable, mapTable;
-    private ScrollPane pane, itemPane;
     public int allValence = 0;
+    private ScrollPane pane, itemPane;
 
     public ValenceMapDialog(ValenceBuild building){
         super("valence");

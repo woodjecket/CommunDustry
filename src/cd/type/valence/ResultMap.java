@@ -1,6 +1,6 @@
 package cd.type.valence;
 
-import arc.struct.Seq;
+import arc.struct.*;
 import mindustry.type.*;
 
 //TODO 2dMap

@@ -1,11 +1,11 @@
 package cd.type.valence;
 
-import cd.content.CDItems;
-import mindustry.content.Items;
+import cd.content.*;
+import mindustry.content.*;
 
 import static cd.type.valence.ItemsValence.*;
 
-public class ItemValenceLoader {
+public class ItemValenceLoader{
     public static void load(){
         setValence(Items.silicon, 0);
         setValence(Items.graphite, new ValenceFunc(module -> module.formulaBefore.has(Items.silicon) ? 3 : 4));
