@@ -5,6 +5,7 @@ import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
+import cd.type.blocks.*;
 import cd.type.blocks.laser.*;
 import mindustry.*;
 import mindustry.core.*;
@@ -21,10 +22,12 @@ public class LaserEnergyComponent extends BaseComponent{
     public boolean acceptLaserEnergy;
     public boolean provideLaserEnergy;
 
+    public float laserEnergyOutput;
+
     public float maxLaserEnergy = 10f;
 
     public int range = 5;
-    public float laserBaseEnergy = 10f;
+    public float laserTransportEfficiency = 0.5f / 60f;
     public int attenuateRange = 3;
     public float attenuatePercent = 0.05f;
 
@@ -137,14 +140,36 @@ public class LaserEnergyComponent extends BaseComponent{
     @Override
     public void onUpdateTile(Building b){
         //世界每次有方块更新就让world.tileChanges变化，此处达到每次更新才重新计算的效果
-        if(((LaserInterface)b).getLastChange() != world.tileChanges)
-            if(provideLaserEnergy){
+        if(provideLaserEnergy){
+            if(((LaserInterface)b).getLastChange() != world.tileChanges){
                 ((LaserInterface)b).setLastChange(world.tileChanges);
                 updateChild(b);
             }
+            updateLaserEnergy(b);
+        }
+
     }
 
-    public void updateChild(Building b){
+    private void updateLaserEnergy(Building b){
+        var bLaser = (LaserInterface)b;
+        Building child = null;
+        if(bLaser.getLaserChild() != null){
+            child = bLaser.getLaserChild();
+        }
+        var childLaser = (LaserInterface)child;
+        if(childLaser == null) return;
+        if(childLaser.getLaserEnergy() > ((ComponentInterface)child.block).getComp(LaserEnergyComponent.class).maxLaserEnergy) return;
+        bLaser.changeLaserEnergy(0 - laserTransportEfficiency);
+        childLaser.changeLaserEnergy(laserTransportEfficiency);
+    }
+
+    @Override
+    public void onCraft(Building b){
+        var bLaser = (LaserInterface)b;
+        bLaser.changeLaserEnergy(laserEnergyOutput);
+    }
+
+    private void updateChild(Building b){
         var bLaser = (LaserInterface)b;
         //先前的子节点
         var prev = bLaser.getLaserChild();
@@ -201,7 +226,7 @@ public class LaserEnergyComponent extends BaseComponent{
         //宣告以下绘制在power层进行
         Draw.z(Layer.power);
         //画笔颜色根据电够不够混合一下
-        Draw.color(laserColor1, laserColor2, (1f - bLaser.getLaserEnergy() / laserBaseEnergy) * 0.86f + Mathf.absin(3f, 0.1f));
+        Draw.color(laserColor1, laserColor2, (1f - bLaser.getLaserEnergy() / maxLaserEnergy) * 0.86f + Mathf.absin(3f, 0.1f));
         //画笔不透明度改成设置里的
         Draw.alpha(Renderer.laserOpacity);
         //算一算目前激光宽度（Width），基础加波动

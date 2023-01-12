@@ -22,7 +22,7 @@ public class CDBlocks{
     pneuCrafter,
     pneuCompressor,
     pneuAndcataCrafter,
-    dLP,
+    laserSource,
     dLR,
     dLE;
 
@@ -155,17 +155,7 @@ public class CDBlocks{
             }});
             hasPressure = true;
         }};
-        dLP = new ComponentBlock("dLP2"){{
-            requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
-            addComp(new LaserEnergyComponent(){{
-                provideLaserEnergy = true;
-            }});
-            allowDiagonal = false;
-            drawArrow = true;
-            update = true;
-            rotate = true;
-            rotateDraw = true;
-        }};
+
         dLR = new ComponentBlock("dLR2"){{
             requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
             addComp(new LaserEnergyComponent(){{
@@ -188,6 +178,23 @@ public class CDBlocks{
             update = true;
             rotate = true;
             rotateDraw = true;
+        }};
+
+        laserSource = new ComponentCrafter("laser-source"){{
+            requirements(Category.crafting, with(Items.copper, 75, Items.lead, 30));
+            craftTime = 90f;
+            size = 2;
+            hasItems = true;
+            consumeItem(Items.coal, 2);
+            addComp(new LaserEnergyComponent(){{
+                provideLaserEnergy = true;
+                laserEnergyOutput = 0.25f;
+                range = 10;
+                laserColor2 = Color.valueOf("80b3c4");
+            }});
+            rotate = true;
+            drawArrow = true;
+
         }};
     }
 }
