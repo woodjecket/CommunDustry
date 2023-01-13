@@ -25,6 +25,7 @@ public class LaserEnergyComponent extends BaseComponent{
     public float laserEnergyOutput;
 
     public float maxLaserEnergy = 10f;
+    public float consumeLaserEnergy = 0.5f;
 
     public int range = 5;
     public float laserTransportEfficiency = 0.5f / 60f;
@@ -166,7 +167,7 @@ public class LaserEnergyComponent extends BaseComponent{
     @Override
     public void onCraft(Building b){
         var bLaser = (LaserInterface)b;
-        bLaser.changeLaserEnergy(laserEnergyOutput);
+        bLaser.changeLaserEnergy(laserEnergyOutput-consumeLaserEnergy);
     }
 
     private void updateChild(Building b){
@@ -262,5 +263,10 @@ public class LaserEnergyComponent extends BaseComponent{
         () -> laserColor2,
         () -> ((LaserInterface)entity).getLaserEnergy() / maxLaserEnergy
         ));
+    }
+
+    @Override
+    public boolean onShouldConsume(Building b){
+        return provideLaserEnergy || !acceptLaserEnergy || ((LaserInterface)b).getLaserEnergy() > consumeLaserEnergy;
     }
 }

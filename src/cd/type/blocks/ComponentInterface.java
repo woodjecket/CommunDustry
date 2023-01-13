@@ -7,4 +7,5 @@ public interface ComponentInterface{
     void addComp(BaseComponent... c);
     <T extends BaseComponent> void removeComp(Class<T> type);
     Iterable<BaseComponent> listComps();
+
 }

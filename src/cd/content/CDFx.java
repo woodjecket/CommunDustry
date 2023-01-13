@@ -17,6 +17,6 @@ public class CDFx{
     })),
     pneuSmoke = new Effect(100, e -> {
         color(Color.gray, Pal.darkishGray, e.fin());
-        Fill.circle(e.x, e.y, (7f - e.fin() * 7f) / 2f);
+        Fill.circle(e.x, e.y, (7f - e.fin() * 7f) / 3f);
     });
 }
