@@ -14,7 +14,7 @@ main: "cd.CDMod"
 description: "WIP"
 
 #the mod version
-version: 2.0
+version: 2.1.0-PRE-ALPHA
 
 #the minimum game build required to run this mod
 minGameVersion: 140

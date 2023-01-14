@@ -5,6 +5,7 @@ import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
+import cd.entities.stat.*;
 import cd.type.blocks.*;
 import cd.type.blocks.laser.*;
 import mindustry.*;
@@ -25,7 +26,7 @@ public class LaserEnergyComponent extends BaseComponent{
     public float laserEnergyOutput;
 
     public float maxLaserEnergy = 10f;
-    public float consumeLaserEnergy = 0.5f;
+    public float consumeLaserEnergy;
 
     public int range = 5;
     public float laserTransportEfficiency = 0.5f / 60f;
@@ -160,6 +161,7 @@ public class LaserEnergyComponent extends BaseComponent{
         var childLaser = (LaserInterface)child;
         if(childLaser == null) return;
         if(childLaser.getLaserEnergy() > ((ComponentInterface)child.block).getComp(LaserEnergyComponent.class).maxLaserEnergy) return;
+        if(bLaser.getLaserEnergy()<0) return;
         bLaser.changeLaserEnergy(0 - laserTransportEfficiency);
         childLaser.changeLaserEnergy(laserTransportEfficiency);
     }
@@ -263,6 +265,13 @@ public class LaserEnergyComponent extends BaseComponent{
         () -> laserColor2,
         () -> ((LaserInterface)entity).getLaserEnergy() / maxLaserEnergy
         ));
+    }
+
+    @Override
+    public void onSetStats(Block b){
+        b.stats.add(CDStat.maxLaser, maxLaserEnergy);
+        if(laserEnergyOutput != 0) b.stats.add(CDStat.laserOutput, laserEnergyOutput, CDStat.perConsume);
+        if(consumeLaserEnergy != 0) b.stats.add(CDStat.laserConsume, consumeLaserEnergy, CDStat.perConsume);
     }
 
     @Override

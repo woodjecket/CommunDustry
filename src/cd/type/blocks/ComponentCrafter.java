@@ -169,11 +169,11 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
 
 
         public boolean isAcceptLaserEnergy(){
-            return getComp(LaserEnergyComponent.class).isAcceptLaserEnergy();
+            return getComp(LaserEnergyComponent.class) != null && getComp(LaserEnergyComponent.class).isAcceptLaserEnergy();
         }
 
         public boolean isProvideLaserEnergy(int bx, int by){
-            return getComp(LaserEnergyComponent.class).isProvideLaserEnergy(this, bx, by);
+            return getComp(LaserEnergyComponent.class) != null && getComp(LaserEnergyComponent.class).isProvideLaserEnergy(this, bx, by);
         }
 
         public int getLastChange(){
