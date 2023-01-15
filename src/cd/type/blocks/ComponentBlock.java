@@ -1,5 +1,6 @@
 package cd.type.blocks;
 
+import arc.func.*;
 import arc.graphics.g2d.*;
 import arc.struct.*;
 import arc.util.*;
@@ -12,7 +13,6 @@ import mindustry.gen.*;
 import mindustry.world.*;
 import mindustry.world.draw.*;
 
-import java.util.*;
 @SuppressWarnings("unchecked")
 public class ComponentBlock extends Block implements ComponentInterface{
     private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
@@ -28,13 +28,13 @@ public class ComponentBlock extends Block implements ComponentInterface{
     public void load(){
         super.load();
         drawer.load(this);
-        listComps().forEach(BaseComponent::onLoad);
+        executeAllComps(BaseComponent::onLoad);
     }
 
     @Override
     public void drawPlace(int x, int y, int rotation, boolean valid){
         super.drawPlace(x, y, rotation, valid);
-        listComps().forEach(c -> c.onDrawPlace(this, x, y, rotation));
+        executeAllComps(c -> c.onDrawPlace(this, x, y, rotation));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ComponentBlock extends Block implements ComponentInterface{
     @Override
     public void init(){
         super.init();
-        listComps().forEach(c -> c.onInit(this));
+        executeAllComps(c -> c.onInit(this));
         hasPressure = (getComp(PneuComponent.class) != null);
         hasLaser = (getComp(LaserEnergyComponent.class) != null);
     }
@@ -58,13 +58,13 @@ public class ComponentBlock extends Block implements ComponentInterface{
     @Override
     public void setBars(){
         super.setBars();
-        listComps().forEach(c -> c.onSetBars(this));
+        executeAllComps(c -> c.onSetBars(this));
     }
 
     @Override
     public void setStats(){
         super.setStats();
-        listComps().forEach(c -> c.onSetStats(this));
+        executeAllComps(c -> c.onSetStats(this));
     }
 
     public <C extends BaseComponent> C getComp(Class<C> type){
@@ -73,13 +73,13 @@ public class ComponentBlock extends Block implements ComponentInterface{
     }
 
     public void addComp(BaseComponent... c){
-        Arrays.stream(c).forEach(sc -> {
+        for(var sc: c){
             var type = sc.getClass();
             if(type.isAnonymousClass()){
                 type = (Class<? extends BaseComponent>)type.getSuperclass();
             }
             comps.put(type, sc);
-        });
+        }
     }
 
     public <T extends BaseComponent> void removeComp(Class<T> type){
@@ -88,6 +88,12 @@ public class ComponentBlock extends Block implements ComponentInterface{
 
     public Iterable<BaseComponent> listComps(){
         return comps.values();
+    }
+
+    public void executeAllComps(Cons<BaseComponent> operator){
+        for(var i: listComps()){
+            operator.get(i);
+        }
     }
 
     public class ComponentBuild extends Building implements PneuInterface, LaserInterface{
@@ -113,7 +119,7 @@ public class ComponentBlock extends Block implements ComponentInterface{
         @Override
         public void draw(){
             drawer.draw(this);
-            listComps().forEach(c -> c.onEntityDraw(this));
+            executeAllComps(c -> c.onEntityDraw(this));
         }
 
         @Override
@@ -125,23 +131,23 @@ public class ComponentBlock extends Block implements ComponentInterface{
         @Override
         public void updateTile(){
             super.updateTile();
-            listComps().forEach(c -> c.onUpdateTile(this));
+            executeAllComps(c -> c.onUpdateTile(this));
         }
 
         @Override
         public void placed(){
             super.placed();
-            listComps().forEach(c -> c.onPlace(this));
+            executeAllComps(c -> c.onPlace(this));
         }
 
         @Override
         public void onDestroyed(){
             super.onDestroyed();
-            listComps().forEach(c -> c.onDestroyed(this));
+            executeAllComps(c -> c.onDestroyed(this));
         }
 
         public void createExplosion(){
-            listComps().forEach(c -> c.onCreateExplosion(this));
+            executeAllComps(c -> c.onCreateExplosion(this));
         }
 
 

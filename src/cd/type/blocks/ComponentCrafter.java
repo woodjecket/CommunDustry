@@ -1,5 +1,6 @@
 package cd.type.blocks;
 
+import arc.func.*;
 import arc.graphics.g2d.*;
 import arc.struct.*;
 import arc.util.io.*;
@@ -9,8 +10,6 @@ import cd.type.blocks.pneumatic.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.production.*;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
 @SuppressWarnings("unchecked")
 public class ComponentCrafter extends GenericCrafter implements ComponentInterface{
     private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
@@ -24,7 +23,7 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
     @Override
     public void init(){
         super.init();
-        listComps().forEach(c -> c.onInit(this));
+        executeAllComps(c -> c.onInit(this));
         hasPressure = (getComp(PneuComponent.class) != null);
         hasLaser = (getComp(LaserEnergyComponent.class) != null);
 
@@ -33,13 +32,13 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
     @Override
     public void load(){
         super.load();
-        listComps().forEach(BaseComponent::onLoad);
+        executeAllComps(BaseComponent::onLoad);
     }
 
     @Override
     public void drawPlace(int x, int y, int rotation, boolean valid){
         super.drawPlace(x, y, rotation, valid);
-        listComps().forEach(c -> c.onDrawPlace(this, x, y, rotation));
+        executeAllComps(c -> c.onDrawPlace(this, x, y, rotation));
     }
 
     @Override
@@ -51,13 +50,13 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
     @Override
     public void setBars(){
         super.setBars();
-        listComps().forEach(c -> c.onSetBars(this));
+        executeAllComps(c -> c.onSetBars(this));
     }
 
     @Override
     public void setStats(){
         super.setStats();
-        listComps().forEach(c -> c.onSetStats(this));
+        executeAllComps(c -> c.onSetStats(this));
     }
 
     public <C extends BaseComponent> C getComp(Class<C> type){
@@ -66,13 +65,13 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
     }
 
     public void addComp(BaseComponent... c){
-        Arrays.stream(c).forEach(sc -> {
+        for(var sc: c){
             var type = sc.getClass();
             if(type.isAnonymousClass()){
                 type = (Class<? extends BaseComponent>)type.getSuperclass();
             }
             comps.put(type, sc);
-        });
+        }
     }
 
     public <T extends BaseComponent> void removeComp(Class<T> type){
@@ -81,6 +80,12 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
 
     public Iterable<BaseComponent> listComps(){
         return comps.values();
+    }
+
+    public void executeAllComps(Cons<BaseComponent> operator){
+        for(var i: listComps()){
+            operator.get(i);
+        }
     }
 
 
@@ -107,42 +112,45 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
 
         @Override
         public boolean shouldConsume(){
-            AtomicBoolean atomicBoolean = new AtomicBoolean(super.shouldConsume());
-            listComps().forEach(c -> atomicBoolean.set(atomicBoolean.get() && c.onShouldConsume(this)));
-
-            return atomicBoolean.get();
+            var result = super.shouldConsume();
+            for(var c: listComps()){
+                result &= c.onShouldConsume(this);
+            }
+            return result;
         }
 
         @Override
         public void updateTile(){
             super.updateTile();
-            listComps().forEach(c -> c.onUpdateTile(this));
+            executeAllComps(c -> c.onUpdateTile(this));
         }
 
         @Override
         public void placed(){
             super.placed();
-            listComps().forEach(c -> c.onPlace(this));
+            executeAllComps(c -> c.onPlace(this));
         }
 
 
         @Override
         public void draw(){
             drawer.draw(this);
-            listComps().forEach(c -> c.onEntityDraw(this));
+            executeAllComps(c -> c.onEntityDraw(this));
         }
 
         @Override
         public float efficiencyScale(){
-            final float[] result = {1f};
-            listComps().forEach(c -> result[0] *= c.onEfficiencyScale(this));
-            return result[0];
+            float result = 1f;
+            for(var c: listComps()){
+                result *= c.onEfficiencyScale(this);
+            }
+            return result;
         }
 
         @Override
         public void craft(){
             super.craft();
-            listComps().forEach(c -> c.onCraft(this));
+            executeAllComps(c -> c.onCraft(this));
         }
 
         @Override

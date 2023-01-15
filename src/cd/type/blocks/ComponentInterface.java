@@ -1,5 +1,6 @@
 package cd.type.blocks;
 
+import arc.func.*;
 import cd.entities.component.*;
 
 public interface ComponentInterface{
@@ -8,4 +9,5 @@ public interface ComponentInterface{
     <T extends BaseComponent> void removeComp(Class<T> type);
     Iterable<BaseComponent> listComps();
 
+    void executeAllComps(Cons<BaseComponent> operator);
 }
