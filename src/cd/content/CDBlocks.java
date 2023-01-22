@@ -76,6 +76,7 @@ public class CDBlocks{
 
                 craftTime = 10f;
                 rotate = true;
+                rotateDraw = true;
                 invertFlip = true;
 
                 liquidCapacity = 50f;
@@ -84,7 +85,6 @@ public class CDBlocks{
                 consumePower(1f);
 
                 drawer = new DrawMulti(
-                new DrawRegion("-bottom"),
                 new DrawLiquidTile(Liquids.water, 2f),
                 new DrawBubbles(Color.valueOf("7693e3")){
                     {
@@ -102,7 +102,7 @@ public class CDBlocks{
                 ambientSoundVolume = 0.08f;
 
                 regionRotated1 = 3;
-                outputLiquids = LiquidStack.with(Liquids.ozone, 4f / 60, Liquids.hydrogen, 6f / 60);
+                outputLiquids = LiquidStack.with( Liquids.ozone, 4f / 60, Liquids.hydrogen, 6f / 60);
                 liquidOutputDirections = new int[]{1, 3};
             }
         };
@@ -131,6 +131,7 @@ public class CDBlocks{
             consume(new ConsumeItemFlammable());
             addComp(new PneuComponent(){{
                 canProvidePressure = true;
+                maxOperatePressure = 9f;
             }});
         }};
         basicClF3Crafter = new ComponentCrafter("basic-clf3-crafter"){{

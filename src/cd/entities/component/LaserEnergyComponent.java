@@ -169,7 +169,7 @@ public class LaserEnergyComponent extends BaseComponent{
     @Override
     public void onCraft(Building b){
         var bLaser = (LaserInterface)b;
-        bLaser.changeLaserEnergy(laserEnergyOutput-consumeLaserEnergy);
+        bLaser.changeLaserEnergy(bLaser.getLaserEnergy()>maxLaserEnergy?0:laserEnergyOutput-consumeLaserEnergy);
     }
 
     private void updateChild(Building b){
