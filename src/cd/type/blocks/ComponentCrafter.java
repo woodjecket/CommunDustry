@@ -5,8 +5,6 @@ import arc.graphics.g2d.*;
 import arc.struct.*;
 import arc.util.io.*;
 import cd.entities.component.*;
-import cd.type.blocks.laser.*;
-import cd.type.blocks.pneumatic.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.production.*;
 

@@ -6,8 +6,6 @@ import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
 import cd.entities.component.*;
-import cd.type.blocks.laser.*;
-import cd.type.blocks.pneumatic.*;
 import mindustry.entities.units.*;
 import mindustry.gen.*;
 import mindustry.world.*;

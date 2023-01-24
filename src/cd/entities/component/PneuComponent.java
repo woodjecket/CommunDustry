@@ -4,7 +4,7 @@ import arc.*;
 import arc.audio.*;
 import cd.content.*;
 import cd.entities.stat.*;
-import cd.type.blocks.pneumatic.*;
+import cd.type.blocks.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;

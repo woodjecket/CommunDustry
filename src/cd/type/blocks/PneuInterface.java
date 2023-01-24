@@ -1,4 +1,4 @@
-package cd.type.blocks.pneumatic;
+package cd.type.blocks;
 
 
 public interface PneuInterface{

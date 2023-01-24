@@ -1,4 +1,4 @@
-package cd.type.blocks.laser;
+package cd.type.blocks;
 
 import mindustry.gen.*;
 

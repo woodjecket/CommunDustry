@@ -7,7 +7,6 @@ import arc.math.*;
 import arc.math.geom.*;
 import cd.entities.stat.*;
 import cd.type.blocks.*;
-import cd.type.blocks.laser.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.gen.*;
