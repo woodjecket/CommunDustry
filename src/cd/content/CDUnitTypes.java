@@ -1,11 +1,9 @@
 package cd.content;
 
-import arc.graphics.*;
 import cd.entities.bullets.*;
 import mindustry.content.*;
 import mindustry.entities.abilities.*;
 import mindustry.gen.*;
-import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.type.ammo.*;
 
@@ -31,34 +29,19 @@ public class CDUnitTypes{
             mineSpeed = 3.5f;
             abilities.add(new RepairFieldAbility(5f, 60f * 8, 50f));
             weapons.add(new Weapon("poly-weapon"){{
-                top = false;
-                y = -2.5f;
-                x = 3.75f;
+                mirror = false;
                 reload = 30f;
                 ejectEffect = Fx.none;
                 recoil = 2f;
                 shootSound = Sounds.missile;
-                velocityRnd = 0.5f;
-                inaccuracy = 15f;
-                alternate = true;
-
-                bullet = new SoundWaveBulletType(){{
-                    homingPower = 0.08f;
-                    weaveMag = 4;
-                    weaveScale = 4;
-                    lifetime = 50f;
-                    keepVelocity = false;
-                    shootEffect = Fx.shootHeal;
-                    smokeEffect = Fx.hitLaser;
-                    hitEffect = despawnEffect = Fx.hitLaser;
-                    frontColor = Color.white;
-                    hitSound = Sounds.none;
-                    maxRange = 100f;
-                    healPercent = 5.5f;
-                    collidesTeam = true;
-                    backColor = Pal.heal;
-                    trailColor = Pal.heal;
-                    damage = 100f;
+                x = 0;
+                bullet = new SoundWaveBulletType() {{
+                    width = 45;
+                    height = 8;
+                    lifetime = 80f;
+                    damage = 10f;
+                    waveSpeed = 5;
+                    speed = 0;
                 }};
             }});
         }};
