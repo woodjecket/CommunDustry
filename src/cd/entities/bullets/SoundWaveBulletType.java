@@ -8,6 +8,8 @@ import mindustry.gen.*;
 
 public class SoundWaveBulletType extends BasicBulletType {
     public float waveSpeed = 1f;
+    public float attenuateRange = lifetime * 0.75f * waveSpeed;
+    public float attenuatePercent = height * 0.05f;
 
     @Override
     public void init(Bullet b) {
@@ -23,7 +25,7 @@ public class SoundWaveBulletType extends BasicBulletType {
     @Override
     public void draw(Bullet b) {
         if (b.data instanceof WaveBullet p) {
-            Lines.stroke(height, backColor);
+            Lines.stroke(p.thickness, backColor);
             Lines.arc(b.x, b.y, p.dst, width / 360, b.rotation() - 90 + (180 - width) / 2);
         }
     }
@@ -37,7 +39,7 @@ public class SoundWaveBulletType extends BasicBulletType {
     }
 
     protected float calculateRange() {
-        return Math.max(maxRange, 0);
+        return Math.max(lifetime * waveSpeed, 0);
     }
 
     {
@@ -45,19 +47,26 @@ public class SoundWaveBulletType extends BasicBulletType {
         absorbable = hittable = false;
         pierce = pierceBuilding = true;
         keepVelocity = false;
+        speed = 0;
     }
 
-    public static class WaveBullet {
+    public class WaveBullet {
         public Bullet waveParent;
         public float angle;
         public float thickness;
         public float dst = 0;
-        public float speed = 1;
 
         public void update() {
             //还没写伤害建筑
             if (!waveParent.isAdded()) return;
-            dst += speed;
+            if (dst > attenuateRange){
+                thickness -= attenuatePercent;
+            }
+            if (thickness <= 0){
+                damage = thickness = 0;
+                waveParent.remove();
+            }
+            dst += waveSpeed;
             Units.nearbyEnemies(waveParent.team, waveParent.x, waveParent.y, dst + thickness,
                     b -> {
                         if (!b.within(waveParent.x, waveParent.y, dst) &&

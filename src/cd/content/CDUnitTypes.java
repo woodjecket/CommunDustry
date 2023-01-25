@@ -41,7 +41,6 @@ public class CDUnitTypes{
                     lifetime = 80f;
                     damage = 10f;
                     waveSpeed = 5;
-                    speed = 0;
                 }};
             }});
         }};
