@@ -1,7 +1,7 @@
-package cd.type.blocks;
+package cd.world.blocks;
 
 import arc.func.*;
-import cd.entities.component.*;
+import cd.world.component.*;
 
 public interface ComponentInterface{
     <C extends BaseComponent> C getComp(Class<C> type);

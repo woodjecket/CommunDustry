@@ -1,4 +1,4 @@
-package cd.type.blocks;
+package cd.world.blocks;
 
 import mindustry.gen.*;
 

@@ -1,4 +1,4 @@
-package cd.type.blocks.defense;
+package cd.world.blocks.defense;
 
 import arc.*;
 import arc.math.*;

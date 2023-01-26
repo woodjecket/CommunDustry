@@ -1,4 +1,4 @@
-package cd.entities.component;
+package cd.world.component;
 
 import mindustry.gen.*;
 import mindustry.world.*;

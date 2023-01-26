@@ -14,7 +14,7 @@ public class SoundWaveBulletType extends BasicBulletType {
     @Override
     public void init(Bullet b) {
         super.init(b);
-        b.data = new WaveBullet() {{
+        b.data = new Soundwave() {{
             waveParent = b;
             speed = waveSpeed;
             angle = width;
@@ -24,7 +24,7 @@ public class SoundWaveBulletType extends BasicBulletType {
 
     @Override
     public void draw(Bullet b) {
-        if (b.data instanceof WaveBullet p) {
+        if (b.data instanceof Soundwave p) {
             Lines.stroke(p.thickness, backColor);
             Lines.arc(b.x, b.y, p.dst, width / 360, b.rotation() - 90 + (180 - width) / 2);
         }
@@ -33,7 +33,7 @@ public class SoundWaveBulletType extends BasicBulletType {
     @Override
     public void update(Bullet b) {
         super.update(b);
-        if (b.data instanceof WaveBullet w) {
+        if (b.data instanceof Soundwave w) {
             w.update();
         }
     }
@@ -50,7 +50,7 @@ public class SoundWaveBulletType extends BasicBulletType {
         speed = 0;
     }
 
-    public class WaveBullet {
+    public class Soundwave{
         public Bullet waveParent;
         public float angle;
         public float thickness;

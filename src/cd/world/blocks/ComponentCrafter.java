@@ -1,10 +1,10 @@
-package cd.type.blocks;
+package cd.world.blocks;
 
 import arc.func.*;
 import arc.graphics.g2d.*;
 import arc.struct.*;
 import arc.util.io.*;
-import cd.entities.component.*;
+import cd.world.component.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.production.*;
 

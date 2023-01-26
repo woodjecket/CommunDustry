@@ -1,10 +1,10 @@
-package cd.entities.component;
+package cd.world.component;
 
 import arc.*;
 import arc.audio.*;
 import cd.content.*;
-import cd.entities.stat.*;
-import cd.type.blocks.*;
+import cd.world.stat.*;
+import cd.world.blocks.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;

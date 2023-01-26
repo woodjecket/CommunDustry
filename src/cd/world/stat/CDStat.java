@@ -1,4 +1,4 @@
-package cd.entities.stat;
+package cd.world.stat;
 
 import mindustry.world.meta.*;
 

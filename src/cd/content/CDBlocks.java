@@ -1,12 +1,13 @@
 package cd.content;
 
 import arc.graphics.*;
-import cd.entities.component.*;
-import cd.type.blocks.*;
+import cd.world.component.*;
+import cd.world.blocks.*;
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.world.*;
+import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.consumers.*;
 import mindustry.world.draw.*;
@@ -16,19 +17,38 @@ import static mindustry.type.ItemStack.with;
 public class CDBlocks{
 
     public static Block
-    basicFreezer,
-    basicDirectlyH2O2Crafter,
-    basicElectrolyzer,
-    pneuConduit,
-    chlorineExtractor,
-    airCompressor,
-    basicClF3Crafter,
-    basicCO2Laser,
-    basicLaserRepeater,
-    fluorineExtractor,
-    basicChipCrafter;
+    basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer, pneuConduit, chlorineExtractor, airCompressor, basicClF3Crafter, basicCO2Laser, basicLaserRepeater, fluorineExtractor, basicChipCrafter,
+    //env
+    ashWall, ashFloor, ashBoulder,deadSapling,enrichedSandFloor, enrichedSandWall, enrichedSandBoulder,
+    graniteFloor,graniteWall,graniteBoulder,
+    permafrostFloor, permafrostWall,vine
+    ;
 
     public void load(){
+        ashWall = new StaticWall("ash-wall");
+        enrichedSandWall = new StaticWall("enriched-sand-wall");
+        graniteWall = new StaticWall("granite-wall");
+        permafrostWall = new StaticWall("permafrost-wall");
+
+        ashFloor = new Floor("ash-floor");
+        enrichedSandFloor = new Floor("enriched-sand-floor");
+        graniteFloor = new Floor("granite-floor");
+        permafrostFloor = new Floor("permafrost-floor");
+
+        ashBoulder = new Prop("ash-boulder"){{
+            ashFloor.asFloor().decoration = this;
+        }};
+        enrichedSandBoulder = new Prop("enriched-sand-boulder"){{
+            enrichedSandFloor.asFloor().decoration = this;
+        }};
+        graniteBoulder = new Prop("granite-boulder"){{
+            graniteFloor.asFloor().decoration = this;
+        }};
+        deadSapling = new StaticTree("dead-sapling");
+        vine = new Prop("vine"){{
+            alwaysReplace = false;
+            instantDeconstruct = false;
+        }};
         basicFreezer = new GenericCrafter("basic-freezer"){
             {
                 requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));

@@ -1,12 +1,12 @@
-package cd.entities.component;
+package cd.world.component;
 
 import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
-import cd.entities.stat.*;
-import cd.type.blocks.*;
+import cd.world.stat.*;
+import cd.world.blocks.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.gen.*;

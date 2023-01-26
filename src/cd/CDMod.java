@@ -9,6 +9,7 @@ public class CDMod extends Mod{
     public static CDItems modItems;
     public static CDLiquids modLiquids;
     public static CDUnitTypes modUnitTypes;
+    public static CDPlanets modPlanets;
 
     public CDMod(){
         Log.info("Loaded CDMod constructor.");
@@ -26,6 +27,9 @@ public class CDMod extends Mod{
         modBlocks.load();
         modUnitTypes = new CDUnitTypes();
         modUnitTypes.load();
+        modPlanets = new CDPlanets();
+        modPlanets.load();
+
     }
 
 }

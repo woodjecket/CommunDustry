@@ -1,7 +1,7 @@
-package cd.entities.component;
+package cd.world.component;
 
 import arc.math.*;
-import cd.entities.stat.*;
+import cd.world.stat.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.world.*;

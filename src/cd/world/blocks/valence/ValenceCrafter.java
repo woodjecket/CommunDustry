@@ -1,4 +1,4 @@
-package cd.type.blocks.valence;
+package cd.world.blocks.valence;
 
 import arc.scene.ui.layout.*;
 import arc.util.*;
