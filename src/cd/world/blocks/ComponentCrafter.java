@@ -10,8 +10,8 @@ import mindustry.world.blocks.production.*;
 
 @SuppressWarnings("unchecked")
 public class ComponentCrafter extends GenericCrafter implements ComponentInterface{
-    private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
     public boolean hasPressure, hasLaser;
+    private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
 
     public ComponentCrafter(String name){
         super(name);
@@ -63,7 +63,7 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
     }
 
     public void addComp(BaseComponent... c){
-        for(var sc: c){
+        for(var sc : c){
             var type = sc.getClass();
             if(type.isAnonymousClass()){
                 type = (Class<? extends BaseComponent>)type.getSuperclass();
@@ -81,7 +81,7 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
     }
 
     public void executeAllComps(Cons<BaseComponent> operator){
-        for(var i: listComps()){
+        for(var i : listComps()){
             operator.get(i);
         }
     }
@@ -111,7 +111,7 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
         @Override
         public boolean shouldConsume(){
             var result = super.shouldConsume();
-            for(var c: listComps()){
+            for(var c : listComps()){
                 result &= c.onShouldConsume(this);
             }
             return result;
@@ -139,7 +139,7 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
         @Override
         public float efficiencyScale(){
             float result = 1f;
-            for(var c: listComps()){
+            for(var c : listComps()){
                 result *= c.onEfficiencyScale(this);
             }
             return result;
@@ -191,28 +191,28 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
         }
 
         public void addLaserParent(Building b){
-           laserParent.add(b);
-       }
+            laserParent.add(b);
+        }
 
         public void removeLaserParent(Building b){
-           laserParent.remove(b);
-       }
+            laserParent.remove(b);
+        }
 
         public Building getLaserChild(){
-           return laserChild;
-       }
+            return laserChild;
+        }
 
         public void setLaserChild(Building b){
-           laserChild = b;
-       }
+            laserChild = b;
+        }
 
         public void changeLaserEnergy(float c){
-           laserEnergy += c;
-       }
+            laserEnergy += c;
+        }
 
         public float getLaserEnergy(){
-           return laserEnergy;
-       }
+            return laserEnergy;
+        }
     }
 
 

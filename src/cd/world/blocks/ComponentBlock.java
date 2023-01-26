@@ -13,9 +13,9 @@ import mindustry.world.draw.*;
 
 @SuppressWarnings("unchecked")
 public class ComponentBlock extends Block implements ComponentInterface{
-    private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
     public boolean hasPressure, hasLaser;
     public DrawBlock drawer = new DrawDefault();
+    private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
 
     public ComponentBlock(String name){
         super(name);
@@ -71,7 +71,7 @@ public class ComponentBlock extends Block implements ComponentInterface{
     }
 
     public void addComp(BaseComponent... c){
-        for(var sc: c){
+        for(var sc : c){
             var type = sc.getClass();
             if(type.isAnonymousClass()){
                 type = (Class<? extends BaseComponent>)type.getSuperclass();
@@ -89,7 +89,7 @@ public class ComponentBlock extends Block implements ComponentInterface{
     }
 
     public void executeAllComps(Cons<BaseComponent> operator){
-        for(var i: listComps()){
+        for(var i : listComps()){
             operator.get(i);
         }
     }
@@ -190,28 +190,28 @@ public class ComponentBlock extends Block implements ComponentInterface{
 
 
         public void addLaserParent(Building b){
-           laserParent.add(b);
-       }
+            laserParent.add(b);
+        }
 
         public void removeLaserParent(Building b){
-           laserParent.remove(b);
-       }
+            laserParent.remove(b);
+        }
 
         public Building getLaserChild(){
-           return laserChild;
-       }
+            return laserChild;
+        }
 
         public void setLaserChild(Building b){
-           laserChild = b;
-       }
+            laserChild = b;
+        }
 
         public void changeLaserEnergy(float c){
-           laserEnergy += c;
-       }
+            laserEnergy += c;
+        }
 
         public float getLaserEnergy(){
-           return laserEnergy;
-       }
+            return laserEnergy;
+        }
     }
 
 }

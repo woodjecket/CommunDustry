@@ -15,9 +15,10 @@ public class CDStat{
     pressureOutput = new Stat("pressure-output", industry),
     pressureConsume = new Stat("pressure-consume", industry),
 
-    maxLaser = new Stat("max-laser",industry),
-    laserOutput = new Stat("laser-output",industry),
-    laserConsume = new Stat("laser-consume",industry);
+    maxLaser = new Stat("max-laser", industry),
+    laserOutput = new Stat("laser-output", industry),
+    laserConsume = new Stat("laser-consume", industry);
+
     CDStat(){
     }
 

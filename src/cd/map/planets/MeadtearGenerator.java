@@ -21,32 +21,47 @@ import java.lang.reflect.*;
 import static mindustry.Vars.*;
 
 public class MeadtearGenerator extends SerpuloPlanetGenerator{
-    public   BaseGenerator basegen = new BaseGenerator();
-    public  float scl = 5f;
-    public  float riverLiquidOffset = 0.07f;
-    public  boolean genLakes = false;
+    public BaseGenerator basegen = new BaseGenerator();
+    public float scl = 5f;
+    public float riverLiquidOffset = 0.07f;
+    public boolean genLakes = false;
     public Liquid riverLiquid = Liquids.slag;
-   public boolean canHaveNaval = false;
-   public Block normalTree = CDBlocks.deadSapling;
+    public boolean canHaveNaval = false;
+    public Block normalTree = CDBlocks.deadSapling;
     public Block deadTree = CDBlocks.deadSapling;
 
-    public  ObjectMap<Block, Block> dec = ObjectMap.of(
+    public ObjectMap<Block, Block> dec = ObjectMap.of(
     Blocks.sporeMoss, Blocks.sporeCluster,
     Blocks.moss, Blocks.sporeCluster,
     Blocks.taintedWater, Blocks.slag,
     Blocks.darksandTaintedWater, Blocks.darksandWater
     );
 
-    public  ObjectMap<Block, Block> tars = ObjectMap.of(
+    public ObjectMap<Block, Block> tars = ObjectMap.of(
     Blocks.sporeMoss, Blocks.shale,
     Blocks.moss, Blocks.shale
     );
 
-    public  float rawHeight(Vec3 position){
-        position = Tmp.v33.set(position).scl(scl);
-        return (Mathf.pow(Simplex.noise3d(seed, 7, 0.5f, 1f/3f, position.x, position.y, position.z), 2.3f) + riverLiquidOffset) / (1f + riverLiquidOffset);
+    {
+        try{
+            Field arrfield = SerpuloPlanetGenerator.class.getDeclaredField("arr");
+            arrfield.setAccessible(true);
+            Block[][]
+            arrValue = new Block[][]{
+            {Blocks.slag, Blocks.slag, Blocks.basalt, Blocks.basalt, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
+            {Blocks.slag, Blocks.slag, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor}
+            };
+            arrfield.set(this, arrValue);
+        }catch(NoSuchFieldException | IllegalAccessException e){
+            throw new RuntimeException(e);
+        }
     }
-    
+
+    public float rawHeight(Vec3 position){
+        position = Tmp.v33.set(position).scl(scl);
+        return (Mathf.pow(Simplex.noise3d(seed, 7, 0.5f, 1f / 3f, position.x, position.y, position.z), 2.3f) + riverLiquidOffset) / (1f + riverLiquidOffset);
+    }
+
     @Override
     public void generate(){
         cells(4);
@@ -59,8 +74,8 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
 
         for(int i = 0; i < rooms; i++){
             Tmp.v1.trns(rand.random(360f), rand.random(radius / constraint));
-            float rx = (width/2f + Tmp.v1.x);
-            float ry = (height/2f + Tmp.v1.y);
+            float rx = (width / 2f + Tmp.v1.x);
+            float ry = (height / 2f + Tmp.v1.y);
             float maxrad = radius - Tmp.v1.len();
             float rrad = Math.min(rand.random(9f, maxrad / 2f), 30f);
             roomseq.add(new Room((int)rx, (int)ry, (int)rrad));
@@ -71,13 +86,13 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         Seq<Room> enemies = new Seq<>();
         int enemySpawns = rand.random(1, Math.max((int)(sector.threat * 4), 1));
         int offset = rand.nextInt(360);
-        float length = width/2.55f - rand.random(13, 23);
+        float length = width / 2.55f - rand.random(13, 23);
         int angleStep = 5;
         int riverLiquidCheckRad = 5;
-        for(int i = 0; i < 360; i+= angleStep){
+        for(int i = 0; i < 360; i += angleStep){
             int angle = offset + i;
-            int cx = (int)(width/2 + Angles.trnsx(angle, length));
-            int cy = (int)(height/2 + Angles.trnsy(angle, length));
+            int cx = (int)(width / 2 + Angles.trnsx(angle, length));
+            int cy = (int)(height / 2 + Angles.trnsy(angle, length));
 
             int riverLiquidTiles = 0;
 
@@ -86,7 +101,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                 for(int ry = -riverLiquidCheckRad; ry <= riverLiquidCheckRad; ry++){
                     Tile tile = tiles.get(cx + rx, cy + ry);
                     if(tile == null || tile.floor().liquidDrop != null){
-                        riverLiquidTiles ++;
+                        riverLiquidTiles++;
                     }
                 }
             }
@@ -96,7 +111,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
 
                 for(int j = 0; j < enemySpawns; j++){
                     float enemyOffset = rand.range(60f);
-                    Tmp.v1.set(cx - width/2, cy - height/2).rotate(180f + enemyOffset).add(width/2, height/2);
+                    Tmp.v1.set(cx - width / 2, cy - height / 2).rotate(180f + enemyOffset).add(width / 2, height / 2);
                     Room espawn = new Room((int)Tmp.v1.x, (int)Tmp.v1.y, rand.random(8, 16));
                     roomseq.add(espawn);
                     enemies.add(espawn);
@@ -181,7 +196,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                 floor = floor == Blocks.darksandTaintedWater ? Blocks.taintedWater : Blocks.slag;*/
             }
         });
-        
+
 
         genOres();
 
@@ -204,7 +219,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             //tar
             if(floor == Blocks.darksand){
                 if(Math.abs(0.5f - noise(x - 40, y, 2, 0.7, 80)) > 0.25f &&
-                Math.abs(0.5f - noise(x, y + sector.id*10, 1, 1, 60)) > 0.41f && !(roomseq.contains(r -> Mathf.within(x, y, r.x, r.y, 15)))){
+                Math.abs(0.5f - noise(x, y + sector.id * 10, 1, 1, 60)) > 0.41f && !(roomseq.contains(r -> Mathf.within(x, y, r.x, r.y, 15)))){
                     floor = Blocks.tar;
                 }
             }
@@ -255,7 +270,8 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             }
 
             //random stuff
-            dec: {
+            dec:
+            {
                 for(int i = 0; i < 4; i++){
                     Tile near = world.tile(x + Geometry.d4[i].x, y + Geometry.d4[i].y);
                     if(near != null && near.block() != Blocks.air){
@@ -320,7 +336,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                         other.setOverlay(Blocks.oreScrap);
                         for(int j = 1; j <= 2; j++){
                             for(Point2 p : Geometry.d8){
-                                Tile t = tiles.get(cx + p.x*j, cy + p.y*j);
+                                Tile t = tiles.get(cx + p.x * j, cy + p.y * j);
                                 if(t != null && t.floor().hasSurface() && rand.chance(j == 1 ? 0.4 : 0.2)){
                                     t.setOverlay(Blocks.oreScrap);
                                 }
@@ -328,9 +344,9 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                         }
                     }
                 })){
-                    placed ++;
+                    placed++;
 
-                    int debrisRadius = Math.max(part.schematic.width, part.schematic.height)/2 + 3;
+                    int debrisRadius = Math.max(part.schematic.width, part.schematic.height) / 2 + 3;
                     Geometry.circle(x, y, tiles.width, tiles.height, debrisRadius, (cx, cy) -> {
                         float dst = Mathf.dst(cx, cy, x, y);
                         float removeChance = Mathf.lerp(0.05f, 0.5f, dst / debrisRadius);
@@ -388,9 +404,9 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         for(int i = 0; i < tlen; i++){
             Tile tile = tiles.geti(i);
             if(tile.block() == Blocks.air){
-                total ++;
+                total++;
                 if(tile.floor().liquidDrop == riverLiquid){
-                    riverLiquids ++;
+                    riverLiquids++;
                 }
             }
         }
@@ -403,7 +419,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                 room.connectLiquid(spawn);
             }
         }
-        
+
         if(naval){
             int deepRadius = 2;
 
@@ -439,15 +455,15 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         float scl = 1f;
         float addscl = 1.3f;
 
-        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x, sector.tile.v.y, sector.tile.v.z)*nmag + poles > 0.25f*addscl){
+        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.25f * addscl){
             ores.add(Blocks.oreCoal);
         }
 
-        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 1, sector.tile.v.y, sector.tile.v.z)*nmag + poles > 0.5f*addscl){
+        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 1, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.5f * addscl){
             ores.add(Blocks.oreTitanium);
         }
 
-        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z)*nmag + poles > 0.7f*addscl){
+        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.7f * addscl){
             ores.add(Blocks.oreThorium);
         }
 
@@ -467,8 +483,8 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             for(int i = ores.size - 1; i >= 0; i--){
                 Block entry = ores.get(i);
                 float freq = frequencies.get(i);
-                if(Math.abs(0.5f - noise(offsetX, offsetY + i*999, 2, 0.7, (40 + i * 2))) > 0.22f + i*0.01 &&
-                Math.abs(0.5f - noise(offsetX, offsetY - i*999, 1, 1, (30 + i * 4))) > 0.37f + freq){
+                if(Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + i * 2))) > 0.22f + i * 0.01 &&
+                Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + i * 4))) > 0.37f + freq){
                     ore = entry;
                     break;
                 }
@@ -480,20 +496,6 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         });
     }
 
-    {
-        try{
-            Field arrfield = SerpuloPlanetGenerator.class.getDeclaredField("arr");
-            arrfield.setAccessible(true);
-            Block[][]
-            arrValue = new Block[][]{
-            {Blocks.slag, Blocks.slag,Blocks.basalt,Blocks.basalt,Blocks.basalt,Blocks.basalt, CDBlocks.graniteFloor,CDBlocks.graniteFloor,CDBlocks.enrichedSandFloor},
-            {Blocks.slag, Blocks.slag,Blocks.basalt,Blocks.basalt,Blocks.basalt, CDBlocks.graniteFloor,CDBlocks.ashFloor,CDBlocks.ashFloor,CDBlocks.ashFloor,CDBlocks.ashFloor}
-            };
-            arrfield.set(this,arrValue);
-        }catch(NoSuchFieldException | IllegalAccessException e){
-            throw new RuntimeException(e);
-        }
-    }
     //see it just a black box
     class Room{
         int x, y, radius;
@@ -528,7 +530,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                 midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
             }
 
-            midpoint.sub(width/2f, height/2f).limit(width / 2f / Mathf.sqrt3).add(width/2f, height/2f);
+            midpoint.sub(width / 2f, height / 2f).limit(width / 2f / Mathf.sqrt3).add(width / 2f, height / 2f);
 
             int mx = (int)midpoint.x, my = (int)midpoint.y;
 
@@ -572,7 +574,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
 
             //add randomized offset to avoid straight lines
             midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
-            midpoint.sub(width/2f, height/2f).limit(width / 2f / Mathf.sqrt3).add(width/2f, height/2f);
+            midpoint.sub(width / 2f, height / 2f).limit(width / 2f / Mathf.sqrt3).add(width / 2f, height / 2f);
 
             int mx = (int)midpoint.x, my = (int)midpoint.y;
 

@@ -5,8 +5,8 @@ import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
-import cd.world.stat.*;
 import cd.world.blocks.*;
+import cd.world.stat.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.gen.*;
@@ -160,7 +160,7 @@ public class LaserEnergyComponent extends BaseComponent{
         var childLaser = (LaserInterface)child;
         if(childLaser == null) return;
         if(childLaser.getLaserEnergy() > ((ComponentInterface)child.block).getComp(LaserEnergyComponent.class).maxLaserEnergy) return;
-        if(bLaser.getLaserEnergy()<0) return;
+        if(bLaser.getLaserEnergy() < 0) return;
         bLaser.changeLaserEnergy(0 - laserTransportEfficiency);
         childLaser.changeLaserEnergy(laserTransportEfficiency);
     }
@@ -168,7 +168,7 @@ public class LaserEnergyComponent extends BaseComponent{
     @Override
     public void onCraft(Building b){
         var bLaser = (LaserInterface)b;
-        bLaser.changeLaserEnergy(bLaser.getLaserEnergy()>maxLaserEnergy?0:laserEnergyOutput-consumeLaserEnergy);
+        bLaser.changeLaserEnergy(bLaser.getLaserEnergy() > maxLaserEnergy ? 0 : laserEnergyOutput - consumeLaserEnergy);
     }
 
     private void updateChild(Building b){

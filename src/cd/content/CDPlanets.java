@@ -11,7 +11,7 @@ public class CDPlanets{
     public static Planet meadtear;
 
     public void load(){
-        meadtear = new Planet("meadtear-test-2.2.1-PRE-ALPHA", Planets.sun,1f,2){{
+        meadtear = new Planet("meadtear-test-2.2.1-PRE-ALPHA", Planets.sun, 1f, 2){{
             generator = new MeadtearGenerator();
             meshLoader = () -> new HexMesh(this, 5);
             cloudMeshLoader = () -> new MultiMesh(

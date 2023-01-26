@@ -25,7 +25,7 @@ public class CDLiquids{
             effect = StatusEffects.sapped;
             particleEffect = CDFx.iceCraft;
         }};
-        ClF3 = new Liquid("clf3",Color.valueOf("39ff14")){{
+        ClF3 = new Liquid("clf3", Color.valueOf("39ff14")){{
             gas = true;
             barColor = gasColor = Color.valueOf("ffeeee88");
             explosiveness = 0.7f;

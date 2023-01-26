@@ -1,8 +1,8 @@
 package cd.content;
 
 import arc.graphics.*;
-import cd.world.component.*;
 import cd.world.blocks.*;
+import cd.world.component.*;
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -19,10 +19,9 @@ public class CDBlocks{
     public static Block
     basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer, pneuConduit, chlorineExtractor, airCompressor, basicClF3Crafter, basicCO2Laser, basicLaserRepeater, fluorineExtractor, basicChipCrafter,
     //env
-    ashWall, ashFloor, ashBoulder,deadSapling,enrichedSandFloor, enrichedSandWall, enrichedSandBoulder,
-    graniteFloor,graniteWall,graniteBoulder,
-    permafrostFloor, permafrostWall,vine
-    ;
+    ashWall, ashFloor, ashBoulder, deadSapling, enrichedSandFloor, enrichedSandWall, enrichedSandBoulder,
+    graniteFloor, graniteWall, graniteBoulder,
+    permafrostFloor, permafrostWall, vine;
 
     public void load(){
         ashWall = new StaticWall("ash-wall");
@@ -79,7 +78,7 @@ public class CDBlocks{
                 ambientSoundVolume = 0.07f;
                 consumeLiquids(new LiquidStack(Liquids.hydrogen, 0.05f),
                 new LiquidStack(Liquids.ozone, 2f / 60f));
-                consumeItem(CDItems.ice,1);
+                consumeItem(CDItems.ice, 1);
                 addComp(new CatalyzerCrafterComponent(){{
                     catalyzerNecessity = true;
                     catalyzer = with(CDItems.platinum, 2);
@@ -122,14 +121,14 @@ public class CDBlocks{
                 ambientSoundVolume = 0.08f;
 
                 regionRotated1 = 3;
-                outputLiquids = LiquidStack.with( Liquids.ozone, 4f / 60, Liquids.hydrogen, 6f / 60);
+                outputLiquids = LiquidStack.with(Liquids.ozone, 4f / 60, Liquids.hydrogen, 6f / 60);
                 liquidOutputDirections = new int[]{1, 3};
             }
         };
         pneuConduit = new ComponentBlock("pneu-conduit"){{
             size = 1;
             requirements(Category.distribution,
-            with(Items.lead,5,Items.graphite,10));
+            with(Items.lead, 5, Items.graphite, 10));
             addComp(new PneuComponent());
         }};
         chlorineExtractor = new ComponentCrafter("chlorine-extractor"){{
@@ -137,8 +136,8 @@ public class CDBlocks{
                 canConsumePressure = true;
                 pressureConsume = 1f;
             }});
-            requirements(Category.crafting, with( Items.copper, 30,Items.lead, 30,Items.silicon, 50,Items.metaglass,50));
-            outputLiquid =  new LiquidStack(CDLiquids.chlorine,5f/60f);
+            requirements(Category.crafting, with(Items.copper, 30, Items.lead, 30, Items.silicon, 50, Items.metaglass, 50));
+            outputLiquid = new LiquidStack(CDLiquids.chlorine, 5f / 60f);
             craftTime = 60f;
             size = 3;
             consumePower(0.1f);
@@ -156,15 +155,15 @@ public class CDBlocks{
         }};
         basicClF3Crafter = new ComponentCrafter("basic-clf3-crafter"){{
             requirements(Category.crafting, with(Items.copper, 150, Items.graphite, 135, Items.titanium, 60));
-            outputLiquid = new LiquidStack(CDLiquids.ClF3,0.2f);
+            outputLiquid = new LiquidStack(CDLiquids.ClF3, 0.2f);
             craftTime = 90f;
             size = 2;
             hasItems = true;
-            consumeLiquids(LiquidStack.with(CDLiquids.chlorine,0.1f,CDLiquids.fluorine,0.3f));
+            consumeLiquids(LiquidStack.with(CDLiquids.chlorine, 0.1f, CDLiquids.fluorine, 0.3f));
             consumePower(0.4f);
             addComp(new PneuComponent(){{
                         canConsumePressure = true;
-            }},
+                    }},
             new CatalyzerCrafterComponent(){{
                 catalyzer = with(CDItems.platinum, 1, Items.surgeAlloy, 1);
                 catalyzerScale = new float[]{2f, 3f};
@@ -173,7 +172,7 @@ public class CDBlocks{
             }});
         }};
 
-        
+
         basicLaserRepeater = new ComponentBlock("basic-laser-repeater"){{
             requirements(Category.crafting, with(CDItems.lanthanum, 5));
             addComp(new LaserEnergyComponent(){{
@@ -188,11 +187,11 @@ public class CDBlocks{
             rotateDraw = true;
         }};
         fluorineExtractor = new ComponentCrafter("fluorine-extractor"){{
-            requirements(Category.crafting, with( Items.copper, 30,Items.lead, 60,Items.silicon, 25,Items.metaglass,50));
+            requirements(Category.crafting, with(Items.copper, 30, Items.lead, 60, Items.silicon, 25, Items.metaglass, 50));
             craftTime = 120f;
             size = 3;
             hasItems = true;
-            outputLiquid = new LiquidStack(CDLiquids.fluorine,0.1f);
+            outputLiquid = new LiquidStack(CDLiquids.fluorine, 0.1f);
             consumePower(0.2f);
             addComp(new LaserEnergyComponent(){{
                 acceptLaserEnergy = true;
@@ -201,7 +200,7 @@ public class CDBlocks{
         }};
 
         basicCO2Laser = new ComponentCrafter("basic-co2-laser"){{
-            requirements(Category.crafting, with(CDItems.lanthanum, 25, Items.silicon,15));
+            requirements(Category.crafting, with(CDItems.lanthanum, 25, Items.silicon, 15));
             craftTime = 90f;
             size = 1;
             hasItems = true;
@@ -217,30 +216,30 @@ public class CDBlocks{
         }};
 
         basicChipCrafter = new ComponentCrafter("basic-chip-crafter"){{
-                requirements(Category.crafting, with(Items.plastanium, 40, Items.titanium, 100, Items.silicon, 150, Items.thorium, 80));
-                outputItem = new ItemStack(CDItems.basicChip, 2);
-                craftTime = 120f;
-                size = 3;
-                hasItems = true;
-                hasLiquids = true;
-                consumeItems(with(Items.silicon,5,Items.thorium,6));
-                consumeLiquid(Liquids.cryofluid,12f/60f);
-                consumePower(1f);
-                addComp(
-                new PneuComponent(){{
-                            canConsumePressure = true;
-                            pressureConsume = 7f;
-                        }},
-                new CatalyzerCrafterComponent(){{
-                    catalyzer = with(CDItems.platinum, 1, Items.phaseFabric, 2);
-                    catalyzerScale = new float[]{2f, 5f};
-                    maxEfficiency = 7f;
-                    catalyzerNecessity = false;
-                }},
-                new LaserEnergyComponent(){{
-                    acceptLaserEnergy = true;
-                    consumeLaserEnergy = 0.5f;
-                }});
+            requirements(Category.crafting, with(Items.plastanium, 40, Items.titanium, 100, Items.silicon, 150, Items.thorium, 80));
+            outputItem = new ItemStack(CDItems.basicChip, 2);
+            craftTime = 120f;
+            size = 3;
+            hasItems = true;
+            hasLiquids = true;
+            consumeItems(with(Items.silicon, 5, Items.thorium, 6));
+            consumeLiquid(Liquids.cryofluid, 12f / 60f);
+            consumePower(1f);
+            addComp(
+            new PneuComponent(){{
+                canConsumePressure = true;
+                pressureConsume = 7f;
+            }},
+            new CatalyzerCrafterComponent(){{
+                catalyzer = with(CDItems.platinum, 1, Items.phaseFabric, 2);
+                catalyzerScale = new float[]{2f, 5f};
+                maxEfficiency = 7f;
+                catalyzerNecessity = false;
+            }},
+            new LaserEnergyComponent(){{
+                acceptLaserEnergy = true;
+                consumeLaserEnergy = 0.5f;
+            }});
         }};
     }
 }

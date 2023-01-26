@@ -35,7 +35,7 @@ public class CDUnitTypes{
                 recoil = 2f;
                 shootSound = Sounds.missile;
                 x = 0;
-                bullet = new SoundWaveBulletType() {{
+                bullet = new SoundWaveBulletType(){{
                     width = 45;
                     height = 8;
                     lifetime = 80f;
