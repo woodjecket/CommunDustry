@@ -3,6 +3,7 @@ package cd;
 import arc.util.*;
 import cd.content.*;
 import mindustry.mod.*;
+import mindustry.ui.dialogs.*;
 
 public class CDMod extends Mod{
     public static CDBlocks modBlocks;
@@ -29,7 +30,11 @@ public class CDMod extends Mod{
         modUnitTypes.load();
         modPlanets = new CDPlanets();
         modPlanets.load();
+        configure();
+    }
 
+    public void configure(){
+        PlanetDialog.debugSelect = true;
     }
 
 }

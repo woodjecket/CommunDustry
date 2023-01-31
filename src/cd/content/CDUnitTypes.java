@@ -6,6 +6,7 @@ import mindustry.entities.abilities.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.type.ammo.*;
+import mindustry.world.meta.*;
 
 public class CDUnitTypes{
     public static UnitType soundWaveTest;
@@ -13,6 +14,7 @@ public class CDUnitTypes{
     public void load(){
         soundWaveTest = new UnitType("sound-wave-test-2.2.1-PRE-ALPHA"){{
             constructor = UnitTypes.poly.constructor;
+            envDisabled = Env.none;
             flying = true;
             drag = 0.05f;
             speed = 2.6f;
