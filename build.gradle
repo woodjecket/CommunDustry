@@ -22,17 +22,19 @@ ext{
 
 //java 8 backwards compatibility flag
 allprojects{
-    tasks.withType(JavaCompile){
-        options.compilerArgs.addAll(['--release', '8'])
-        options.fork = true
-        options.forkOptions.jvmArgs.addAll([
-        "--add-opens", "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
-        "--add-opens", "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
-        "--add-opens", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
-        "--add-opens", "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
-        "--add-opens", "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
-        "--add-opens", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
-        ])
+    tasks.withType(JavaCompile).tap{
+        configureEach{
+            options.compilerArgs.addAll(['--release', '8'])
+            options.fork = true
+            options.forkOptions.jvmArgs.addAll([
+                    "--add-opens", "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+                    "--add-opens", "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+                    "--add-opens", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
+                    "--add-opens", "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
+                    "--add-opens", "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+                    "--add-opens", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
+            ])
+        }
     }
 }
 
@@ -44,7 +46,7 @@ dependencies{
 }
 
 //force arc version
-configurations.all{
+configurations.configureEach{
     resolutionStrategy.eachDependency{ details ->
         if(details.requested.group == 'com.github.Anuken.Arc'){
             details.useVersion "$mindustryVersion"
@@ -53,11 +55,11 @@ configurations.all{
 }
 
 
-task jarAndroid{
+tasks.register('jarAndroid'){
     dependsOn "jar"
 
     doLast{
-        if(!sdkRoot || !new File(sdkRoot).exists()) throw new GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
+        if(!sdkRoot || !new File(sdkRoot as String).exists()) throw new GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
 
         def platformRoot = new File("$sdkRoot/platforms/").listFiles().sort().reverse().find{ f -> new File(f, "android.jar").exists() }
 
@@ -89,7 +91,7 @@ jar{
 
 }
 
-task game{
+tasks.register('game'){
     dependsOn jar
     doLast{
         "mv -f $buildDir/libs/${project.archivesBaseName}Desktop.jar $buildDir/libs/mindustry_mod".execute().waitForProcessOutput(System.out, System.err)
@@ -97,12 +99,12 @@ task game{
     }
 }
 
-task deploy(type: Jar){
+tasks.register('deploy'){
     dependsOn jarAndroid
     dependsOn jar
     archiveFileName = "${project.archivesBaseName}.jar"
 
-    from{ [zipTree("$buildDir/libs/${project.archivesBaseName}Desktop.jar"), zipTree("$buildDir/libs/${project.archivesBaseName}Android.jar")]}
+    from{ [zipTree("$buildDir/libs/${project.archivesBaseName}Desktop.jar"), zipTree("$buildDir/libs/${project.archivesBaseName}Android.jar")] }
     doLast{
         delete{
             delete "$buildDir/libs/${project.archivesBaseName}Desktop.jar"

@@ -28,7 +28,6 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     public boolean genLakes = false;
     public Liquid hotRiverLiquid = Liquids.slag;
     public Block hotRiverTile = Blocks.slag;
-    //TODO
     public Liquid coldRiverLiquid = Liquids.water;
     public Block coldRiverTile = Blocks.water;
 
@@ -38,7 +37,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     public Block[][] blocks = new Block[][]{
     {hotRiverTile, hotRiverTile, Blocks.basalt, Blocks.basalt, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
     {hotRiverTile, hotRiverTile, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor},
-    {coldRiverTile, coldRiverTile, Blocks.ice,Blocks.ice,Blocks.ice,Blocks.snow}
+    {coldRiverTile, coldRiverTile, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.snow},
+    {coldRiverTile, coldRiverTile, Blocks.dirt, Blocks.dirt, Blocks.mud, Blocks.grass, CDBlocks.vine}
     };
 
     public ObjectMap<Block, Block> dec = ObjectMap.of(
@@ -162,7 +162,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             float rrscl = rr * 44 - 2;
 
             if(value > 0.17f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)){
-                boolean deep = (value > 0.17f + 0.05f ) && (!Mathf.within(x, y, fspawn.x, fspawn.y, rrscl));
+                boolean deep = (value > 0.17f + 0.05f) && (!Mathf.within(x, y, fspawn.x, fspawn.y, rrscl));
                 boolean frozen = floor == Blocks.ice || floor == Blocks.iceSnow || floor == Blocks.snow || floor.asFloor().isLiquid;
                 if(!frozen){
                     if(deep) floor = hotRiverTile;
@@ -503,12 +503,12 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         position = Tmp.v33.set(position).scl(scl);
         float rad = scl;
         float temp = Mathf.clamp(Math.abs(position.y * 2f) / (rad));
-        float tnoise = Simplex.noise3d(seed, 7, 0.56, 1f/3f, position.x, position.y + 999f, position.z);
+        float tnoise = Simplex.noise3d(seed, 7, 0.56, 1f / 3f, position.x, position.y + 999f, position.z);
         temp = Mathf.lerp(temp, tnoise, 0.5f);
         height *= 1.2f;
         height = Mathf.clamp(height);
 
-        float tar = Simplex.noise3d(seed, 4, 0.55f, 1f/2f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
+        float tar = Simplex.noise3d(seed, 4, 0.55f, 1f / 2f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
         int index = Mathf.clamp((int)(temp * blocks.length), 0, blocks.length - 1);
         Block res = blocks[index]
         [Mathf.clamp((int)(height * blocks[index].length), 0, blocks[index].length - 1)];
@@ -518,6 +518,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             return res;
         }
     }
+
     @Override
     public Color getColor(Vec3 position){
         Block block = getBlock(position);
@@ -525,6 +526,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         if(block == Blocks.salt) return Blocks.sand.mapColor;
         return Tmp.c1.set(block.mapColor).a(1f - block.albedo);
     }
+
     @Override
     public void genTile(Vec3 position, TileGen tile){
         tile.floor = getBlock(position);

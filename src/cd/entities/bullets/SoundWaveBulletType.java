@@ -7,7 +7,7 @@ import mindustry.entities.*;
 import mindustry.entities.bullet.*;
 import mindustry.gen.*;
 
-public class SoundWaveBulletType extends BasicBulletType{
+public class SoundWaveBulletType extends BasicBulletType implements DatadBulletType{
     public float waveSpeed = 1f;
     public float attenuateRange = lifetime * 0.75f * waveSpeed;
     public float attenuatePercent = height * 0.05f;
@@ -50,6 +50,7 @@ public class SoundWaveBulletType extends BasicBulletType{
         return Math.max(lifetime * waveSpeed, 0);
     }
 
+
     public class Soundwave{
         public Bullet waveParent;
         public float angle;
@@ -61,13 +62,13 @@ public class SoundWaveBulletType extends BasicBulletType{
             if(!waveParent.isAdded()) return;
             if(dst > attenuateRange){
                 thickness -= attenuatePercent;
-                waveParent.damage -= damage *attenuatePercent /height;
+                waveParent.damage -= damage * attenuatePercent / height;
             }
-            if(thickness <= 0||waveParent.damage<=0){
+            if(thickness <= 0 || waveParent.damage <= 0){
                 waveParent.damage = thickness = 0;
                 waveParent.remove();
             }
-            Vars.ui.showLabel(String.valueOf(waveParent.damage),1f,waveParent.x,waveParent.y);
+            Vars.ui.showLabel(String.valueOf(waveParent.damage), 0f, waveParent.x, waveParent.y);
             dst += waveSpeed;
             Units.nearbyEnemies(waveParent.team, waveParent.x, waveParent.y, dst + thickness,
             b -> {
