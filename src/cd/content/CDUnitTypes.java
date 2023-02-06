@@ -11,7 +11,7 @@ import mindustry.world.meta.*;
 public class CDUnitTypes{
     public static UnitType soundWaveTest;
 
-    public void load(){
+    public static void load(){
         soundWaveTest = new UnitType("sound-wave-test-2.2.1-PRE-ALPHA"){{
             constructor = UnitTypes.poly.constructor;
             envDisabled = Env.none;

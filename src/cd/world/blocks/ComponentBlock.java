@@ -88,7 +88,7 @@ public class ComponentBlock extends Block implements ComponentInterface{
         return comps.values();
     }
 
-    public void executeAllComps(Cons<BaseComponent> operator){
+    public void executeAllComps(Cons<? super BaseComponent> operator){
         for(var i : listComps()){
             operator.get(i);
         }
@@ -110,8 +110,8 @@ public class ComponentBlock extends Block implements ComponentInterface{
             return pressure;
         }
 
-        public void setPressure(float p){
-            this.pressure = p;
+        public void setPressure(float pressure){
+            this.pressure = pressure;
         }
 
         @Override

@@ -55,7 +55,7 @@ public class SoundWaveBulletType extends BasicBulletType implements DatadBulletT
         public Bullet waveParent;
         public float angle;
         public float thickness;
-        public float dst = 0;
+        public float dst;
 
         public void update(){
             //还没写伤害建筑

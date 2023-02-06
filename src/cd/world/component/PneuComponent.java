@@ -52,8 +52,6 @@ public class PneuComponent extends BaseComponent{
     public float explosionShake = 6f, explosionShakeDuration = 16f;
 
 
-    public PneuComponent(){
-    }
 
     public float getExplodePressure(){
         return explodePressure;

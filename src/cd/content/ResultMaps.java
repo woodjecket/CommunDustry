@@ -3,8 +3,11 @@ package cd.content;
 import cd.type.valence.*;
 import mindustry.content.*;
 
-public class ResultMaps{
+public final class ResultMaps{
     public static ResultMap map1;
+
+    private ResultMaps(){
+    }
 
     public static void load(){
         map1 = new ResultMap(30, true);

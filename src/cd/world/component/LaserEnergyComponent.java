@@ -27,7 +27,7 @@ public class LaserEnergyComponent extends BaseComponent{
     public float maxLaserEnergy = 10f;
     public float consumeLaserEnergy;
 
-    public int range = 5;
+    public int laserRange = 5;
     public float laserTransportEfficiency = 0.5f / 60f;
     public int attenuateRange = 3;
     public float attenuatePercent = 0.05f;
@@ -62,13 +62,13 @@ public class LaserEnergyComponent extends BaseComponent{
             int dx = dir.x;
             int dy = dir.y;
             int offset = b.size / 2;
-            for(int j = 1 + offset; j <= range + offset; j++){
+            for(int j = 1 + offset; j <= laserRange + offset; j++){
                 var other = world.build(x + j * dir.x, y + j * dir.y);
                 if(other != null && !(other instanceof LaserInterface || other.block.underBullets)){
                     break;
                 }
 
-                if(other instanceof LaserInterface && other.team == player.team() && ((LaserInterface)other).isProvideLaserEnergy(x, y)){
+                if(other instanceof LaserInterface laserInterface && other.team == player.team() && laserInterface.isProvideLaserEnergy(x, y)){
                     len = j;
                     from = other;
                     break;
@@ -88,17 +88,17 @@ public class LaserEnergyComponent extends BaseComponent{
     }
 
     private void drawLaserDestination(Block b, int x, int y, int rotation){
-        int maxLen = range + b.size / 2;
+        int maxLen = laserRange + b.size / 2;
         Building dest = null;
         var dir = Geometry.d4[rotation];
         int dx = dir.x, dy = dir.y;
         int offset = b.size / 2;
-        for(int j = 1 + offset; j <= range + offset; j++){
+        for(int j = 1 + offset; j <= laserRange + offset; j++){
             var other = world.build(x + j * dir.x, y + j * dir.y);
             if(other != null && !((other instanceof LaserInterface) || other.block.underBullets)){
                 break;
             }
-            if(other instanceof LaserInterface && other.team == player.team() && ((LaserInterface)other).isAcceptLaserEnergy()){
+            if(other instanceof LaserInterface laserInterface && other.team == player.team() && laserInterface.isAcceptLaserEnergy()){
                 maxLen = j;
                 dest = other;
                 break;
@@ -117,7 +117,7 @@ public class LaserEnergyComponent extends BaseComponent{
 
     @Override
     public void onInit(Block b){
-        b.updateClipRadius((range + 1) * tilesize);
+        b.updateClipRadius((laserRange + 1) * tilesize);
     }
 
     public boolean isProvideLaserEnergy(Building b, int bx, int by){
@@ -183,14 +183,14 @@ public class LaserEnergyComponent extends BaseComponent{
         int offset = b.block.size / 2;
         //找方向范围内第一个带isAbsorbLaserEnergy的方块，j是距离
         //从中心开算，但是范围应该从边缘算，所以有偏移
-        for(int j = 1 + offset; j <= range + offset; j++){
+        for(int j = 1 + offset; j <= laserRange + offset; j++){
             //开启遍历，坐标x是此方块x+距离*方向乘数，y同理
             var other = world.build(b.tile.x + j * dir.x, b.tile.y + j * dir.y);
             if(other instanceof LaserInterface && !((LaserInterface)other).isAcceptLaserEnergy()){
                 break;
             }
 
-            if(other != null && other.team == Vars.player.team() && other instanceof LaserInterface && ((LaserInterface)other).isAcceptLaserEnergy()){
+            if(other != null && other.team == Vars.player.team() && other instanceof LaserInterface laserInterface && laserInterface.isAcceptLaserEnergy()){
                 bLaser.setLaserChild(other);
                 break;
             }
@@ -237,7 +237,7 @@ public class LaserEnergyComponent extends BaseComponent{
         //格子值存在，且（那个方块不是同类结点，格子的xy都和自己的不一样，格子后建造且他连接范围不比自己长，或者他连接范围就比自己短这四个条件满足其一）
         if(bLaser.getLaserChild() != null && (!(bLaser.getLaserChild().block instanceof LaserInterface node) ||
         (bLaser.getLaserChild().tileX() != b.tileX() && bLaser.getLaserChild().tileY() != b.tileY()) ||
-        (bLaser.getLaserChild().id > b.id && range >= node.laserRange()) || range > node.laserRange())){
+        (bLaser.getLaserChild().id > b.id && laserRange >= node.laserRange()) || laserRange > node.laserRange())){
             //我和他之间，是x轴距离更长还是y轴，挑个长的赋值给dst
             int dst = Math.max(Math.abs(bLaser.getLaserChild().tile.x - b.tile.x), Math.abs(bLaser.getLaserChild().tile.y - b.tile.y));
             //距离还不到两人1/2，就是贴贴状态，就不发激光了
@@ -254,7 +254,7 @@ public class LaserEnergyComponent extends BaseComponent{
     }
 
     public int getLaserRange(){
-        return range;
+        return laserRange;
     }
 
     @Override

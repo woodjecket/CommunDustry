@@ -80,7 +80,7 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
         return comps.values();
     }
 
-    public void executeAllComps(Cons<BaseComponent> operator){
+    public void executeAllComps(Cons<? super BaseComponent> operator){
         for(var i : listComps()){
             operator.get(i);
         }
@@ -104,15 +104,15 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
             return pressure;
         }
 
-        public void setPressure(float p){
-            this.pressure = p;
+        public void setPressure(float pressure){
+            this.pressure = pressure;
         }
 
         @Override
         public boolean shouldConsume(){
             var result = super.shouldConsume();
             for(var c : listComps()){
-                result &= c.onShouldConsume(this);
+                result = result && c.onShouldConsume(this);
             }
             return result;
         }

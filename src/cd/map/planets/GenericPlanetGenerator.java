@@ -25,16 +25,16 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     public BaseGenerator basegen = new BaseGenerator();
     public float scl = 5f;
     public float riverLiquidOffset = 0.07f;
-    public boolean genLakes = false;
+    public boolean genLakes;
     public Liquid hotRiverLiquid = Liquids.slag;
     public Block hotRiverTile = Blocks.slag;
     public Liquid coldRiverLiquid = Liquids.water;
     public Block coldRiverTile = Blocks.water;
 
-    public boolean canHaveNaval = false;
+    public boolean canHaveNaval;
     public Block normalTree = CDBlocks.deadSapling;
     public Block deadTree = CDBlocks.deadSapling;
-    public Block[][] blocks = new Block[][]{
+    public Block[][] blocks = {
     {hotRiverTile, hotRiverTile, Blocks.basalt, Blocks.basalt, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
     {hotRiverTile, hotRiverTile, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor},
     {coldRiverTile, coldRiverTile, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.snow},
@@ -163,8 +163,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
 
             if(value > 0.17f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)){
                 boolean deep = (value > 0.17f + 0.05f) && (!Mathf.within(x, y, fspawn.x, fspawn.y, rrscl));
-                boolean frozen = floor == Blocks.ice || floor == Blocks.iceSnow || floor == Blocks.snow || floor.asFloor().isLiquid;
-                if(!frozen){
+                boolean frozen = floor != Blocks.ice && floor != Blocks.iceSnow && floor != Blocks.snow && !floor.asFloor().isLiquid;
+                if(frozen){
                     if(deep) floor = hotRiverTile;
                     else floor = Blocks.hotrock;
                 }else{
@@ -393,7 +393,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), state.rules.attackMode, state.rules.attackMode && spawner.countGroundSpawns() == 0, naval);
     }
 
-    public boolean checkNaval(Room spawn, Seq<Room> enemies){
+    public boolean checkNaval(Room spawn, Iterable<? extends Room> enemies){
         if(!canHaveNaval) return false;
         int tlen = tiles.width * tiles.height;
         int total = 0, riverLiquids = 0;
@@ -484,8 +484,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             for(int i = ores.size - 1; i >= 0; i--){
                 Block entry = ores.get(i);
                 float freq = frequencies.get(i);
-                if(Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + i * 2))) > 0.22f + i * 0.01 &&
-                Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + i * 4))) > 0.37f + freq){
+                if(Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + (i << 1)))) > 0.22f + i * 0.01 &&
+                Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + (i << 2)))) > 0.37f + freq){
                     ore = entry;
                     break;
                 }
@@ -538,7 +538,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     }
 
     //see it just a black box
-    class Room{
+    private class Room{
         int x, y, radius;
         ObjectSet<Room> connected = new ObjectSet<>();
 

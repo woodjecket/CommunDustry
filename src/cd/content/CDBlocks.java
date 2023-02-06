@@ -23,7 +23,7 @@ public class CDBlocks{
     graniteFloor, graniteWall, graniteBoulder,
     permafrostFloor, permafrostWall, vine;
 
-    public void load(){
+    public static void load(){
         ashWall = new StaticWall("ash-wall");
         enrichedSandWall = new StaticWall("enriched-sand-wall");
         graniteWall = new StaticWall("granite-wall");
@@ -208,7 +208,7 @@ public class CDBlocks{
             addComp(new LaserEnergyComponent(){{
                 provideLaserEnergy = true;
                 laserEnergyOutput = 0.25f;
-                range = 10;
+                laserRange = 10;
                 laserColor2 = Color.valueOf("80b3c4");
             }});
             rotate = true;

@@ -3,10 +3,7 @@ package cd.world.component;
 import mindustry.gen.*;
 import mindustry.world.*;
 
-public class BaseComponent{
-
-    public BaseComponent(){
-    }
+public class BaseComponent implements Component{
 
     public void onUpdateTile(Building b){
     }
@@ -30,6 +27,7 @@ public class BaseComponent{
 
     public void onInit(Block b){
     }
+
 
     public void onSetStats(Block b){
     }

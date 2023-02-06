@@ -10,7 +10,7 @@ import mindustry.world.meta.*;
 public class CDPlanets{
     public static Planet meadtear;
 
-    public void load(){
+    public static void load(){
         meadtear = new Planet("meadtear-test-2.2.1-PRE-ALPHA", Planets.sun, 1f, 2){{
             generator = new GenericPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 5);

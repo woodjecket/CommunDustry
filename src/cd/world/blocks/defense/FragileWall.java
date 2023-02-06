@@ -32,7 +32,7 @@ public class FragileWall extends Wall{
     }
 
     public class FragileWallBuilding extends Wall.WallBuild{
-        public float damagedAmount = 0;
+        public float damagedAmount;
 
         @Override
         public void updateTile(){

@@ -12,5 +12,5 @@ public interface ComponentInterface{
 
     Iterable<BaseComponent> listComps();
 
-    void executeAllComps(Cons<BaseComponent> operator);
+    void executeAllComps(Cons<? super BaseComponent> operator);
 }

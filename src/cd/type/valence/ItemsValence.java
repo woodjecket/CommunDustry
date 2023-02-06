@@ -7,8 +7,11 @@ import mindustry.type.*;
 
 import java.util.concurrent.atomic.*;
 
-public class ItemsValence{
+public final class ItemsValence{
     public static ObjectMap<Item, ValenceMap> map = new ObjectMap<>();
+
+    private ItemsValence(){
+    }
 
     public static boolean hasValence(Item item){
         return map.containsKey(item);

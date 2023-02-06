@@ -7,7 +7,6 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import cd.type.valence.*;
 import cd.world.blocks.valence.*;
-import cd.world.blocks.valence.ValenceCrafter.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -21,7 +20,7 @@ public class ValenceMapDialog extends BaseDialog{
     public Formula formula;
     public ResultMap resultMap;
     public Table itemsTable, formulaTable, mapTable;
-    public int allValence = 0;
+    public int allValence;
     private ScrollPane pane, itemPane;
 
     public ValenceMapDialog(ValenceBuild building){
@@ -79,13 +78,13 @@ public class ValenceMapDialog extends BaseDialog{
                 bTable.table().growY().width(10);
                 bTable.table(table -> {
                     table.button(Icon.redo, () -> {
-                        ((ValenceCrafterBuild)building).configure(0);
-                        ((ValenceCrafterBuild)building).configure(1);
+                        ((Buildingc)building).configure(0);
+                        ((Buildingc)building).configure(1);
                     }).growX().height(75).padBottom(10).row();
                     table.button(Icon.cancel, () -> {
                         formula.clear();
-                        ((ValenceCrafterBuild)building).configure(null);
-                        ((ValenceCrafterBuild)building).configure(1);
+                        ((Buildingc)building).configure(null);
+                        ((Buildingc)building).configure(1);
                     }).growX().height(75).padBottom(10).row();
                     table.button(Icon.copy, () -> {
                         Vars.ui.showInfoFade("@copied");
@@ -95,13 +94,13 @@ public class ValenceMapDialog extends BaseDialog{
                         Formula tmpFormula = Formula.readFromBase64(Core.app.getClipboardText());
                         if(tmpFormula == null) return;
                         formula = tmpFormula;
-                        ((ValenceCrafterBuild)building).configure(2);
+                        ((Buildingc)building).configure(2);
                     }).growX().height(75).padBottom(10).row();
                     table.table(Tex.pane).grow().padBottom(10).row();
                     table.button(Icon.crafting, () -> {
                         building.updateValence();
-                        ((ValenceCrafterBuild)building).configure(1f);
-                        ((ValenceCrafterBuild)building).configure(1);
+                        ((Buildingc)building).configure(1f);
+                        ((Buildingc)building).configure(1);
                         hide();
                     }).growX().height(75);
                 }).growY().width(75);
@@ -140,8 +139,8 @@ public class ValenceMapDialog extends BaseDialog{
                 table.add(new ItemDisplay(i, (int)Mathf.maxZero(a - formula.count(i))));
                 table.table().grow();
                 if(a - formula.count(i) > 0) table.button(Icon.rightOpenSmall, () -> {
-                    ((ValenceCrafterBuild)building).configure(i);
-                    ((ValenceCrafterBuild)building).configure(1);
+                    ((Buildingc)building).configure(i);
+                    ((Buildingc)building).configure(1);
                 }).padBottom(10);
             }).growX().height(80);
             itemTable.row();

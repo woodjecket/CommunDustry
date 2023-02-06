@@ -7,7 +7,7 @@ import mindustry.type.*;
 public class CDLiquids{
     public static Liquid fluorine, H2O2, chlorine, ClF3;
 
-    public void load(){
+    public static void load(){
         fluorine = new Liquid("fluorine", Color.valueOf("9ec42b")){{
             gas = true;
             flammability = 1.0f;
