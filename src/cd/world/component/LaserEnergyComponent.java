@@ -14,8 +14,8 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 
-import static arc.math.Mathf.sign;
-import static java.lang.Math.abs;
+import static arc.math.Mathf.*;
+import static java.lang.Math.*;
 import static mindustry.Vars.*;
 
 public class LaserEnergyComponent extends BaseComponent{
@@ -161,8 +161,10 @@ public class LaserEnergyComponent extends BaseComponent{
         if(childLaser == null) return;
         if(childLaser.getLaserEnergy() > ((ComponentInterface)child.block).getComp(LaserEnergyComponent.class).maxLaserEnergy) return;
         if(bLaser.getLaserEnergy() < 0) return;
-        bLaser.changeLaserEnergy(0 - laserTransportEfficiency);
-        childLaser.changeLaserEnergy(laserTransportEfficiency);
+        var outRangeDst = max(attenuateRange, dst(b.x, b.y, child.x, child.y)) - attenuateRange;
+        var realEfficiency = laserTransportEfficiency * (1 - outRangeDst * attenuatePercent);
+        bLaser.changeLaserEnergy(0 - realEfficiency);
+        childLaser.changeLaserEnergy(realEfficiency);
     }
 
     @Override
