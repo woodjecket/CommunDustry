@@ -1,15 +1,14 @@
 package cd.world.blocks;
 
-import arc.func.*;
 import arc.graphics.g2d.*;
 import arc.struct.*;
 import arc.util.io.*;
+import cd.entities.building.*;
 import cd.world.component.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.production.*;
 
-@SuppressWarnings("unchecked")
-public class ComponentCrafter extends GenericCrafter implements ComponentInterface{
+public class ComponentCrafter extends GenericCrafter implements IComp{
     public boolean hasPressure, hasLaser;
     private ObjectMap<Class<? extends BaseComponent>, BaseComponent> comps = new ObjectMap<>();
 
@@ -19,11 +18,16 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
     }
 
     @Override
+    public ObjectMap<Class<? extends BaseComponent>, BaseComponent> components(){
+        return comps;
+    }
+
+    @Override
     public void init(){
         super.init();
         executeAllComps(c -> c.onInit(this));
         hasPressure = (getComp(PneuComponent.class) != null);
-        hasLaser = (getComp(LaserEnergyComponent.class) != null);
+        hasLaser = (getComp(LaserComponent.class) != null);
 
     }
 
@@ -57,47 +61,14 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
         executeAllComps(c -> c.onSetStats(this));
     }
 
-    public <C extends BaseComponent> C getComp(Class<C> type){
-        if(!comps.containsKey(type)) return null;
-        return (comps.get(type) != null) ? (C)comps.get(type) : null;
-    }
 
-    public void addComp(BaseComponent... c){
-        for(var sc : c){
-            var type = sc.getClass();
-            if(type.isAnonymousClass()){
-                type = (Class<? extends BaseComponent>)type.getSuperclass();
-            }
-            comps.put(type, sc);
-        }
-    }
-
-    public <T extends BaseComponent> void removeComp(Class<T> type){
-        comps.remove(type);
-    }
-
-    public Iterable<BaseComponent> listComps(){
-        return comps.values();
-    }
-
-    public void executeAllComps(Cons<? super BaseComponent> operator){
-        for(var i : listComps()){
-            operator.get(i);
-        }
-    }
-
-
-    public class ComponentCrafterBuild extends GenericCrafterBuild implements PneuInterface, LaserInterface{
+    public class ComponentCrafterBuild extends GenericCrafterBuild implements ILaserPneu, ILaserBuilding{
         //define pneumatic
         public float pressure;
-        /** A laser building might have one or more parents who give laser energy. */
-        public Seq<Building> laserParent = new Seq<>();
         /** But it can only have one child who can be given laser energy to. */
         public Building laserChild;
         /** The laser energy now */
         public float laserEnergy;
-        /** To make the laser block connect automatically. The working way seen below. */
-        public int lastChange = -2;
 
 
         public float getPressure(){
@@ -169,34 +140,19 @@ public class ComponentCrafter extends GenericCrafter implements ComponentInterfa
             if(hasLaser) write.f(laserEnergy);
         }
 
-        public int laserRange(){
-            return getComp(LaserEnergyComponent.class).getLaserRange();
+        public int getLaserRange(){
+            return getComp(LaserComponent.class).getLaserRange();
         }
 
 
         public boolean isAcceptLaserEnergy(){
-            return getComp(LaserEnergyComponent.class) != null && getComp(LaserEnergyComponent.class).isAcceptLaserEnergy();
+            return getComp(LaserComponent.class) != null && getComp(LaserComponent.class).isAcceptLaserEnergy();
         }
 
         public boolean isProvideLaserEnergy(int bx, int by){
-            return getComp(LaserEnergyComponent.class) != null && getComp(LaserEnergyComponent.class).isProvideLaserEnergy(this, bx, by);
+            return getComp(LaserComponent.class) != null && getComp(LaserComponent.class).isProvideLaserEnergy(this, bx, by);
         }
 
-        public int getLastChange(){
-            return lastChange;
-        }
-
-        public void setLastChange(int t){
-            lastChange = t;
-        }
-
-        public void addLaserParent(Building b){
-            laserParent.add(b);
-        }
-
-        public void removeLaserParent(Building b){
-            laserParent.remove(b);
-        }
 
         public Building getLaserChild(){
             return laserChild;

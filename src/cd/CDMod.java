@@ -12,6 +12,11 @@ public class CDMod extends Mod{
         Log.info("Loaded CDMod constructor.");
     }
 
+    public static void configure(){
+        PlanetDialog.debugSelect = true;
+        Log.level = debug;
+    }
+
     @Override
     public void loadContent(){
         Log.info("Loading content.");
@@ -21,11 +26,6 @@ public class CDMod extends Mod{
         CDUnitTypes.load();
         CDPlanets.load();
         configure();
-    }
-
-    public static void configure(){
-        PlanetDialog.debugSelect = true;
-        Log.level = debug;
     }
 
 }

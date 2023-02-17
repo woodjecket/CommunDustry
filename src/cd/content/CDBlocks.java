@@ -175,7 +175,7 @@ public class CDBlocks{
 
         basicLaserRepeater = new ComponentBlock("basic-laser-repeater"){{
             requirements(Category.crafting, with(CDItems.lanthanum, 5));
-            addComp(new LaserEnergyComponent(){{
+            addComp(new LaserComponent(){{
                 provideLaserEnergy = true;
                 acceptLaserEnergy = true;
             }});
@@ -193,7 +193,7 @@ public class CDBlocks{
             hasItems = true;
             outputLiquid = new LiquidStack(CDLiquids.fluorine, 0.1f);
             consumePower(0.2f);
-            addComp(new LaserEnergyComponent(){{
+            addComp(new LaserComponent(){{
                 acceptLaserEnergy = true;
                 consumeLaserEnergy = 0.125f;
             }});
@@ -205,7 +205,7 @@ public class CDBlocks{
             size = 1;
             hasItems = true;
             consume(new ConsumeItemFlammable());
-            addComp(new LaserEnergyComponent(){{
+            addComp(new LaserComponent(){{
                 provideLaserEnergy = true;
                 laserEnergyOutput = 0.25f;
                 laserRange = 10;
@@ -236,7 +236,7 @@ public class CDBlocks{
                 maxEfficiency = 7f;
                 catalyzerNecessity = false;
             }},
-            new LaserEnergyComponent(){{
+            new LaserComponent(){{
                 acceptLaserEnergy = true;
                 consumeLaserEnergy = 0.5f;
             }});

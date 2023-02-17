@@ -4,7 +4,7 @@ import arc.*;
 import arc.audio.*;
 import arc.math.geom.*;
 import cd.content.*;
-import cd.world.blocks.*;
+import cd.entities.building.*;
 import cd.world.stat.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
@@ -58,20 +58,20 @@ public class PneuComponent extends BaseComponent{
 
     @Override
     public boolean onShouldConsume(Building b){
-        PneuInterface bPneu = (PneuInterface)b;
+        ILaserPneu bPneu = (ILaserPneu)b;
         return bPneu.getPressure() < maxOperatePressure && (canProvidePressure || bPneu.getPressure() > minOperatePressure);
     }
 
     @Override
     public void onCraft(Building b){
-        PneuInterface bPneu = (PneuInterface)b;
+        ILaserPneu bPneu = (ILaserPneu)b;
         if(canProvidePressure) bPneu.setPressure(bPneu.getPressure() + outputPressure);
         if(canConsumePressure) bPneu.setPressure(bPneu.getPressure() - pressureConsume);
     }
 
     @Override
     public void onPlace(Building b){
-        PneuInterface bPneu = (PneuInterface)b;
+        ILaserPneu bPneu = (ILaserPneu)b;
         bPneu.setPressure(standardPressure);
     }
 
@@ -81,10 +81,10 @@ public class PneuComponent extends BaseComponent{
     }
 
     public void calculatePressure(Building b){
-        PneuInterface bPneu = (PneuInterface)b;
+        ILaserPneu bPneu = (ILaserPneu)b;
         if(b.block.rotate){
-            var other = b.proximity.filter(o-> Geometry.d4[b.rotation].x == b.tileX()-o.tileX() && Geometry.d4[b.rotation].y == b.tileY()-o.tileY());
-            if(!(other instanceof PneuInterface otherPneu)) return;
+            var other = b.proximity.filter(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() && Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
+            if(!(other instanceof ILaserPneu otherPneu)) return;
             float thisP = bPneu.getPressure();
             float otherP = otherPneu.getPressure();
             float arrangeP = (thisP + otherP) / 2f;
@@ -94,7 +94,7 @@ public class PneuComponent extends BaseComponent{
             }
         }else{
             for(Building other : b.proximity){
-                if(!(other instanceof PneuInterface otherPneu)) continue;
+                if(!(other instanceof ILaserPneu otherPneu)) continue;
                 float thisP = bPneu.getPressure();
                 float otherP = otherPneu.getPressure();
                 float arrangeP = (thisP + otherP) / 2f;
@@ -115,7 +115,7 @@ public class PneuComponent extends BaseComponent{
 
     @Override
     public void onCreateExplosion(Building b){
-        PneuInterface bPneu = (PneuInterface)b;
+        ILaserPneu bPneu = (ILaserPneu)b;
         if(bPneu.getPressure() > explodePressure){
             if(explosionDamage > 0){
                 Damage.damage(b.x, b.y, explosionRadius * tilesize, explosionDamage);
@@ -149,7 +149,7 @@ public class PneuComponent extends BaseComponent{
     public void onSetBars(Block b){
         b.addBar("pressure",
         (entity) -> new Bar(
-        () -> Core.bundle.format("bar.pressure-amount", ((PneuInterface)entity).getPressure()),
-        () -> Pal.lightOrange, () -> ((PneuInterface)entity).getPressure() / explodePressure));
+        () -> Core.bundle.format("bar.pressure-amount", ((ILaserPneu)entity).getPressure()),
+        () -> Pal.lightOrange, () -> ((ILaserPneu)entity).getPressure() / explodePressure));
     }
 }
