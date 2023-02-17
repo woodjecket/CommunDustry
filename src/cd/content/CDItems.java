@@ -6,7 +6,7 @@ import mindustry.type.*;
 public class CDItems{
     public static Item lanthanum, cerium, platinum, ice, basicChip;
 
-    public void load(){
+    public static void load(){
         lanthanum = new Item("lanthanum", Color.valueOf("fc1c37")){{
             flammability = 0.4f;
         }};
