@@ -2,6 +2,7 @@ package cd.world.component;
 
 import arc.*;
 import arc.audio.*;
+import arc.math.geom.*;
 import cd.content.*;
 import cd.world.blocks.*;
 import cd.world.stat.*;
@@ -51,8 +52,6 @@ public class PneuComponent extends BaseComponent{
     public Sound explodeSound = Sounds.explosion;
     public float explosionShake = 6f, explosionShakeDuration = 16f;
 
-
-
     public float getExplodePressure(){
         return explodePressure;
     }
@@ -83,8 +82,9 @@ public class PneuComponent extends BaseComponent{
 
     public void calculatePressure(Building b){
         PneuInterface bPneu = (PneuInterface)b;
-        for(Building other : b.proximity){
-            if(!(other instanceof PneuInterface otherPneu)) continue;
+        if(b.block.rotate){
+            var other = b.proximity.filter(o-> Geometry.d4[b.rotation].x == b.tileX()-o.tileX() && Geometry.d4[b.rotation].y == b.tileY()-o.tileY());
+            if(!(other instanceof PneuInterface otherPneu)) return;
             float thisP = bPneu.getPressure();
             float otherP = otherPneu.getPressure();
             float arrangeP = (thisP + otherP) / 2f;
@@ -92,13 +92,24 @@ public class PneuComponent extends BaseComponent{
                 bPneu.setPressure(arrangeP);
                 otherPneu.setPressure(arrangeP);
             }
-        }
-        if(bPneu.getPressure() < standardPressure){
-            bPneu.setPressure((bPneu.getPressure() + standardPressure) / 2f + standardPressure / 10f);
-        }
+        }else{
+            for(Building other : b.proximity){
+                if(!(other instanceof PneuInterface otherPneu)) continue;
+                float thisP = bPneu.getPressure();
+                float otherP = otherPneu.getPressure();
+                float arrangeP = (thisP + otherP) / 2f;
+                if(thisP > otherP && thisP >= standardPressure && otherP >= standardPressure){
+                    bPneu.setPressure(arrangeP);
+                    otherPneu.setPressure(arrangeP);
+                }
+            }
+            if(bPneu.getPressure() < standardPressure){
+                bPneu.setPressure((bPneu.getPressure() + standardPressure) / 2f + standardPressure / 10f);
+            }
 
-        if(bPneu.getPressure() > explodePressure){
-            b.kill();
+            if(bPneu.getPressure() > explodePressure){
+                b.kill();
+            }
         }
     }
 
