@@ -2,14 +2,14 @@ package cd.world.stat;
 
 import mindustry.world.meta.*;
 
-public class CDStat{
+public final class CDStat{
 
-    public final static StatCat
+    public static final StatCat
     industry = new StatCat("industry");
 
-    public final static StatUnit
+    public static final StatUnit
     perConsume = new StatUnit("perConsume");
-    public final static Stat
+    public static final Stat
     catalyzer = new Stat("catalyzer", StatCat.crafting),
     pressureRange = new Stat("pressure-range", industry),
     pressureOutput = new Stat("pressure-output", industry),
@@ -19,7 +19,5 @@ public class CDStat{
     laserOutput = new Stat("laser-output", industry),
     laserConsume = new Stat("laser-consume", industry);
 
-    CDStat(){
-    }
 
 }

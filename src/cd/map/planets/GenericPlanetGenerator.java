@@ -1,5 +1,6 @@
 package cd.map.planets;
 
+import arc.graphics.*;
 import arc.math.*;
 import arc.math.geom.*;
 import arc.struct.*;
@@ -20,20 +21,30 @@ import java.lang.reflect.*;
 
 import static mindustry.Vars.*;
 
-public class MeadtearGenerator extends SerpuloPlanetGenerator{
+public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     public BaseGenerator basegen = new BaseGenerator();
     public float scl = 5f;
     public float riverLiquidOffset = 0.07f;
-    public boolean genLakes = false;
-    public Liquid riverLiquid = Liquids.slag;
-    public boolean canHaveNaval = false;
+    public boolean genLakes;
+    public Liquid hotRiverLiquid = Liquids.slag;
+    public Block hotRiverTile = Blocks.slag;
+    public Liquid coldRiverLiquid = Liquids.water;
+    public Block coldRiverTile = Blocks.water;
+
+    public boolean canHaveNaval;
     public Block normalTree = CDBlocks.deadSapling;
     public Block deadTree = CDBlocks.deadSapling;
+    public Block[][] blocks = {
+    {hotRiverTile, hotRiverTile, Blocks.basalt, Blocks.basalt, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
+    {hotRiverTile, hotRiverTile, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor},
+    {coldRiverTile, coldRiverTile, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.snow},
+    {coldRiverTile, coldRiverTile, Blocks.dirt, Blocks.dirt, Blocks.mud, Blocks.grass, CDBlocks.vine}
+    };
 
     public ObjectMap<Block, Block> dec = ObjectMap.of(
     Blocks.sporeMoss, Blocks.sporeCluster,
     Blocks.moss, Blocks.sporeCluster,
-    Blocks.taintedWater, Blocks.slag,
+    Blocks.taintedWater, Blocks.water,
     Blocks.darksandTaintedWater, Blocks.darksandWater
     );
 
@@ -46,12 +57,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         try{
             Field arrfield = SerpuloPlanetGenerator.class.getDeclaredField("arr");
             arrfield.setAccessible(true);
-            Block[][]
-            arrValue = new Block[][]{
-            {Blocks.slag, Blocks.slag, Blocks.basalt, Blocks.basalt, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
-            {Blocks.slag, Blocks.slag, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor}
-            };
-            arrfield.set(this, arrValue);
+            arrfield.set(this, blocks);
         }catch(NoSuchFieldException | IllegalAccessException e){
             throw new RuntimeException(e);
         }
@@ -84,6 +90,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         //check positions on the map to place the player spawn. this needs to be in the corner of the map
         Room spawn = null;
         Seq<Room> enemies = new Seq<>();
+        //Enemy base up to threat*4
         int enemySpawns = rand.random(1, Math.max((int)(sector.threat * 4), 1));
         int offset = rand.nextInt(360);
         float length = width / 2.55f - rand.random(13, 23);
@@ -155,20 +162,15 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             float rrscl = rr * 44 - 2;
 
             if(value > 0.17f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)){
-                //SOME FIX
-                floor = Blocks.slag;
-                /*
-                boolean deep = value > 0.17f + 0.1f && !Mathf.within(x, y, fspawn.x, fspawn.y, 15 + rrscl);
-                boolean spore = floor != Blocks.sand && floor != Blocks.salt;
-                //do not place rivers on ice, they're frozen
-                //ignore pre-existing liquids
-                if(!(floor == Blocks.ice || floor == Blocks.iceSnow || floor == Blocks.snow || floor.asFloor().isLiquid)){
-                    floor = spore ?
-                    (deep ? Blocks.taintedWater : Blocks.darksandTaintedWater) :
-                    (deep ? Blocks.slag :
-                    (floor == Blocks.sand || floor == Blocks.salt ? Blocks.sandWater : Blocks.darksandWater));
+                boolean deep = (value > 0.17f + 0.05f) && (!Mathf.within(x, y, fspawn.x, fspawn.y, rrscl));
+                boolean frozen = floor != Blocks.ice && floor != Blocks.iceSnow && floor != Blocks.snow && !floor.asFloor().isLiquid;
+                if(frozen){
+                    if(deep) floor = hotRiverTile;
+                    else floor = Blocks.hotrock;
+                }else{
+                    if(deep) floor = coldRiverTile;
+                    else floor = Blocks.ice;
                 }
-                */
             }
         });
 
@@ -177,9 +179,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             int deepRadius = 3;
 
             if(floor.asFloor().isLiquid && floor.asFloor().shallow){
-                //SOME FIX
-                floor = Blocks.slag;
-                /*for(int cx = -deepRadius; cx <= deepRadius; cx++){
+                for(int cx = -deepRadius; cx <= deepRadius; cx++){
                     for(int cy = -deepRadius; cy <= deepRadius; cy++){
                         if((cx) * (cx) + (cy) * (cy) <= deepRadius * deepRadius){
                             int wx = cx + x, wy = cy + y;
@@ -192,8 +192,12 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                         }
                     }
                 }
-
-                floor = floor == Blocks.darksandTaintedWater ? Blocks.taintedWater : Blocks.slag;*/
+                var l = floor.asFloor().liquidDrop;
+                if(l == coldRiverLiquid){
+                    floor = (floor == Blocks.ice ? Blocks.ice : Blocks.snow);
+                }else if(l == hotRiverLiquid){
+                    floor = ((floor == Blocks.basalt) || (floor == CDBlocks.graniteFloor)) ? Blocks.hotrock : Blocks.basalt;
+                }
             }
         });
 
@@ -209,13 +213,6 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         tech();
 
         pass((x, y) -> {
-/*            //random moss
-            if(floor == Blocks.sporeMoss){
-                if(Math.abs(0.5f - noise(x - 90, y, 4, 0.8, 65)) > 0.02){
-                    floor = Blocks.moss;
-                }
-            }*/
-
             //tar
             if(floor == Blocks.darksand){
                 if(Math.abs(0.5f - noise(x - 40, y, 2, 0.7, 80)) > 0.25f &&
@@ -225,9 +222,9 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             }
 
             //hotrock tweaks
-            if(floor == Blocks.hotrock){
-                if(Math.abs(0.5f - noise(x - 90, y, 4, 0.8, 80)) > 0.035){
-                    floor = Blocks.basalt;
+            if(floor == Blocks.basalt){
+                if(0.5f - noise(x - 90, y, 4, 0.8, 80) > 0.035){
+                    floor = Blocks.hotrock;
                 }else{
                     ore = Blocks.air;
                     boolean all = true;
@@ -241,13 +238,13 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                         floor = Blocks.magmarock;
                     }
                 }
-            }else if(genLakes && floor != Blocks.basalt && floor != Blocks.ice && floor.asFloor().hasSurface()){
+            }else if(genLakes && floor != Blocks.ice && floor.asFloor().hasSurface()){
                 float noise = noise(x + 782, y, 5, 0.75f, 260f, 1f);
                 if(noise > 0.67f && !roomseq.contains(e -> Mathf.within(x, y, e.x, e.y, 14))){
                     if(noise > 0.72f){
-                        floor = noise > 0.78f ? Blocks.taintedWater : (floor == Blocks.sand ? Blocks.sandWater : Blocks.darksandTaintedWater);
+                        floor = hotRiverTile;
                     }else{
-                        floor = (floor == Blocks.sand ? floor : Blocks.darksand);
+                        floor = (floor == CDBlocks.graniteFloor ? floor : CDBlocks.enrichedSandFloor);
                     }
                 }
             }
@@ -264,7 +261,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                         all = false;
                     }
                 }
-                if(any && ((block == Blocks.snowWall || block == Blocks.iceWall) || (all && block == Blocks.air && floor == Blocks.snow && rand.chance(0.03)))){
+                if(any && ((block == CDBlocks.ashWall || block == CDBlocks.enrichedSandFloor) || (all && block == Blocks.air && floor == Blocks.snow && rand.chance(0.03)))){
                     block = rand.chance(0.5) ? normalTree : deadTree;
                 }
             }
@@ -396,7 +393,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), state.rules.attackMode, state.rules.attackMode && spawner.countGroundSpawns() == 0, naval);
     }
 
-    public boolean checkNaval(Room spawn, Seq<Room> enemies){
+    public boolean checkNaval(Room spawn, Iterable<? extends Room> enemies){
         if(!canHaveNaval) return false;
         int tlen = tiles.width * tiles.height;
         int total = 0, riverLiquids = 0;
@@ -405,7 +402,7 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             Tile tile = tiles.geti(i);
             if(tile.block() == Blocks.air){
                 total++;
-                if(tile.floor().liquidDrop == riverLiquid){
+                if(tile.floor().liquidDrop == hotRiverLiquid){
                     riverLiquids++;
                 }
             }
@@ -440,8 +437,12 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
                             }
                         }
                     }
-
-                    floor = floor == Blocks.slag ? Blocks.slag : Blocks.taintedWater;
+                    var l = floor.asFloor().liquidDrop;
+                    if(l == hotRiverLiquid){
+                        floor = floor == hotRiverTile ? hotRiverTile : Blocks.hotrock;
+                    }else if(l == coldRiverLiquid){
+                        floor = floor == coldRiverTile ? coldRiverTile : Blocks.taintedWater;
+                    }
                 }
             });
         }
@@ -483,8 +484,8 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
             for(int i = ores.size - 1; i >= 0; i--){
                 Block entry = ores.get(i);
                 float freq = frequencies.get(i);
-                if(Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + i * 2))) > 0.22f + i * 0.01 &&
-                Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + i * 4))) > 0.37f + freq){
+                if(Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + (i << 1)))) > 0.22f + i * 0.01 &&
+                Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + (i << 2)))) > 0.37f + freq){
                     ore = entry;
                     break;
                 }
@@ -496,8 +497,48 @@ public class MeadtearGenerator extends SerpuloPlanetGenerator{
         });
     }
 
+    public Block getBlock(Vec3 position){
+        float height = rawHeight(position);
+        Tmp.v31.set(position);
+        position = Tmp.v33.set(position).scl(scl);
+        float rad = scl;
+        float temp = Mathf.clamp(Math.abs(position.y * 2f) / (rad));
+        float tnoise = Simplex.noise3d(seed, 7, 0.56, 1f / 3f, position.x, position.y + 999f, position.z);
+        temp = Mathf.lerp(temp, tnoise, 0.5f);
+        height *= 1.2f;
+        height = Mathf.clamp(height);
+
+        float tar = Simplex.noise3d(seed, 4, 0.55f, 1f / 2f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
+        int index = Mathf.clamp((int)(temp * blocks.length), 0, blocks.length - 1);
+        Block res = blocks[index]
+        [Mathf.clamp((int)(height * blocks[index].length), 0, blocks[index].length - 1)];
+        if(tar > 0.5f){
+            return tars.get(res, res);
+        }else{
+            return res;
+        }
+    }
+
+    @Override
+    public Color getColor(Vec3 position){
+        Block block = getBlock(position);
+        //replace salt with sand color
+        if(block == Blocks.salt) return Blocks.sand.mapColor;
+        return Tmp.c1.set(block.mapColor).a(1f - block.albedo);
+    }
+
+    @Override
+    public void genTile(Vec3 position, TileGen tile){
+        tile.floor = getBlock(position);
+        tile.block = tile.floor.asFloor().wall;
+
+        if(Ridged.noise3d(seed + 1, position.x, position.y, position.z, 2, 22) > 0.31){
+            tile.block = Blocks.air;
+        }
+    }
+
     //see it just a black box
-    class Room{
+    private class Room{
         int x, y, radius;
         ObjectSet<Room> connected = new ObjectSet<>();
 

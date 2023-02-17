@@ -8,7 +8,7 @@ import mindustry.graphics.*;
 import static arc.graphics.g2d.Draw.color;
 import static arc.math.Angles.randLenVectors;
 
-public class CDFx{
+public final class CDFx{
     public static final Effect
 
     iceCraft = new Effect(15, e -> randLenVectors(e.id, 6, 4f + e.fin() * 5f, (x, y) -> {
@@ -19,4 +19,7 @@ public class CDFx{
         color(Color.gray, Pal.darkishGray, e.fin());
         Fill.circle(e.x, e.y, (7f - e.fin() * 7f) / 3f);
     });
+
+    private CDFx(){
+    }
 }

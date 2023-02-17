@@ -29,12 +29,12 @@ public class Formula{
         return new Formula(seq);
     }
 
-    public static Formula readFromBase64(String string){
-        if(!string.startsWith("Zm9ybXVsYSA=")){
+    public static Formula readFromBase64(String s){
+        if(!s.startsWith("Zm9ybXVsYSA=")){
             Vars.ui.showErrorMessage("it is not a formula");
             return null;
         }
-        String tmpString = string.replace("Zm9ybXVsYSA=", "");
+        String tmpString = s.replace("Zm9ybXVsYSA=", "");
         Seq<Item> seq = new Seq<>();
         String decode = Base64Coder.decodeString(tmpString);
         for(String i : decode.substring(1, decode.length() - 1).split(", ")){

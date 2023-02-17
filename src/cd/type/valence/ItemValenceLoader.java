@@ -5,7 +5,10 @@ import mindustry.content.*;
 
 import static cd.type.valence.ItemsValence.*;
 
-public class ItemValenceLoader{
+public final class ItemValenceLoader{
+    private ItemValenceLoader(){
+    }
+
     public static void load(){
         setValence(Items.silicon, 0);
         setValence(Items.graphite, new ValenceFunc(module -> module.formulaBefore.has(Items.silicon) ? 3 : 4));
