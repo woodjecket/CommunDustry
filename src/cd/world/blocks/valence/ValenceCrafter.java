@@ -39,7 +39,7 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
     }
 
     @Override
-    public ResultMap getMap(){
+    public ResultMap getResultMap(){
         return resultMap;
     }
 

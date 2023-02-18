@@ -1,11 +1,11 @@
 package cd;
 
-import arc.Core;
-import arc.util.Log;
+import arc.*;
+import arc.util.*;
 import cd.content.*;
-import mindustry.Vars;
-import mindustry.mod.Mod;
-import mindustry.ui.dialogs.PlanetDialog;
+import mindustry.*;
+import mindustry.mod.*;
+import mindustry.ui.dialogs.*;
 
 import static arc.util.Log.LogLevel.debug;
 
@@ -14,7 +14,7 @@ public class CDMod extends Mod{
         Log.info("Loaded CDMod constructor.");
     }
 
-    public void configure() {
+    public static void configure() {
         PlanetDialog.debugSelect = true;
         Log.level = debug;
         var meta = Vars.mods.getMod(cd.CDMod.class).meta;
@@ -32,6 +32,7 @@ public class CDMod extends Mod{
         CDUnitTypes.load();
         CDPlanets.load();
         configure();
+
     }
 
 }

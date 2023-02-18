@@ -73,7 +73,7 @@ public class ComponentBlock extends Block implements IComp{
     public class ComponentBuild extends Building implements ILaserPneu, ILaserBuilding{
         //define pneumatic
         public float pressure;
-        /** But it can only have one child who can be given laser energy to. */
+        /** It can only have one child who can be given laser energy to. */
         public Building laserChild;
         /** The laser energy now */
         public float laserEnergy;

@@ -91,3 +91,11 @@ task deploy(type: Jar) {
         }
     }
 }
+
+tasks.register('game'){
+    dependsOn jar
+    doLast{
+        "mv -f $buildDir/libs/${project.archivesBaseName}Desktop.jar $buildDir/libs/mindustry_mod".execute().waitForProcessOutput(System.out, System.err)
+        "/Users/abc/Mindustry.app/Contents/MacOS/Mindustry ; exit".execute().waitForProcessOutput(System.out, System.err)
+    }
+}
