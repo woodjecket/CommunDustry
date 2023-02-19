@@ -23,12 +23,12 @@ public class TestBlocks{
     public static ComponentCrafter a = new ComponentCrafter("2.2.3-PRE-ALPHA-MULTI-BLOCK"){{
         addComp(
         new MainMultiComponent(){{
-            dataOf(d,1,1,Blocks.distributor,1,-1);
+            dataOf(d,-1,1,Blocks.copperWall,1,-1,Blocks.copperWall,1,1,Blocks.copperWall,-1,-1);
         }}
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
         craftEffect = CDFx.iceCraft;
-        outputItem = new ItemStack(CDItems.ice, 1);
+        outputLiquid = LiquidStack.with(Liquids.water,6f)[0];
         craftTime = 60f;
         size = 1;
         hasPower = true;
@@ -36,7 +36,7 @@ public class TestBlocks{
         drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("93ccea")));
         ambientSound = Sounds.smelter;
         ambientSoundVolume = 0.07f;
-        consumeLiquid(Liquids.water, 0.1f);
+        consumeItem(CDItems.ice);
     }};
 
     public static ComponentCrafter b = new ComponentCrafter("2.2.3-PRE-ALPHA-MULTI-MULTI-BLOCK"){{
