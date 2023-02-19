@@ -1,4 +1,4 @@
-package cd.world.multi;
+package cd.world.blocks.multi;
 
 import arc.math.geom.*;
 import arc.util.*;

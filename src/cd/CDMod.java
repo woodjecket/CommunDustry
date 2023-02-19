@@ -3,6 +3,7 @@ package cd;
 import arc.*;
 import arc.util.*;
 import cd.content.*;
+import cd.content.test.*;
 import mindustry.*;
 import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
@@ -10,6 +11,7 @@ import mindustry.ui.dialogs.*;
 import static arc.util.Log.LogLevel.debug;
 
 public class CDMod extends Mod{
+    public boolean test = true;
     public CDMod(){
         Log.info("Loaded CDMod constructor.");
     }
@@ -32,6 +34,7 @@ public class CDMod extends Mod{
         CDUnitTypes.load();
         CDPlanets.load();
         configure();
+        if(test) new TestBlocks();
 
     }
 

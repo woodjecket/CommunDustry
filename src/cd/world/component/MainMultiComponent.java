@@ -1,7 +1,8 @@
 package cd.world.component;
 
 import arc.graphics.g2d.*;
-import cd.world.multi.*;
+import cd.world.blocks.multi.*;
+import cd.world.blocks.multi.MultiStructPort.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.world.*;
@@ -11,7 +12,7 @@ import java.util.concurrent.atomic.*;
 import static mindustry.Vars.tilesize;
 
 public class MainMultiComponent extends BaseComponent{
-    public IMultiData data = new OMultiData();
+    private IMultiData data = new OMultiData();
 
     /** I did NOT check if the position is null! */
     public static boolean isPosAtLowerLeft(int tx, int ty, Building b){
@@ -34,16 +35,20 @@ public class MainMultiComponent extends BaseComponent{
         data.valueOf(a);
     }
 
-    private boolean structDone(Posc build){
+    private boolean structDone(Building build){
         AtomicBoolean b = new AtomicBoolean(true);
         data.getEachable().each(p -> {
             int ctx = build.tileX() + p.x, cty = build.tileY() + p.y;
-            if(Vars.world.build(ctx, cty) == null){
+            Building building = Vars.world.build(ctx, cty);
+            if(building == null){
                 b.set(false);
                 return;
             }
-            if(Vars.world.build(ctx, cty).block == data.getByOffsetPos(p)){
-                b.set(isPosAtLowerLeft(ctx, cty, Vars.world.build(ctx, cty)) && b.get());
+            if(building.block == data.getByOffsetPos(p)){
+                boolean b1 = isPosAtLowerLeft(ctx, cty, building) && b.get();
+                b.set(b1);
+                //Vars.ui.showLabel(Strings.format("x:@,y:@,null:@,block:@,want:@",ctx,cty, false, building.block,data.getByOffsetPos(p)),1f/60f,ctx*tilesize,cty*tilesize);
+                if(b1 && building instanceof MultiStructPortBuild ms) ms.connectParent = build;
             }
         });
         return b.get();
