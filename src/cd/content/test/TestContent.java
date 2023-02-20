@@ -1,6 +1,7 @@
 package cd.content.test;
 
 import arc.graphics.*;
+import arc.math.geom.*;
 import arc.struct.*;
 import cd.content.*;
 import cd.type.*;
@@ -122,7 +123,8 @@ public class TestContent{
     public static ComponentCrafter i = new ComponentCrafter("2.2.3-PRE-ALPHA-MULTI-FOUR-BLOCK"){{
         addComp(
         new MainMultiComponent(){{
-            dataOf(d,-1,1,h,1,-1,Blocks.copperWall,1,1,Blocks.copperWall,-1,-1);
+            dataOf(d,-1,1,h,1,-1,h,1,1,Blocks.copperWall,-1,-1);
+            directionOf(Liquids.water,new Point2(1,-1),CDLiquids.H2O2,new Point2(1,1));
         }}
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));

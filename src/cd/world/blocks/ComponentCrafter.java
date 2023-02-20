@@ -1,6 +1,7 @@
 package cd.world.blocks;
 
 import arc.graphics.g2d.*;
+import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.io.*;
 import cd.entities.building.*;
@@ -173,9 +174,10 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
         }
 
         @Override
-        public void addPorts(MultiStructPortBuild b){
+        public void addPorts(MultiStructPortBuild b, Point2 p){
             if(!ports.contains(b)){
                 ports.add(b);
+                b.offsetPos = p;
             }
         }
 

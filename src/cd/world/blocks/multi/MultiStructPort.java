@@ -1,6 +1,6 @@
 package cd.world.blocks.multi;
 
-import arc.util.*;
+import arc.math.geom.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -26,6 +26,7 @@ public class MultiStructPort extends Block{
 
     public class MultiStructPortBuild extends Building{
         public Building connectParent;
+        public Point2 offsetPos;
 
         @Override
         public boolean acceptItem(Building source, Item item){
@@ -51,7 +52,7 @@ public class MultiStructPort extends Block{
                         float arrangeRemains = (thisRemains + parentRemains) / 2f;
                         float thisTobeChange = thisRemains - arrangeRemains;
                         float parentToBeChange = parentRemains - arrangeRemains;
-                        Vars.ui.showLabel(Strings.format("tA:@,pA:@,tR:@,pR:@,aR:@,tB:@,pB:@", thisAmount, parentAmount, thisRemains, parentRemains, arrangeRemains, thisTobeChange, parentToBeChange), 1, x, y);
+                        //Vars.ui.showLabel(Strings.format("tA:@,pA:@,tR:@,pR:@,aR:@,tB:@,pB:@", thisAmount, parentAmount, thisRemains, parentRemains, arrangeRemains, thisTobeChange, parentToBeChange), 1, x, y);
                         if(liquids.get(liquid) - thisTobeChange >= 0){
                             liquids.remove(liquid, -thisTobeChange);
                             connectParent.handleLiquid(this, liquid, parentToBeChange);
