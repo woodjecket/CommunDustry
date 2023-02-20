@@ -34,7 +34,7 @@ public class CDMod extends Mod{
         CDUnitTypes.load();
         CDPlanets.load();
         configure();
-        if(test) new TestBlocks();
+        if(test) TestContent.load();
 
     }
 

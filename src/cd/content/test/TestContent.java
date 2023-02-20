@@ -1,10 +1,13 @@
 package cd.content.test;
 
 import arc.graphics.*;
+import arc.struct.*;
 import cd.content.*;
+import cd.type.*;
 import cd.world.blocks.*;
 import cd.world.blocks.multi.*;
 import cd.world.component.*;
+import mindustry.*;
 import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -13,7 +16,22 @@ import mindustry.world.draw.*;
 
 import static mindustry.type.ItemStack.with;
 
-public class TestBlocks{
+public class TestContent{
+    //public static Item e = new MetaDust(Items.pyratite,"ffaa5f","D4A383","d37f47");
+    //public static Item f = new MetaDust(Items.copper);
+    public static Seq<MetaDust> g = new Seq<>();
+
+    public static void load(){
+        Seq<Item> fore = Vars.content.items();
+
+        for(Item i : fore.copy()){
+            if(i == Items.pyratite){
+                g.add(new MetaDust(Items.pyratite, "ffaa5f", "D4A383", "d37f47"));
+            }else{
+                g.add(new MetaDust(i));
+            }
+        }
+    }
     public static Block d = new MultiStructPort("2.2.3-PRE-ALPHA-MULTI-PORT"){{
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
         hasLiquids = true;
