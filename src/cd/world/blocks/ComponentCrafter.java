@@ -4,6 +4,7 @@ import arc.graphics.g2d.*;
 import arc.struct.*;
 import arc.util.io.*;
 import cd.entities.building.*;
+import cd.world.blocks.multi.MultiStructPort.*;
 import cd.world.component.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.production.*;
@@ -62,13 +63,14 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
     }
 
 
-    public class ComponentCrafterBuild extends GenericCrafterBuild implements ILaserPneu, ILaserBuilding{
+    public class ComponentCrafterBuild extends GenericCrafterBuild implements ILaserPneu, ILaserBuilding,IMulti{
         //define pneumatic
         public float pressure;
         /** But it can only have one child who can be given laser energy to. */
         public Building laserChild;
         /** The laser energy now */
         public float laserEnergy;
+        private Seq<MultiStructPortBuild> ports = new Seq<>();
 
 
         public float getPressure(){
@@ -168,6 +170,18 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
 
         public float getLaserEnergy(){
             return laserEnergy;
+        }
+
+        @Override
+        public void addPorts(MultiStructPortBuild b){
+            if(!ports.contains(b)){
+                ports.add(b);
+            }
+        }
+
+        @Override
+        public Seq<MultiStructPortBuild> getPorts(){
+            return ports;
         }
     }
 

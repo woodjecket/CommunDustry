@@ -1,6 +1,8 @@
 package cd.world.component;
 
 import arc.graphics.g2d.*;
+import arc.util.*;
+import cd.entities.building.*;
 import cd.world.blocks.multi.*;
 import cd.world.blocks.multi.MultiStructPort.*;
 import mindustry.*;
@@ -25,6 +27,32 @@ public class MainMultiComponent extends BaseComponent{
     public void onUpdateTile(Building b){
         super.onUpdateTile(b);
         b.enabled = structDone(b);
+        if(b instanceof IMulti m){
+            for(var item : Vars.content.items()){
+                if(b.items.has(item)){
+                    for(var multiStructPortBuild : m.getPorts()){
+                        if(((MultiStructPort)multiStructPortBuild.block).isOutputItem && multiStructPortBuild.items.get(item) < multiStructPortBuild.block.itemCapacity){
+                            b.items.remove(item, 1);
+                            Log.info("removed @", item);
+                            multiStructPortBuild.items.add(item, 1);
+                            Log.info("added @", item);
+                        }
+                    }
+                }
+            }
+            for(var liquid : Vars.content.liquids()){
+                if(b.liquids.get(liquid) > 0){
+                    for(var build : m.getPorts()){
+                        if(((MultiStructPort)build.block).isOutputLiquid && build.liquids.get(liquid) < build.block.liquidCapacity){
+                            float remains = build.block.liquidCapacity - build.liquids.get(liquid);
+                            remains = Math.max(remains, b.liquids.get(liquid));
+                            b.liquids.remove(liquid, remains);
+                            build.liquids.add(liquid, remains);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -45,10 +73,13 @@ public class MainMultiComponent extends BaseComponent{
                 return;
             }
             if(building.block == data.getByOffsetPos(p)){
-                boolean b1 = isPosAtLowerLeft(ctx, cty, building) && b.get();
+                boolean b1 = building.block == data.getByOffsetPos(p) && isPosAtLowerLeft(ctx, cty, building) && b.get();
                 b.set(b1);
                 //Vars.ui.showLabel(Strings.format("x:@,y:@,null:@,block:@,want:@",ctx,cty, false, building.block,data.getByOffsetPos(p)),1f/60f,ctx*tilesize,cty*tilesize);
-                if(b1 && building instanceof MultiStructPortBuild ms) ms.connectParent = build;
+                if(b1 && building instanceof MultiStructPortBuild ms){
+                    ms.connectParent = build;
+                    if(build instanceof IMulti m) m.addPorts(ms);
+                }
             }
         });
         return b.get();
