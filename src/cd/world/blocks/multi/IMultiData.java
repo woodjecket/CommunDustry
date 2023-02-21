@@ -7,9 +7,7 @@ import arc.util.*;
  * The interface for multi-struct data
  */
 public interface IMultiData{
-    RotatedBlock getByOffsetPos(Point2 o);
-
-    RotatedBlock getByPosRotation(Point2 o, int rotation);
+    RotatedBlock get(Point2 key);
 
     void valueOf(Object... v);
 

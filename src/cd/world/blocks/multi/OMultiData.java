@@ -12,17 +12,10 @@ public class OMultiData implements IMultiData{
 
 
     @Override
-    public RotatedBlock getByOffsetPos(Point2 o){
-        return data.get(o);
+    public RotatedBlock get(Point2 key){
+        return data.get(key);
     }
 
-    @Override
-    public RotatedBlock getByPosRotation(Point2 o, int rotation){
-        return getByOffsetPos(o);
-        /*Point2 rotated = o.cpy().rotate(-rotation);
-        Log.info("tried to access (@,@), full is @",rotated.x,rotated.y,data.toString());
-        return getByOffsetPos(rotated);*/
-    }
 
     @Override
     public void valueOf(Object... v){
