@@ -8,6 +8,7 @@ import mindustry.world.*;
 /** Stores the data for multi-struct. A wrapper to access data with the interface */
 public class OMultiData implements IMultiData{
     private ObjectMap<Point2, RotatedBlock> data = new ObjectMap<>();
+    private Eachable<Point2> eachable;
 
 
     @Override
@@ -17,9 +18,10 @@ public class OMultiData implements IMultiData{
 
     @Override
     public RotatedBlock getByPosRotation(Point2 o, int rotation){
-        Point2 rotated = o.cpy().rotate(-rotation).cpy();
+        return getByOffsetPos(o);
+        /*Point2 rotated = o.cpy().rotate(-rotation);
         Log.info("tried to access (@,@), full is @",rotated.x,rotated.y,data.toString());
-        return getByOffsetPos(rotated);
+        return getByOffsetPos(rotated);*/
     }
 
     @Override
@@ -31,11 +33,12 @@ public class OMultiData implements IMultiData{
                 data.put(new Point2((Integer)v[i + 1], (Integer)v[i + 2]).cpy(), new RotatedBlock((Block)v[i]));
             }
         }
+        eachable = data.keys().toSeq();
     }
 
     @Override
     public Eachable<Point2> getEachable(){
-        return data.keys().toSeq();
+        return eachable;
     }
 
 }

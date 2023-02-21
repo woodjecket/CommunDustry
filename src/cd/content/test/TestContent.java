@@ -33,6 +33,61 @@ public class TestContent{
         isInputItem = isInputLiquid = false;
         size = 1;
     }};
+
+    public static Block j = new MultiStructPort("2.2.3-PRE-ALPHA-MULTI-MULTI-OUT-PORT"){{
+        requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        hasLiquids = true;
+        hasItems = true;
+        isOutputLiquid = isOutputItem = true;
+        isInputItem = isInputLiquid = false;
+        size = 2;
+    }};
+
+    public static Block k = new MultiStructPort("2.2.3-PRE-ALPHA-MULTI-MULTI-IN-PORT"){{
+        requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        hasLiquids = true;
+        hasItems = true;
+        isOutputLiquid = isOutputItem = false;
+        isInputItem = isInputLiquid = true;
+        size = 3;
+    }};
+
+    public static ComponentCrafter l = new ComponentCrafter("2.2.3-PRE-ALPHA-MULTI-FIVE-BLOCK"){{
+        addComp(
+        new MainMultiComponent(){{
+            /*
+            * 0 0 0 0 0 k k k 0 0
+            * 0 0 0 0 0 k k k 0 0
+            * 0 0 | | | k k k 0 0
+            * 0 0 l l l l - k k k
+            * 0 0 l l l l - k k k
+            * j j l C l l - k k k
+            * j j l l l l 0 0 0 0
+            * 0 0 0 j j 0 0 0 0 0
+            * 0 0 0 j j 0 0 0 0 0
+            * 0 0 0 0 0 0 0 0 0 0 */
+            dataOf(k, 4, 0, k, 2, 3, j, 0, -3, j, -3, -1,
+            Blocks.titaniumConveyor,3,0,Blocks.conveyor,3,1,Blocks.armoredConveyor,3,2,
+            new RotatedBlock(Blocks.diode,1),-1,3,new RotatedBlock(Blocks.plastaniumConveyor,1),0,3,new RotatedBlock(CDBlocks.basicCO2Laser,1),1,3);
+
+            directionOf(Liquids.water, new Point2(0, -3), CDLiquids.H2O2, new Point2(-3, -1));
+        }}
+        );
+        requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        craftEffect = CDFx.iceCraft;
+        outputLiquids = LiquidStack.with(Liquids.water, 6f / 60f, CDLiquids.H2O2, 6f / 60f);
+        craftTime = 60f;
+        size = 4;
+        hasPower = true;
+        hasLiquids = true;
+        drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("93ccea")));
+        ambientSound = Sounds.smelter;
+        ambientSoundVolume = 0.07f;
+        consumeLiquids(LiquidStack.with(Liquids.cryofluid, 6f / 60f, CDLiquids.ClF3, 7f / 60f))
+        ;
+        rotate = true;
+    }};
+
     public static ComponentCrafter a = new ComponentCrafter("2.2.3-PRE-ALPHA-MULTI-BLOCK"){{
         addComp(
         new MainMultiComponent(){{

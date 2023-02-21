@@ -3,7 +3,6 @@ package cd.world.component;
 import arc.graphics.g2d.*;
 import arc.math.geom.*;
 import arc.struct.*;
-import arc.util.*;
 import cd.entities.building.*;
 import cd.world.blocks.multi.*;
 import cd.world.blocks.multi.MultiStructPort.*;
@@ -69,6 +68,7 @@ public class MainMultiComponent extends BaseComponent{
         final int baseRotation = build.rotation;
         AtomicBoolean b = new AtomicBoolean(true);
         data.getEachable().each(p -> {
+
             int ctx = build.tileX() + p.x, cty = build.tileY() + p.y;
             Building building = Vars.world.build(ctx, cty);
             if(building == null){
@@ -76,7 +76,7 @@ public class MainMultiComponent extends BaseComponent{
                 return;
             }
             if(building.block == data.getByPosRotation(p,baseRotation).getBlock()){
-                Log.info("(@,@) @,@", ctx, cty, building.rotation, baseRotation);
+                //Log.info("(@,@) @,@", ctx, cty, building.rotation, baseRotation);
                 /*
                  * 0 0/1/2/3 0/1/2/3
                  * 1 0/1/2/3 1/2/3/0
@@ -95,7 +95,7 @@ public class MainMultiComponent extends BaseComponent{
     }
 
     private boolean isProperRotation(int baseRotation, Point2 p, Building building){
-        return !building.block.rotate || (building.rotation + baseRotation) % 4 == data.getByPosRotation(p,baseRotation).getRotation();
+        return !building.block.rotate || (building.rotation - baseRotation) % 4 == data.getByPosRotation(p,baseRotation).getRotation();
     }
 
     @Override
