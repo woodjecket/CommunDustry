@@ -1,6 +1,7 @@
 package cd.world.blocks.multi;
 
 import arc.math.geom.*;
+import arc.util.io.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -51,7 +52,7 @@ public class MultiStructPort extends Block{
         /**
          *
          */
-        public boolean canInputItem(Item item){
+        public boolean canOutputItem(Item item){
             return isOutputItem() && items.get(item) < block.itemCapacity;
         }
 
@@ -117,5 +118,19 @@ public class MultiStructPort extends Block{
         public boolean canOutputLiquid(Liquid liquid){
             return isOutputLiquid && liquids.get(liquid) < block.liquidCapacity;
         }
+
+        @Override
+        public void read(Reads read, byte revision){
+            super.read(read, revision);
+            int version = read.i();
+        }
+
+        @Override
+        public void write(Writes write){
+            super.write(write);
+            write.i(1);
+        }
     }
+
+
 }

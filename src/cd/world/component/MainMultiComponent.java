@@ -3,7 +3,6 @@ package cd.world.component;
 import arc.graphics.g2d.*;
 import arc.math.geom.*;
 import arc.struct.*;
-import arc.util.*;
 import cd.entities.building.*;
 import cd.world.blocks.multi.*;
 import cd.world.blocks.multi.MultiStructPort.*;
@@ -128,7 +127,7 @@ public class MainMultiComponent extends BaseComponent{
             var m1 = m.getPorts();
             b.items.each((item, i) -> {
                 m1.filter(port -> {
-                    if(port.canInputItem(item)){
+                    if(port.canOutputItem(item)){
                         return true;
                     }else{
                         getOff.add(port);
@@ -244,10 +243,10 @@ public class MainMultiComponent extends BaseComponent{
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.get(p).getBlock()){
                 if(!isSufficient(ctx, cty, Vars.world.build(ctx, cty), b) || !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
-                    Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, b.rotation * 90);
+                    Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, data.get(p).getRotation() * 90);
                 }
             }else{
-                Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, b.rotation * 90);
+                Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, data.get(p).getRotation() * 90);
             }
         });
     }
