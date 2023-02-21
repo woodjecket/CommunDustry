@@ -64,7 +64,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
     }
 
 
-    public class ComponentCrafterBuild extends GenericCrafterBuild implements ILaserPneu, ILaserBuilding,IMulti{
+    public class ComponentCrafterBuild extends GenericCrafterBuild implements ILaserPneu, ILaserBuilding, IMulti{
         //define pneumatic
         public float pressure;
         /** But it can only have one child who can be given laser energy to. */
@@ -90,6 +90,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
             }
             return result;
         }
+
 
         @Override
         public void updateTile(){
@@ -178,6 +179,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
             if(!ports.contains(b)){
                 ports.add(b);
                 b.offsetPos = p;
+                //Log.info("@ is @",b,p);
             }
         }
 

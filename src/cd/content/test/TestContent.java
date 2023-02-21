@@ -17,6 +17,7 @@ import mindustry.world.draw.*;
 
 import static mindustry.type.ItemStack.with;
 
+@SuppressWarnings("unused")
 public class TestContent{
     public static Seq<MetaDust> g = new Seq<>();
     public static Block d = new MultiStructPort("2.2.3-PRE-ALPHA-MULTI-PORT"){{
@@ -56,26 +57,26 @@ public class TestContent{
         addComp(
         new MainMultiComponent(){{
             /*
-            * 0 0 0 0 0 k k k 0 0
-            * 0 0 0 0 0 k k k 0 0
-            * 0 0 | | | k k k 0 0
-            * 0 0 l l l l - k k k
-            * 0 0 l l l l - k k k
-            * j j l C l l - k k k
-            * j j l l l l 0 0 0 0
-            * 0 0 0 j j 0 0 0 0 0
-            * 0 0 0 j j 0 0 0 0 0
-            * 0 0 0 0 0 0 0 0 0 0 */
+             * 0 0 0 0 0 k k k 0 0
+             * 0 0 0 0 0 k k k 0 0
+             * 0 0 | | | k k k 0 0
+             * 0 0 l l l l - k k k
+             * 0 0 l l l l - k k k
+             * j j l C l l - k k k
+             * j j l l l l 0 0 0 0
+             * 0 0 0 j j 0 0 0 0 0
+             * 0 0 0 j j 0 0 0 0 0
+             * 0 0 0 0 0 0 0 0 0 0 */
             dataOf(k, 4, 0, k, 2, 3, j, 0, -3, j, -3, -1,
-            Blocks.titaniumConveyor,3,0,Blocks.conveyor,3,1,Blocks.armoredConveyor,3,2,
-            new RotatedBlock(Blocks.diode,1),-1,3,new RotatedBlock(Blocks.plastaniumConveyor,1),0,3,new RotatedBlock(CDBlocks.basicCO2Laser,1),1,3);
+            Blocks.titaniumConveyor, 3, 0, Blocks.conveyor, 3, 1, Blocks.armoredConveyor, 3, 2,
+            new RotatedBlock(Blocks.diode, 1), -1, 3, new RotatedBlock(Blocks.plastaniumConveyor, 1), 0, 3, new RotatedBlock(CDBlocks.basicCO2Laser, 1), 1, 3);
 
-            directionOf(Liquids.water, new Point2(0, -3), CDLiquids.H2O2, new Point2(-3, -1));
+            directionOf(Liquids.water, new Point2(0, -3), Liquids.slag, new Point2(-3, -1));
         }}
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
         craftEffect = CDFx.iceCraft;
-        outputLiquids = LiquidStack.with(Liquids.water, 6f / 60f, CDLiquids.H2O2, 6f / 60f);
+        outputLiquids = LiquidStack.with(Liquids.water, 6f / 60f, Liquids.slag, 6f / 60f);
         craftTime = 60f;
         size = 4;
         hasPower = true;
@@ -188,11 +189,11 @@ public class TestContent{
     public static void load(){
         Seq<Item> fore = Vars.content.items();
 
-        for(Item i : fore.copy()){
-            if(i == Items.pyratite){
+        for(Item in : fore.copy()){
+            if(in == Items.pyratite){
                 g.add(new MetaDust(Items.pyratite, "ffaa5f", "D4A383", "d37f47"));
             }else{
-                g.add(new MetaDust(i));
+                g.add(new MetaDust(in));
             }
         }
     }

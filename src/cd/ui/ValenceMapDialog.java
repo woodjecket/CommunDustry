@@ -7,7 +7,6 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import cd.type.valence.*;
 import cd.world.blocks.valence.*;
-import cd.world.blocks.valence.ValenceCrafter.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -21,7 +20,7 @@ public class ValenceMapDialog extends BaseDialog{
     public Formula formula;
     public ResultMap resultMap;
     public Table itemsTable, formulaTable, mapTable;
-    public int allValence = 0;
+    public int allValence;
     private ScrollPane pane, itemPane;
 
     public ValenceMapDialog(ValenceBuild building){
@@ -40,16 +39,16 @@ public class ValenceMapDialog extends BaseDialog{
         cont.clearChildren();
         Table contTable = cont.table().grow().get();
         AtomicReference<Table>
-        AItemsTable = new AtomicReference<>(),
-        AFormulaTable = new AtomicReference<>(),
-        AMapTable = new AtomicReference<>();
+        aItemsTable = new AtomicReference<>(),
+        aFormulaTable = new AtomicReference<>(),
+        aMapTable = new AtomicReference<>();
         contTable.table().growY().width(50);
         contTable.table(table -> {
             table.button(Icon.leftOpen, this::hide).size(100).row();
             table.table().growX().height(10).row();
             table.table(Tex.pane, table1 -> {
                 Table line = new Table(Tex.whiteui){
-                    float rHeight = getHeight();
+                    public float rHeight = getHeight();
 
                     @Override
                     public void draw(){
@@ -67,25 +66,25 @@ public class ValenceMapDialog extends BaseDialog{
         }).growY().width(100);
         contTable.table().growY().width(10);
         contTable.table(aTable -> {
-            AMapTable.set(aTable.table(Tex.pane).growX().height(100).get());
+            aMapTable.set(aTable.table(Tex.pane).growX().height(100).get());
             aTable.row();
             aTable.table().growX().height(10).row();
             aTable.table(bTable -> {
-                AItemsTable.set(bTable.table(Tex.pane).growY().width(400).get());
+                aItemsTable.set(bTable.table(Tex.pane).growY().width(400).get());
                 bTable.table().growY().width(10);
                 bTable.table(Tex.pane).growY().get().image(Icon.right);
                 bTable.table().growY().width(10);
-                AFormulaTable.set(bTable.table(Tex.pane).grow().get());
+                aFormulaTable.set(bTable.table(Tex.pane).grow().get());
                 bTable.table().growY().width(10);
                 bTable.table(table -> {
                     table.button(Icon.redo, () -> {
-                        ((ValenceCrafterBuild)building).configure(0);
-                        ((ValenceCrafterBuild)building).configure(1);
+                        ((Buildingc)building).configure(0);
+                        ((Buildingc)building).configure(1);
                     }).growX().height(75).padBottom(10).row();
                     table.button(Icon.cancel, () -> {
                         formula.clear();
-                        ((ValenceCrafterBuild)building).configure(null);
-                        ((ValenceCrafterBuild)building).configure(1);
+                        ((Buildingc)building).configure(null);
+                        ((Buildingc)building).configure(1);
                     }).growX().height(75).padBottom(10).row();
                     table.button(Icon.copy, () -> {
                         Vars.ui.showInfoFade("@copied");
@@ -95,13 +94,13 @@ public class ValenceMapDialog extends BaseDialog{
                         Formula tmpFormula = Formula.readFromBase64(Core.app.getClipboardText());
                         if(tmpFormula == null) return;
                         formula = tmpFormula;
-                        ((ValenceCrafterBuild)building).configure(2);
+                        ((Buildingc)building).configure(2);
                     }).growX().height(75).padBottom(10).row();
                     table.table(Tex.pane).grow().padBottom(10).row();
                     table.button(Icon.crafting, () -> {
                         building.updateValence();
-                        ((ValenceCrafterBuild)building).configure(1f);
-                        ((ValenceCrafterBuild)building).configure(1);
+                        ((Buildingc)building).configure(1f);
+                        ((Buildingc)building).configure(1);
                         hide();
                     }).growX().height(75);
                 }).growY().width(75);
@@ -111,9 +110,9 @@ public class ValenceMapDialog extends BaseDialog{
         contTable.table().growY().width(10);
         contTable.table(Tex.buttonSideRight).growY().width(100);
         contTable.table().growY().width(50);
-        itemsTable = AItemsTable.get();
-        formulaTable = AFormulaTable.get();
-        mapTable = AMapTable.get();
+        itemsTable = aItemsTable.get();
+        formulaTable = aFormulaTable.get();
+        mapTable = aMapTable.get();
         pane = formulaTable.pane(buildFormula()).grow().get();
         updateFormula();
         buildMap();
@@ -140,8 +139,8 @@ public class ValenceMapDialog extends BaseDialog{
                 table.add(new ItemDisplay(i, (int)Mathf.maxZero(a - formula.count(i))));
                 table.table().grow();
                 if(a - formula.count(i) > 0) table.button(Icon.rightOpenSmall, () -> {
-                    ((ValenceCrafterBuild)building).configure(i);
-                    ((ValenceCrafterBuild)building).configure(1);
+                    ((Buildingc)building).configure(i);
+                    ((Buildingc)building).configure(1);
                 }).padBottom(10);
             }).growX().height(80);
             itemTable.row();
@@ -150,23 +149,23 @@ public class ValenceMapDialog extends BaseDialog{
     }
 
     public Table buildFormula(){
-        Table pane = new Table();
+        Table pane1 = new Table();
         AtomicInteger index = new AtomicInteger(0);
         formula.toStack().each(i -> {
             if(formula.count(i.item) > ((Building)building).items.get(i.item)){
                 formula.items.removeRange(formula.items.indexOf(i.item), formula.items.size - 1);
             }
             if(formula.items.any()){
-                if(index.get() > 0) pane.table(Tex.button, b -> b.image(Icon.add));
-                if(index.get() % 5 == 0) pane.row();
-                pane.table(Tex.button, table -> {
+                if(index.get() > 0) pane1.table(Tex.button, b -> b.image(Icon.add));
+                if(index.get() % 5 == 0) pane1.row();
+                pane1.table(Tex.button, table -> {
                     ItemDisplay id = new ItemDisplay(i.item, i.amount, false);
                     table.add(id);
                 }).size(100).padTop(10).padBottom(10);
                 index.getAndIncrement();
             }
         });
-        return pane;
+        return pane1;
     }
 
     public void buildMap(){

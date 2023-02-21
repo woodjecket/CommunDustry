@@ -9,22 +9,23 @@ import mindustry.world.*;
 public class MultiStructPort extends Block{
 
 
+    public boolean isInputItem = true;
+    public boolean isInputLiquid = true;
+    public boolean isOutputItem;
+    public boolean isOutputLiquid;
 
-    public boolean isInputItem =true;
-    public boolean isInputLiquid=true;
-    public boolean isOutputItem=false;
-    public boolean isOutputLiquid = false;
     public MultiStructPort(String name){
         super(name);
         update = true;
-        hasItems=hasLiquids=true;
-        rotate=true;
+        hasItems = hasLiquids = true;
+        rotate = true;
     }
 
     @Override
     public void init(){
         super.init();
         removeBar("liquid");
+
     }
 
     public class MultiStructPortBuild extends Building{
@@ -48,6 +49,7 @@ public class MultiStructPort extends Block{
         }
 
         /**
+         *
          */
         public boolean canInputItem(Item item){
             return isOutputItem() && items.get(item) < block.itemCapacity;
@@ -67,6 +69,7 @@ public class MultiStructPort extends Block{
         @Override
         public void updateTile(){
             super.updateTile();
+            //liquids.each((l,i)-> Log.info(this +"\""+l.toString()+ i));
             if(connectParent != null){
                 if(isInputLiquid){
                     for(var liquid : Vars.content.liquids()){
@@ -105,13 +108,13 @@ public class MultiStructPort extends Block{
                 }
                 if(isOutputLiquid){
                     for(var liquid : Vars.content.liquids()){
-                        if(liquids.get(liquid)>0) dumpLiquid(liquid);
+                        if(liquids.get(liquid) > 0) dumpLiquid(liquid);
                     }
                 }
             }
         }
 
-        public boolean canInputLiquid(Liquid liquid){
+        public boolean canOutputLiquid(Liquid liquid){
             return isOutputLiquid && liquids.get(liquid) < block.liquidCapacity;
         }
     }

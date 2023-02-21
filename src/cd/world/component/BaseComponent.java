@@ -59,4 +59,5 @@ public abstract class BaseComponent{
     /** Calls when building {@code setBars} */
     public void onSetBars(Block b){
     }
+
 }

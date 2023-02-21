@@ -8,31 +8,31 @@ import mindustry.*;
 import mindustry.graphics.*;
 import mindustry.graphics.MultiPacker.*;
 import mindustry.type.*;
-@Deprecated
+
 public class MetaDust extends Item{
-    public Item item;
     public static AtlasRegion metaDust;
+    public Item item;
     private int[] palettei;
 
     public MetaDust(Item item){
         super(item.name + "-dust", item.color);
-        this.item=item;
-        palettei = new int[]{color.mul(0.81f).rgba8888(),color.rgba8888(),color.mul(1.24f).rgba8888()};
+        this.item = item;
+        palettei = new int[]{color.mul(0.81f).rgba8888(), color.rgba8888(), color.mul(1.24f).rgba8888()};
         explosiveness = item.explosiveness * 1.2f;
         flammability = item.flammability * 1.3f;
         charge = item.charge * 0.8f;
-        localizedName = Core.bundle.format("commumdustry-item-dust",item.localizedName);
+        localizedName = Core.bundle.format("commumdustry-item-dust", item.localizedName);
         Log.info(localizedName);
     }
 
-    public MetaDust(Item item, Color c1,Color c2,Color c3){
+    public MetaDust(Item item, Color c1, Color c2, Color c3){
         this(item);
-        palettei = new int[]{c1.rgba8888(),c2.rgba8888(),c3.rgba8888()};
+        palettei = new int[]{c1.rgba8888(), c2.rgba8888(), c3.rgba8888()};
     }
 
-    public MetaDust(Item item, String c1,String c2,String c3){
+    public MetaDust(Item item, String c1, String c2, String c3){
         this(item);
-        palettei = new int[]{Color.valueOf(c1).rgba8888(),Color.valueOf(c2).rgba8888(),Color.valueOf(c3).rgba8888()};
+        palettei = new int[]{Color.valueOf(c1).rgba8888(), Color.valueOf(c2).rgba8888(), Color.valueOf(c3).rgba8888()};
     }
 
     @Override
@@ -41,6 +41,7 @@ public class MetaDust extends Item{
         metaDust = Core.atlas.find("commumdustry-meta-dust");
         fullIcon = uiIcon = Core.atlas.find(Vars.content.transformName(name));
     }
+
     @Override
     public void createIcons(MultiPacker packer){
         var dustBase = Core.atlas.getPixmap(metaDust);

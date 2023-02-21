@@ -12,11 +12,12 @@ import static arc.util.Log.LogLevel.debug;
 
 public class CDMod extends Mod{
     public boolean test = true;
+
     public CDMod(){
         Log.info("Loaded CDMod constructor.");
     }
 
-    public static void configure() {
+    public static void configure(){
         PlanetDialog.debugSelect = true;
         Log.level = debug;
         var meta = Vars.mods.getMod(cd.CDMod.class).meta;

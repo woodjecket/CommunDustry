@@ -3,6 +3,7 @@ package cd.world.component;
 import arc.graphics.g2d.*;
 import arc.math.geom.*;
 import arc.struct.*;
+import arc.util.*;
 import cd.entities.building.*;
 import cd.world.blocks.multi.*;
 import cd.world.blocks.multi.MultiStructPort.*;
@@ -32,23 +33,33 @@ public class MainMultiComponent extends BaseComponent{
         b.enabled = structDone(b);
         if(b instanceof IMulti m){
             b.items.each((item, i) -> {
-                m.getPorts().filter(port -> port.canInputItem(item))
+                //FIXME memory leak here
+                Seq<MultiStructPortBuild> ports = m.getPorts().copy();
+                ports.filter(port -> port.canInputItem(item))
                 .each(port -> {
                     b.items.remove(item, 1);
                     port.items.add(item, 1);
                 });
             });
             b.liquids.each((liquid, i) -> {
-                m.getPorts().filter(port -> port.canInputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid)))
+                Log.info(liquid);
+                //FIXME memory leak here
+                var m1 = m.getPorts().copy();
+                m1.filter(port -> {
+                    Log.info(port + " " + (port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid))) + " " + liquid);
+                    return port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid));
+                })
                 .each(port -> {
-                    float remains = port.block.liquidCapacity - port.liquids.get(liquid);
-                    remains = Math.max(remains, b.liquids.get(liquid));
+                    Log.info(port);
+                    float remains = port.block.liquidCapacity - i;
+                    remains = Math.max(remains, i);
                     b.liquids.remove(liquid, remains);
                     port.liquids.add(liquid, remains);
                 });
             });
         }
     }
+
 
     /**
      * No the f**king central offset. Just count from the main block's tile center
@@ -62,6 +73,7 @@ public class MainMultiComponent extends BaseComponent{
         for(int i = 0; i < a.length - 1; i = i + 2){
             liquidOutputPos.put((Liquid)a[i], ((Point2)a[i + 1]).cpy());
         }
+        //Log.info(liquidOutputPos);
     }
 
     private boolean structDone(Building build){
@@ -76,7 +88,7 @@ public class MainMultiComponent extends BaseComponent{
                 b.set(false);
                 return;
             }
-            if(building.block == data.getByPosRotation(p,baseRotation).getBlock()){
+            if(building.block == data.getByPosRotation(p, baseRotation).getBlock()){
                 //Log.info("(@,@) @,@", ctx, cty, building.rotation, baseRotation);
                 /*
                  * 0 0/1/2/3 0/1/2/3
@@ -96,7 +108,7 @@ public class MainMultiComponent extends BaseComponent{
     }
 
     private boolean isProperRotation(int baseRotation, Point2 p, Building building){
-        return !building.block.rotate || (building.rotation - baseRotation) % 4 == data.getByPosRotation(p,baseRotation).getRotation();
+        return !building.block.rotate || (building.rotation - baseRotation) % 4 == data.getByPosRotation(p, baseRotation).getRotation();
     }
 
     @Override
@@ -108,17 +120,18 @@ public class MainMultiComponent extends BaseComponent{
             p.rotate(baseRotation);
             int ctx = b.tileX() + p.x, cty = b.tileY() + p.y;
             p.rotate(-baseRotation);
-            int bSize = data.getByPosRotation(p,baseRotation).getBlock().size;
+            int bSize = data.getByPosRotation(p, baseRotation).getBlock().size;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
-            if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.getByPosRotation(p,baseRotation).getBlock()){
-                if(!isPosAtLowerLeft(ctx, cty, Vars.world.build(ctx, cty)) || !isProperRotation(baseRotation,p,Vars.world.build(ctx, cty))){
-                    Draw.rect(data.getByPosRotation(p,baseRotation).getBlock().region, dx, dy, b.rotation * 90);
+            if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.getByPosRotation(p, baseRotation).getBlock()){
+                if(!isPosAtLowerLeft(ctx, cty, Vars.world.build(ctx, cty)) || !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
+                    Draw.rect(data.getByPosRotation(p, baseRotation).getBlock().region, dx, dy, b.rotation * 90);
                 }
             }else{
-                Draw.rect(data.getByPosRotation(p,baseRotation).getBlock().region, dx, dy, b.rotation * 90);
+                Draw.rect(data.getByPosRotation(p, baseRotation).getBlock().region, dx, dy, b.rotation * 90);
             }
         });
     }
+
 
     @Override
     public void onDrawPlace(Block b, int x, int y, int rotation){
@@ -127,10 +140,10 @@ public class MainMultiComponent extends BaseComponent{
             p.rotate(rotation);
             int ctx = x + p.x, cty = y + p.y;
             p.rotate(-rotation);
-            int bSize = data.getByPosRotation(p,rotation).getBlock().size;
+            int bSize = data.getByPosRotation(p, rotation).getBlock().size;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             Draw.alpha(0.5f);
-            Draw.rect(data.getByPosRotation(p,rotation).getBlock().region, dx, dy, rotation);
+            Draw.rect(data.getByPosRotation(p, rotation).getBlock().region, dx, dy, rotation * 90);
         });
     }
 

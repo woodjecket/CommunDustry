@@ -187,7 +187,7 @@ public class LaserComponent extends BaseComponent{
         for(int j = 1 + offset; j <= laserRange + offset; j++){
             //开启遍历，坐标x是此方块x+距离*方向乘数，y同理
             var other = world.build(b.tile.x + j * dir.x, b.tile.y + j * dir.y);
-            if(other==null)break;
+            if(other == null) break;
             if(other.block.size > 1 && other.tileX() != b.tile.x + j * dir.x){
                 break;
             }

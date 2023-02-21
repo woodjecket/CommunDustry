@@ -19,7 +19,7 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
     public ValenceCrafter(String name, ResultMap resultMap){
         super(name);
         this.resultMap = resultMap;
-        this.buildType = ValenceCrafterBuild::new;
+        buildType = ValenceCrafterBuild::new;
         configurable = true;
         consume(new ConsumeItemValence());
         config(Integer.class, (build, index) -> {
@@ -45,7 +45,7 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
 
     public static class ConsumeItemValence extends ConsumeItemFilter{
         public ConsumeItemValence(){
-            this.filter = ItemsValence::hasValence;
+            filter = ItemsValence::hasValence;
         }
 
         @Override
@@ -58,10 +58,10 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
 
     public class ValenceCrafterBuild extends GenericCrafterBuild implements ValenceBuild{
         public ItemStack output;
-        public float heat = 0;
+        public float heat;
         public Formula formula = new Formula();
         public ValenceMapDialog dialog = new ValenceMapDialog(this);
-        public ValenceModule module = new ValenceModule(getFormula().valenceAtomicInteger, null, 0);
+        public ValenceModule module = new ValenceModule(formula.valenceAtomicInteger, null, 0);
 
         @Override
         public float getProgressIncrease(float baseTime){
@@ -100,7 +100,7 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
 
         @Override
         public int getValence(){
-            return getFormula().getValence();
+            return formula.getValence();
         }
 
         @Override
@@ -141,7 +141,7 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
 
         @Override
         public Object config(){
-            return getFormula();
+            return formula;
         }
 
         @Override
