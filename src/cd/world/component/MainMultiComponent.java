@@ -3,7 +3,6 @@ package cd.world.component;
 import arc.graphics.g2d.*;
 import arc.math.geom.*;
 import arc.struct.*;
-import arc.util.*;
 import cd.entities.building.*;
 import cd.world.blocks.multi.*;
 import cd.world.blocks.multi.MultiStructPort.*;
@@ -20,6 +19,9 @@ public class MainMultiComponent extends BaseComponent{
     private IMultiData data = new OMultiData();
     private ObjectMap<Liquid, Point2> liquidOutputPos = new ObjectMap<>();
 
+    //Single-thread ONLY!!!!!!!
+    private Seq<MultiStructPortBuild> getOff = new Seq<>();
+
     /** I did NOT check if the position is null! */
     public static boolean isPosAtLowerLeft(int tx, int ty, Building b){
         float size = b.block.size;
@@ -32,30 +34,42 @@ public class MainMultiComponent extends BaseComponent{
         super.onUpdateTile(b);
         b.enabled = structDone(b);
         if(b instanceof IMulti m){
+            var m1 = m.getPorts();
             b.items.each((item, i) -> {
-                //FIXME memory leak here
-                Seq<MultiStructPortBuild> ports = m.getPorts().copy();
-                ports.filter(port -> port.canInputItem(item))
+                m1.filter(port -> {
+                    if(port.canInputItem(item)){
+                        return true;
+                    }else {
+                        getOff.add(port);
+                        return false;
+                    }
+                })
                 .each(port -> {
                     b.items.remove(item, 1);
                     port.items.add(item, 1);
                 });
+                m1.addAll(getOff);
+                getOff.clear();
             });
             b.liquids.each((liquid, i) -> {
-                Log.info(liquid);
-                //FIXME memory leak here
-                var m1 = m.getPorts().copy();
+                //Log.info(liquid);
                 m1.filter(port -> {
-                    Log.info(port + " " + (port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid))) + " " + liquid);
-                    return port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid));
+                    //Log.info(port + " " + (port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid))) + " " + liquid);
+                    if(port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid))){
+                        return true;
+                    }
+                    getOff.add(port);
+                    return false;
                 })
                 .each(port -> {
-                    Log.info(port);
+                    //Log.info(port);
                     float remains = port.block.liquidCapacity - i;
                     remains = Math.max(remains, i);
                     b.liquids.remove(liquid, remains);
                     port.liquids.add(liquid, remains);
                 });
+                m1.addAll(getOff);
+                getOff.clear();
             });
         }
     }
