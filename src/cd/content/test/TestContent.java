@@ -119,7 +119,7 @@ public class TestContent{
              * 00000000
              * 00000000*/
             //left lower?
-            dataOf(h, 2, 2, Blocks.distributor, 2, -2);
+            dataOf(h, 2, 2, Blocks.copperWallLarge, 2, -2);
         }}
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));

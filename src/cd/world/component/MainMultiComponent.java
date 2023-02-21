@@ -68,8 +68,9 @@ public class MainMultiComponent extends BaseComponent{
         final int baseRotation = build.rotation;
         AtomicBoolean b = new AtomicBoolean(true);
         data.getEachable().each(p -> {
-
+            p.rotate(baseRotation);
             int ctx = build.tileX() + p.x, cty = build.tileY() + p.y;
+            p.rotate(-baseRotation);
             Building building = Vars.world.build(ctx, cty);
             if(building == null){
                 b.set(false);
@@ -104,7 +105,9 @@ public class MainMultiComponent extends BaseComponent{
         super.onEntityDraw(b);
         Draw.alpha(0.5f);
         data.getEachable().each(p -> {
+            p.rotate(baseRotation);
             int ctx = b.tileX() + p.x, cty = b.tileY() + p.y;
+            p.rotate(-baseRotation);
             int bSize = data.getByPosRotation(p,baseRotation).getBlock().size;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.getByPosRotation(p,baseRotation).getBlock()){
@@ -121,7 +124,9 @@ public class MainMultiComponent extends BaseComponent{
     public void onDrawPlace(Block b, int x, int y, int rotation){
         super.onDrawPlace(b, x, y, rotation);
         data.getEachable().each(p -> {
+            p.rotate(rotation);
             int ctx = x + p.x, cty = y + p.y;
+            p.rotate(-rotation);
             int bSize = data.getByPosRotation(p,rotation).getBlock().size;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             Draw.alpha(0.5f);
