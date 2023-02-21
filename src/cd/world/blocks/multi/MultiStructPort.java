@@ -8,6 +8,8 @@ import mindustry.world.*;
 
 public class MultiStructPort extends Block{
 
+
+
     public boolean isInputItem =true;
     public boolean isInputLiquid=true;
     public boolean isOutputItem=false;
@@ -16,6 +18,7 @@ public class MultiStructPort extends Block{
         super(name);
         update = true;
         hasItems=hasLiquids=true;
+        rotate=true;
     }
 
     @Override
@@ -27,6 +30,29 @@ public class MultiStructPort extends Block{
     public class MultiStructPortBuild extends Building{
         public Building connectParent;
         public Point2 offsetPos;
+
+        public boolean isInputItem(){
+            return isInputItem;
+        }
+
+        public boolean isInputLiquid(){
+            return isInputLiquid;
+        }
+
+        public boolean isOutputItem(){
+            return isOutputItem;
+        }
+
+        public boolean isOutputLiquid(){
+            return isOutputLiquid;
+        }
+
+        /**
+         */
+        public boolean canInputItem(Item item){
+            return isOutputItem() && items.get(item) < block.itemCapacity;
+        }
+
 
         @Override
         public boolean acceptItem(Building source, Item item){
@@ -83,6 +109,10 @@ public class MultiStructPort extends Block{
                     }
                 }
             }
+        }
+
+        public boolean canInputLiquid(Liquid liquid){
+            return isOutputLiquid && liquids.get(liquid) < block.liquidCapacity;
         }
     }
 }

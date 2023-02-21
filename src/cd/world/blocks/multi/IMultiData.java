@@ -2,15 +2,14 @@ package cd.world.blocks.multi;
 
 import arc.math.geom.*;
 import arc.util.*;
-import mindustry.world.*;
 
 /**
  * The interface for multi-struct data
  */
 public interface IMultiData{
-    Block getByOffsetPos(int ox, int oy);
+    RotatedBlock getByOffsetPos(Point2 o);
 
-    Block getByOffsetPos(Point2 o);
+    RotatedBlock getByPosRotation(Point2 o, int rotation);
 
     void valueOf(Object... v);
 
