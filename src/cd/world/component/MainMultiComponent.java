@@ -3,6 +3,7 @@ package cd.world.component;
 import arc.graphics.g2d.*;
 import arc.math.geom.*;
 import arc.struct.*;
+import arc.util.*;
 import cd.entities.building.*;
 import cd.world.blocks.multi.*;
 import cd.world.blocks.multi.MultiStructPort.*;
@@ -152,11 +153,9 @@ public class MainMultiComponent extends BaseComponent{
                     return false;
                 })
                 .each(port -> {
-                    //Log.info(port);
-                    float remains = port.block.liquidCapacity - i;
-                    remains = Math.max(remains, i);
-                    b.liquids.remove(liquid, remains);
-                    port.liquids.add(liquid, remains);
+                    float portRemains = port.block.liquidCapacity-port.liquids.get(liquid);
+                    b.liquids.remove(liquid, Math.min(portRemains,i));
+                    port.liquids.add(liquid, Math.min(portRemains,i));
                 });
                 m1.addAll(getOff);
                 getOff.clear();
