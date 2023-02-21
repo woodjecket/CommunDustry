@@ -23,46 +23,7 @@ public class MainMultiComponent extends BaseComponent{
     //Single-thread ONLY!!!!!!!
     private Seq<MultiStructPortBuild> getOff = new Seq<>();
 
-    /**
-     * I did NOT check if the position is null!
-     * Good point means the point of the lower left when the block's rotation is 0(left), changes with the rotation
-     */
-    @Deprecated
-    public static boolean isAtGoodPoint(int tx, int ty, Building b){
-        float offset = (float)b.block.size % 2 == 0 ? 1f : 0.5f;
-        float change = b.block.size / 2f - offset;
-        float vx = switch(b.rotation){
-            case 0, 1 -> Vars.world.build(tx, ty).tileX() - change;
-            case 2, 3 -> Vars.world.build(tx, ty).tileX() + change;
-            default -> throw new IllegalArgumentException("How did you make the rotation out of 0-3?");
-        };
-        float offset1 = (float)b.block.size % 2 == 0 ? 1f : 0.5f;
-        float change1 = b.block.size / 2f - offset1;
-        float vy = switch(b.rotation){
-            case 0, 3 -> Vars.world.build(tx, ty).tileY() - change1;
-            case 1, 2 -> Vars.world.build(tx, ty).tileY() + change1;
-            default -> throw new IllegalArgumentException("How did you make the rotation out of 0-3?");
-        };
-        return vx == tx && vy == ty;
-    }
-
-    private static float getCentralX(int ctx, int bSize, int rotation){
-        return switch(rotation){
-            case 0, 1 -> ctx + bSize / 2f - 0.5f;
-            case 2, 3 -> ctx - bSize / 2f + 0.5f;
-            default -> throw new IllegalArgumentException("How did you make the rotation out of 0-3?");
-        };
-    }
-
-    private static float getCentralY(int cty, int bSize, int rotation){
-        return switch(rotation){
-            case 0, 3 -> cty + bSize / 2f - 0.5f;
-            case 1, 2 -> cty - bSize / 2f + 0.5f;
-            default -> throw new IllegalArgumentException("How did you make the rotation out of 0-3?");
-        };
-    }
-
-    public static boolean isSufficient(int checkX, int checkY, Building building, Building main){
+    private static boolean isSufficient(int checkX, int checkY, Building building, Building main){
         /*
          * AAAA EEEE IIIQ QOOO
          * AAAA EEEE IINI ONOO
@@ -136,8 +97,26 @@ public class MainMultiComponent extends BaseComponent{
             }
         }
 
-        return goodX == checkX && goodY== checkY;
+        return goodX == checkX && goodY == checkY;
 
+    }
+
+    private static void returnCenter(int size, Point2 p, int baseRotation){
+        if(size % 2 != 0) return;
+        switch(baseRotation){
+            case 1 -> p.x -= 1;
+            case 2 -> p.y -= 1;
+            case 3 -> p.x += 1;
+        }
+    }
+
+    private static void reserveCenter(int size, Point2 p, int baseRotation){
+        if(size % 2 != 0) return;
+        switch(baseRotation){
+            case 1 -> p.x += 1;
+            case 2 -> p.y += 1;
+            case 3 -> p.x -= 1;
+        }
     }
 
     @Override
@@ -186,8 +165,16 @@ public class MainMultiComponent extends BaseComponent{
     }
 
     /**
-     * No the f**king central offset. Just count from the main block's tile center
-     * (real center or real center's lower left, depends on size) to the lower-left to the block you want
+     * The data of the multi-structure.
+     * To define the data properly, make sure the main block is facing the right
+     * (if your main block is not {@code rotate}, just build some conveyor facing the right).
+     * <p>
+     * Then make a rectangular coordinate system , with the main block's center as original point.
+     * (the center is just the point (tileX,tileY) )
+     * @param a
+     * is in the order that the 1st and 2nd param per 3 is the position of the lower-left
+     * in the system just now, the 3nd is the block, or so as to make a block has the
+     * different rotation you can new a {@code RotatedBlock}
      */
     public void dataOf(Object... a){
         data.valueOf(a);
@@ -197,17 +184,25 @@ public class MainMultiComponent extends BaseComponent{
         for(int i = 0; i < a.length - 1; i = i + 2){
             liquidOutputPos.put((Liquid)a[i], ((Point2)a[i + 1]).cpy());
         }
-        //Log.info(liquidOutputPos);
     }
 
+    /**
+     * The check is just for 3 steps
+     * Step 1: Rotate the position. Just use the {@code rotate}
+     * Step 2: Change the original point. The center of the odd-size block never changes,
+     * but even-size is always changes. A fix is needed to fix the change.
+     * Step 3: Check for the sufficient point. After the two steps above we need to reserve
+     * the point so that the index can works. Then the lower-left point is always changes
+     * so we have to fix it too.
+     */
     private boolean structDone(Building build){
         final int baseRotation = build.rotation;
         AtomicBoolean b = new AtomicBoolean(true);
         data.getEachable().each(p -> {
             p.rotate(baseRotation);
-            reserveCenter(build.block.size,p,baseRotation);
+            reserveCenter(build.block.size, p, baseRotation);
             int ctx = build.tileX() + p.x, cty = build.tileY() + p.y;
-            returnCenter(build.block.size,p,baseRotation);
+            returnCenter(build.block.size, p, baseRotation);
             p.rotate(-baseRotation);
             Building building = Vars.world.build(ctx, cty);
             if(building == null){
@@ -215,15 +210,13 @@ public class MainMultiComponent extends BaseComponent{
                 return;
             }
             if(building.block == data.get(p).getBlock()){
-                //Log.info("(@,@) @,@", ctx, cty, building.rotation, baseRotation);
                 /*
                  * 0 0/1/2/3 0/1/2/3
                  * 1 0/1/2/3 1/2/3/0
                  * 2 0/1/2/3 2/3/0/1
                  * 3 0/1/2/3 3/0/1/2*/
-                boolean b1 = isSufficient(ctx, cty, building,build) && b.get() && isProperRotation(baseRotation, p, building);
+                boolean b1 = isSufficient(ctx, cty, building, build) && b.get() && isProperRotation(baseRotation, p, building);
                 b.set(b1);
-                //Vars.ui.showLabel(Strings.format("x:@,y:@,ll:@,block:@,want:@,b:@",ctx,cty, isPosAtLowerLeft(ctx, cty, building), building.block,data.getByOffsetPos(p).getBlock().b.get()),1f/60f,ctx*tilesize,cty*tilesize);
                 if(b1 && building instanceof MultiStructPortBuild ms){
                     ms.connectParent = build;
                     if(build instanceof IMulti m) m.addPorts(ms, p);
@@ -231,24 +224,6 @@ public class MainMultiComponent extends BaseComponent{
             }else b.set(false);
         });
         return b.get();
-    }
-
-    private static void returnCenter(int size,Point2 p, int baseRotation){
-        if(size %2 != 0) return;
-        switch(baseRotation){
-            case 1 ->p.x-=1;
-            case 2->p.y-=1;
-            case 3->p.x+=1;
-        }
-    }
-
-    private static void reserveCenter(int size, Point2 p, int baseRotation){
-        if(size %2 != 0) return;
-        switch(baseRotation){
-            case 1 ->p.x+=1;
-            case 2->p.y+=1;
-            case 3->p.x-=1;
-        }
     }
 
     private boolean isProperRotation(int baseRotation, Point2 p, Building building){
@@ -262,16 +237,14 @@ public class MainMultiComponent extends BaseComponent{
         Draw.alpha(0.5f);
         data.getEachable().each(p -> {
             p.rotate(baseRotation);
-            reserveCenter(b.block.size,p,baseRotation);
+            reserveCenter(b.block.size, p, baseRotation);
             int ctx = b.tileX() + p.x, cty = b.tileY() + p.y;
-            returnCenter(b.block.size,p, baseRotation);
+            returnCenter(b.block.size, p, baseRotation);
             p.rotate(-baseRotation);
             int bSize = data.get(p).getBlock().size;
-            ///float dx = getGoodX(ctx, cty, bSize, data.get(p).getRotation()) * tilesize, dy = getGoodY(ctx, cty, bSize, data.get(p).getRotation()) * tilesize;
-            //float dx = getCentralX(ctx, bSize, data.get(p).getRotation()) * tilesize, dy = getCentralY(cty, bSize, data.get(p).getRotation()) * tilesize;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.get(p).getBlock()){
-                if(!isSufficient(ctx, cty, Vars.world.build(ctx, cty),b) || !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
+                if(!isSufficient(ctx, cty, Vars.world.build(ctx, cty), b) || !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
                     Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, b.rotation * 90);
                 }
             }else{
@@ -285,9 +258,9 @@ public class MainMultiComponent extends BaseComponent{
         super.onDrawPlace(b, x, y, rotation);
         data.getEachable().each(p -> {
             p.rotate(rotation);
-            reserveCenter(b.size,p,rotation);
+            reserveCenter(b.size, p, rotation);
             int ctx = x + p.x, cty = y + p.y;
-            returnCenter(b.size,p,rotation);
+            returnCenter(b.size, p, rotation);
             p.rotate(-rotation);
             int bSize = data.get(p).getBlock().size;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
