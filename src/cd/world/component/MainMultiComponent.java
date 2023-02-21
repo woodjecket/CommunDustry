@@ -61,7 +61,7 @@ public class MainMultiComponent extends BaseComponent{
 
     public void directionOf(Object... a){
         for(int i = 0; i < a.length - 1; i = i + 2){
-            liquidOutputPos.put((Liquid)a[i], (Point2)a[i + 1]);
+            liquidOutputPos.put((Liquid)a[i], ((Point2)a[i + 1]).cpy());
         }
     }
 
@@ -121,7 +121,6 @@ public class MainMultiComponent extends BaseComponent{
     public void onDrawPlace(Block b, int x, int y, int rotation){
         super.onDrawPlace(b, x, y, rotation);
         data.getEachable().each(p -> {
-            p.rotate(rotation);
             int ctx = x + p.x, cty = y + p.y;
             int bSize = data.getByPosRotation(p,rotation).getBlock().size;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
