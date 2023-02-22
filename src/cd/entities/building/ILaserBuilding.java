@@ -19,4 +19,6 @@ public interface ILaserBuilding{
     boolean isProvideLaserEnergy(int bx, int by);
 
     float getLaserEnergy();
+
+    void setLaserEnergy(float energy);
 }

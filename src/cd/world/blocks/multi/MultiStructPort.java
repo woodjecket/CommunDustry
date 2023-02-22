@@ -1,10 +1,14 @@
 package cd.world.blocks.multi;
 
+import arc.*;
+import arc.graphics.*;
 import arc.math.geom.*;
 import arc.util.io.*;
+import cd.entities.building.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.type.*;
+import mindustry.ui.*;
 import mindustry.world.*;
 
 public class MultiStructPort extends Block{
@@ -14,6 +18,7 @@ public class MultiStructPort extends Block{
     public boolean isInputLiquid = true;
     public boolean isOutputItem;
     public boolean isOutputLiquid;
+    public boolean isInputPressure, isInputLaser;
 
     public MultiStructPort(String name){
         super(name);
@@ -26,12 +31,19 @@ public class MultiStructPort extends Block{
     public void init(){
         super.init();
         removeBar("liquid");
+        addBar("laser-energy", (entity) -> new Bar(
+        () -> Core.bundle.format("bar.laser-energy", ((ILaserBuilding)entity).getLaserEnergy()),
+        () -> Color.valueOf("ffd9c2"),
+        () -> ((ILaserBuilding)entity).getLaserEnergy() / 10f
+        ));
 
     }
 
-    public class MultiStructPortBuild extends Building{
+    public class MultiStructPortBuild extends Building implements ILaserBuilding,ILaserPneu{
         public Building connectParent;
         public Point2 offsetPos;
+        public float pressure;
+        public float laserEnergy;
 
         public boolean isInputItem(){
             return isInputItem;
@@ -114,6 +126,12 @@ public class MultiStructPort extends Block{
                         if(liquids.get(liquid) > 0) dumpLiquid(liquid);
                     }
                 }
+                if(isInputPressure && connectParent instanceof ILaserPneu pneu){
+                    pneu.setPressure(pressure);
+                }
+                if(isInputLaser && connectParent instanceof ILaserBuilding laser){
+                    laser.setLaserEnergy(laserEnergy);
+                }
             }
         }
 
@@ -131,6 +149,54 @@ public class MultiStructPort extends Block{
         public void write(Writes write){
             super.write(write);
             write.i(1);
+        }
+
+        @Override
+        public int getLaserRange(){
+            return 0;
+        }
+
+        @Override
+        public Building getLaserChild(){
+            return null;
+        }
+
+        @Override
+        public void setLaserChild(Building b){}
+
+        @Override
+        public void changeLaserEnergy(float c){
+            laserEnergy += c;
+        }
+
+        @Override
+        public boolean isAcceptLaserEnergy(){
+            return isInputLaser;
+        }
+
+        @Override
+        public boolean isProvideLaserEnergy(int bx, int by){
+            return false;
+        }
+
+        @Override
+        public float getLaserEnergy(){
+            return laserEnergy;
+        }
+
+        @Override
+        public void setLaserEnergy(float energy){
+            laserEnergy=energy;
+        }
+
+        @Override
+        public float getPressure(){
+            return pressure;
+        }
+
+        @Override
+        public void setPressure(float pressure){
+            this.pressure=pressure;
         }
     }
 

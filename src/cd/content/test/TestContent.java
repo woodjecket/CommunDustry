@@ -26,6 +26,25 @@ public class TestContent{
         hasItems = true;
         size = 1;
     }};
+
+    public static Block pressureIn = new MultiStructPort("thanatus-port-pressure-input"){{
+        requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        hasLiquids = true;
+        hasItems = true;
+        isInputItem = isInputLiquid = false;
+        isInputPressure = true;
+        size = 1;
+    }};
+
+    public static Block laserIn = new MultiStructPort("thanatus-port-laser-input"){{
+        requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        hasLiquids = true;
+        hasItems = true;
+        isInputItem = isInputLiquid = false;
+        isInputLaser = true;
+        size = 1;
+    }};
+
     public static Block portOut = new MultiStructPort("thanatus-port-output"){{
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
         hasLiquids = true;
@@ -185,6 +204,37 @@ public class TestContent{
         consumeLiquids(LiquidStack.with(Liquids.cryofluid, 6f / 60f, CDLiquids.ClF3, 7f / 60f))
         ;
         rotate = true;
+    }};
+
+    public static Block superCrafter = new ComponentCrafter("thanatus-super-crafter"){{
+        requirements(Category.crafting, with(Items.plastanium, 40, Items.titanium, 100, Items.silicon, 150, Items.thorium, 80));
+        outputItem = new ItemStack(CDItems.basicChip, 2);
+        craftTime = 120f;
+        size = 1;
+        hasItems = true;
+        hasLiquids = true;
+        consumeItems(with(Items.silicon, 5, Items.thorium, 6));
+        consumeLiquid(Liquids.cryofluid, 12f / 60f);
+        consumePower(1f);
+        addComp(
+        new PneuComponent(){{
+            canConsumePressure = true;
+            pressureConsume = 7f;
+        }},
+        new CatalyzerCrafterComponent(){{
+            catalyzer = with(CDItems.platinum, 1, Items.phaseFabric, 2);
+            catalyzerScale = new float[]{2f, 5f};
+            maxEfficiency = 7f;
+            catalyzerNecessity = false;
+        }},
+        new LaserComponent(){{
+            acceptLaserEnergy = true;
+            consumeLaserEnergy = 0.5f;
+        }},
+        new MainMultiComponent(){{
+            dataOf(portIn, -1, 1, portOut, 1, -1, laserIn, 1, 1, pressureIn, -1, -1,
+            Blocks.duo,0,1,Blocks.arc,0,-1,Blocks.hail,1,0,Blocks.scorch,-1,0);
+        }});
     }};
 
     public static void load(){

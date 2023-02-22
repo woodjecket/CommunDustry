@@ -83,14 +83,15 @@ public class PneuComponent extends BaseComponent{
 
     public void calculatePressure(Building b){
         ILaserPneu bPneu = (ILaserPneu)b;
-        if(b.block.rotate){
+        //noinspection ConstantValue
+        if(false/*b.block.rotate*/){
             var other = b.proximity.filter(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
             Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
             if(!(other instanceof ILaserPneu otherPneu)) return;
             float thisP = bPneu.getPressure();
             float otherP = otherPneu.getPressure();
             float arrangeP = (thisP + otherP) / 2f;
-            if(thisP > otherP && thisP >= standardPressure && otherP >= standardPressure){
+            if(thisP > otherP && thisP >= standardPressure && otherP >= 0){
                 bPneu.setPressure(arrangeP);
                 otherPneu.setPressure(arrangeP);
             }
@@ -100,7 +101,7 @@ public class PneuComponent extends BaseComponent{
                 float thisP = bPneu.getPressure();
                 float otherP = otherPneu.getPressure();
                 float arrangeP = (thisP + otherP) / 2f;
-                if(thisP > otherP && thisP >= standardPressure && otherP >= standardPressure){
+                if(thisP > otherP && thisP >= standardPressure && otherP >= 0){
                     bPneu.setPressure(arrangeP);
                     otherPneu.setPressure(arrangeP);
                 }

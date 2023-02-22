@@ -181,6 +181,11 @@ public class ComponentBlock extends Block implements IComp{
         }
 
         @Override
+        public void setLaserEnergy(float energy){
+            laserEnergy=energy;
+        }
+
+        @Override
         public Seq<MultiStructPortBuild> getPorts(){
             return ports;
         }
