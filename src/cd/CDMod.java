@@ -6,9 +6,6 @@ import cd.content.*;
 import cd.content.test.*;
 import mindustry.*;
 import mindustry.mod.*;
-import mindustry.ui.dialogs.*;
-
-import static arc.util.Log.LogLevel.debug;
 
 public class CDMod extends Mod{
     public boolean test = true;
@@ -18,8 +15,8 @@ public class CDMod extends Mod{
     }
 
     public static void configure(){
-        PlanetDialog.debugSelect = true;
-        Log.level = debug;
+        ///PlanetDialog.debugSelect = true;
+        //Log.level = LogLevel.debug;
         var meta = Vars.mods.getMod(cd.CDMod.class).meta;
         meta.name = Core.bundle.get("mod.commumdustry.displayName");
         meta.description = Core.bundle.get("mod.commumdustry.description");
@@ -28,13 +25,18 @@ public class CDMod extends Mod{
 
     @Override
     public void loadContent(){
-        Log.info("Loading content.");
-        CDItems.load();
-        CDLiquids.load();
-        CDBlocks.load();
-        CDUnitTypes.load();
-        CDPlanets.load();
         configure();
+        Log.debug("Start loading content.");
+        CDItems.load();
+        Log.debug("Loaded items.");
+        CDLiquids.load();
+        Log.debug("Loaded liquids.");
+        CDBlocks.load();
+        Log.debug("Loaded blocks.");
+        CDUnitTypes.load();
+        Log.debug("Loaded units.");
+        CDPlanets.load();
+        Log.debug("Loaded planets.");
         if(test) TestContent.load();
 
     }

@@ -35,7 +35,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     public Block normalTree = CDBlocks.deadSapling;
     public Block deadTree = CDBlocks.deadSapling;
     public Block[][] blocks = {
-    {hotRiverTile, hotRiverTile, Blocks.basalt, Blocks.basalt, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
+    {hotRiverTile, hotRiverTile, Blocks.basalt, Blocks.basalt, Blocks.basalt,
+     CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
     {hotRiverTile, hotRiverTile, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor},
     {coldRiverTile, coldRiverTile, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.snow},
     {coldRiverTile, coldRiverTile, Blocks.dirt, Blocks.dirt, Blocks.mud, Blocks.grass, CDBlocks.vine}
@@ -63,9 +64,10 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         }
     }
 
-    public float rawHeight(Vec3 position){
+    public float rawHeight1(Vec3 position){
         position = Tmp.v33.set(position).scl(scl);
-        return (Mathf.pow(Simplex.noise3d(seed, 7, 0.5f, 1f / 3f, position.x, position.y, position.z), 2.3f) + riverLiquidOffset) / (1f + riverLiquidOffset);
+        return (Mathf.pow(Simplex.noise3d(seed, 7, 0.5f, 1f / 3f, position.x, position.y, position.z),
+        2.3f) + riverLiquidOffset) / (1f + riverLiquidOffset);
     }
 
     @Override
@@ -158,7 +160,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             Vec3 v = sector.rect.project(x, y);
 
             float rr = Simplex.noise2d(sector.id, (float)2, 0.6f, 1f / 7f, x, y) * 0.1f;
-            float value = Ridged.noise3d(2, v.x, v.y, v.z, 1, 1f / 55f) + rr - rawHeight(v) * 0f;
+            float value = Ridged.noise3d(2, v.x, v.y, v.z, 1, 1f / 55f) + rr - rawHeight1(v) * 0f;
             float rrscl = rr * 44 - 2;
 
             if(value > 0.17f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)){
@@ -261,7 +263,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
                         all = false;
                     }
                 }
-                if(any && ((block == CDBlocks.ashWall || block == CDBlocks.enrichedSandFloor) || (all && block == Blocks.air && floor == Blocks.snow && rand.chance(0.03)))){
+                if(any && ((block == CDBlocks.ashWall || block == CDBlocks.enrichedSandFloor) ||
+                (all && block == Blocks.air && floor == Blocks.snow && rand.chance(0.03)))){
                     block = rand.chance(0.5) ? normalTree : deadTree;
                 }
             }
@@ -390,7 +393,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         state.rules.enemyCoreBuildRadius = 600f;
 
         //spawn air only when spawn is blocked
-        state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), state.rules.attackMode, state.rules.attackMode && spawner.countGroundSpawns() == 0, naval);
+        state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), state.rules.attackMode,
+        state.rules.attackMode && spawner.countGroundSpawns() == 0, naval);
     }
 
     public boolean checkNaval(Room spawn, Iterable<? extends Room> enemies){
@@ -453,18 +457,18 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead);
         float poles = Math.abs(sector.tile.v.y);
         float nmag = 0.5f;
-        float scl = 1f;
+        float scl1 = 1f;
         float addscl = 1.3f;
 
-        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.25f * addscl){
+        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.25f * addscl){
             ores.add(Blocks.oreCoal);
         }
 
-        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 1, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.5f * addscl){
+        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x + 1, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.5f * addscl){
             ores.add(Blocks.oreTitanium);
         }
 
-        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.7f * addscl){
+        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.7f * addscl){
             ores.add(Blocks.oreThorium);
         }
 
@@ -497,21 +501,21 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         });
     }
 
-    public Block getBlock(Vec3 position){
-        float height = rawHeight(position);
+    public Block getBlock1(Vec3 position){
+        float height1 = rawHeight1(position);
         Tmp.v31.set(position);
         position = Tmp.v33.set(position).scl(scl);
         float rad = scl;
         float temp = Mathf.clamp(Math.abs(position.y * 2f) / (rad));
         float tnoise = Simplex.noise3d(seed, 7, 0.56, 1f / 3f, position.x, position.y + 999f, position.z);
         temp = Mathf.lerp(temp, tnoise, 0.5f);
-        height *= 1.2f;
-        height = Mathf.clamp(height);
+        height1 *= 1.2f;
+        height1 = Mathf.clamp(height1);
 
         float tar = Simplex.noise3d(seed, 4, 0.55f, 1f / 2f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
         int index = Mathf.clamp((int)(temp * blocks.length), 0, blocks.length - 1);
         Block res = blocks[index]
-        [Mathf.clamp((int)(height * blocks[index].length), 0, blocks[index].length - 1)];
+        [Mathf.clamp((int)(height1 * blocks[index].length), 0, blocks[index].length - 1)];
         if(tar > 0.5f){
             return tars.get(res, res);
         }else{
@@ -521,15 +525,15 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
 
     @Override
     public Color getColor(Vec3 position){
-        Block block = getBlock(position);
+        Block block1 = getBlock1(position);
         //replace salt with sand color
-        if(block == Blocks.salt) return Blocks.sand.mapColor;
-        return Tmp.c1.set(block.mapColor).a(1f - block.albedo);
+        if(block1 == Blocks.salt) return Blocks.sand.mapColor;
+        return Tmp.c1.set(block1.mapColor).a(1f - block1.albedo);
     }
 
     @Override
     public void genTile(Vec3 position, TileGen tile){
-        tile.floor = getBlock(position);
+        tile.floor = getBlock1(position);
         tile.block = tile.floor.asFloor().wall;
 
         if(Ridged.noise3d(seed + 1, position.x, position.y, position.z, 2, 22) > 0.31){
@@ -565,7 +569,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             rand.nextFloat();
 
             if(alt){
-                midpoint.add(Tmp.v2.set(1, 0f).setAngle(Angles.angle(to.x, to.y, x, y) + 90f * (rand.chance(0.5) ? 1f : -1f)).scl(Tmp.v1.dst(x, y) * 2f));
+                midpoint.add(Tmp.v2.set(1, 0f).setAngle(Angles.angle(to.x, to.y, x, y) +
+                90f * (rand.chance(0.5) ? 1f : -1f)).scl(Tmp.v1.dst(x, y) * 2f));
             }else{
                 //add randomized offset to avoid straight lines
                 midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
@@ -583,23 +588,25 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             float nscl = rand.random(100f, 140f) * 6f;
             int rad = rand.random(7, 11);
             int avoid = 2 + rad;
-            var path = pathfind(x1, y1, x2, y2, tile -> (tile.solid() || !tile.floor().isLiquid ? 70f : 0f) + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan);
+            var path = pathfind(x1, y1, x2, y2, tile -> (tile.solid() || !tile.floor().isLiquid ? 70f : 0f)
+            + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan);
             path.each(t -> {
                 //don't place liquid paths near the core
                 if(Mathf.dst2(t.x, t.y, x2, y2) <= avoid * avoid){
                     return;
                 }
 
-                for(int x = -rad; x <= rad; x++){
-                    for(int y = -rad; y <= rad; y++){
-                        int wx = t.x + x, wy = t.y + y;
-                        if(Structs.inBounds(wx, wy, width, height) && Mathf.within(x, y, rad)){
+                for(int x3 = -rad; x3 <= rad; x3++){
+                    for(int y3 = -rad; y3 <= rad; y3++){
+                        int wx = t.x + x, wy = t.y + y1;
+                        if(Structs.inBounds(wx, wy, width, height) && Mathf.within(x3, y3, rad)){
                             Tile other = tiles.getn(wx, wy);
                             other.setBlock(Blocks.air);
-                            if(Mathf.within(x, y, rad - 1) && !other.floor().isLiquid){
-                                Floor floor = other.floor();
+                            if(Mathf.within(x3, y3, rad - 1) && !other.floor().isLiquid){
+                                Floor floor1 = other.floor();
                                 //TODO does not respect tainted floors
-                                other.setFloor((Floor)(floor == Blocks.sand || floor == Blocks.salt ? Blocks.sandWater : Blocks.darksandTaintedWater));
+                                other.setFloor((Floor)(floor1 == Blocks.sand ||
+                                floor1 == Blocks.salt ? Blocks.sandWater : Blocks.darksandTaintedWater));
                             }
                         }
                     }

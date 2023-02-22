@@ -152,9 +152,9 @@ public class MainMultiComponent extends BaseComponent{
                     return false;
                 })
                 .each(port -> {
-                    float portRemains = port.block.liquidCapacity-port.liquids.get(liquid);
-                    b.liquids.remove(liquid, Math.min(portRemains,i));
-                    port.liquids.add(liquid, Math.min(portRemains,i));
+                    float portRemains = port.block.liquidCapacity - port.liquids.get(liquid);
+                    b.liquids.remove(liquid, Math.min(portRemains, i));
+                    port.liquids.add(liquid, Math.min(portRemains, i));
                 });
                 m1.addAll(getOff);
                 getOff.clear();
@@ -185,10 +185,10 @@ public class MainMultiComponent extends BaseComponent{
     }
 
     /**
-     * The check is just for 3 steps
-     * Step 1: Rotate the position. Just use the {@code rotate}
+     * The check is just for 3 steps<p>
+     * Step 1: Rotate the position. Just use the {@code rotate}<p>
      * Step 2: Change the original point. The center of the odd-size block never changes,
-     * but even-size is always changes. A fix is needed to fix the change.
+     * but even-size is always changes. A fix is needed to fix the change.<p>
      * Step 3: Check for the sufficient point. After the two steps above we need to reserve
      * the point so that the index can works. Then the lower-left point is always changes
      * so we have to fix it too.
@@ -217,7 +217,8 @@ public class MainMultiComponent extends BaseComponent{
                 b.set(b1);
                 if(b1 && building instanceof MultiStructPortBuild ms){
                     ms.connectParent = build;
-                    if(build instanceof IMulti m) m.addPorts(ms, p);
+                    if(build instanceof IMulti m)
+                        m.addPorts(ms, p);
                 }
             }else b.set(false);
         });
@@ -243,10 +244,10 @@ public class MainMultiComponent extends BaseComponent{
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.get(p).getBlock()){
                 if(!isSufficient(ctx, cty, Vars.world.build(ctx, cty), b) || !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
-                    Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, data.get(p).getRotation() * 90);
+                    Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, (data.get(p).getRotation() + baseRotation) * 90);
                 }
             }else{
-                Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, data.get(p).getRotation() * 90);
+                Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, (data.get(p).getRotation() + baseRotation) * 90);
             }
         });
     }
@@ -263,7 +264,7 @@ public class MainMultiComponent extends BaseComponent{
             int bSize = data.get(p).getBlock().size;
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             Draw.alpha(0.5f);
-            Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, rotation * 90);
+            Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, (rotation + data.get(p).getRotation()) * 90);
         });
     }
 

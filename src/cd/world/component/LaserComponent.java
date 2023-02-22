@@ -123,7 +123,8 @@ public class LaserComponent extends BaseComponent{
             if(!(((b.tile.x == bx) ? 0 : sign(bx - b.tile.x)) == dir.x && ((b.tile.y == by) ? 0 : sign(by - b.tile.y)) == dir.y)) return false;
             if(((ILaserBuilding)b).getLaserChild() == null) return true;
             int nowDst = Math.max(abs(bx - b.tile.x), abs(by - b.tile.y));
-            int dst = Math.max(Math.abs(((ILaserBuilding)b).getLaserChild().tile.x - b.tile.x), Math.abs(((ILaserBuilding)b).getLaserChild().tile.y - b.tile.y));
+            int dst = Math.max(Math.abs(((ILaserBuilding)b).getLaserChild().tile.x - b.tile.x),
+            Math.abs(((ILaserBuilding)b).getLaserChild().tile.y - b.tile.y));
             return nowDst < dst;
         }else{
             return false;
@@ -244,7 +245,8 @@ public class LaserComponent extends BaseComponent{
                 //算算一半的格子宽
                 float poff = tilesize / 2f;
                 //第一个贴图是激光中间，第二个是头尾两边，从自己对应方向的边缘，到对方的边缘，宽度取刚才算的。就可以激光贴贴了
-                Drawf.laser(laser, laserStart, laserEnd, b.x + poff * b.block.size * point.x, b.y + poff * b.block.size * point.y, bLaser.getLaserChild().tile.worldx() - poff * point.x, bLaser.getLaserChild().tile.worldy() - poff * point.y, w);
+                Drawf.laser(laser, laserStart, laserEnd, b.x + poff * b.block.size * point.x, b.y + poff * b.block.size * point.y,
+                bLaser.getLaserChild().tile.worldx() - poff * point.x, bLaser.getLaserChild().tile.worldy() - poff * point.y, w);
             }
         }
         Draw.reset();

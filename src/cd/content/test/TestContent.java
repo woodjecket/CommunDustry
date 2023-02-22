@@ -69,7 +69,8 @@ public class TestContent{
              * 0 0 0 0 0 0 0 0 0 0 */
             dataOf(portInLarge, 4, 0, portInLarge, 2, 3, portOutLarge, 0, -3, portOutLarge, -3, -1,
             Blocks.titaniumConveyor, 3, 0, Blocks.conveyor, 3, 1, Blocks.armoredConveyor, 3, 2,
-            new RotatedBlock(Blocks.diode, 1), -1, 3, new RotatedBlock(Blocks.plastaniumConveyor, 1), 0, 3, new RotatedBlock(CDBlocks.basicCO2Laser, 1), 1, 3);
+            new RotatedBlock(Blocks.diode, 1), -1, 3, new RotatedBlock(Blocks.plastaniumConveyor, 1),
+            0, 3, new RotatedBlock(CDBlocks.basicCO2Laser, 1), 1, 3);
 
             directionOf(Liquids.water, new Point2(0, -3), Liquids.slag, new Point2(-3, -1));
         }}
@@ -97,7 +98,7 @@ public class TestContent{
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
         craftEffect = CDFx.iceCraft;
-        outputLiquid = LiquidStack.with(Liquids.water, 6f)[0];
+        outputLiquid = LiquidStack.with(Liquids.water, 6f/60f)[0];
         craftTime = 60f;
         size = 1;
         hasPower = true;

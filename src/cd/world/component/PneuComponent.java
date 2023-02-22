@@ -59,7 +59,8 @@ public class PneuComponent extends BaseComponent{
     @Override
     public boolean onShouldConsume(Building b){
         ILaserPneu bPneu = (ILaserPneu)b;
-        return bPneu.getPressure() < maxOperatePressure && (canProvidePressure || bPneu.getPressure() > minOperatePressure);
+        return bPneu.getPressure() < maxOperatePressure &&
+        (canProvidePressure || bPneu.getPressure() > minOperatePressure);
     }
 
     @Override
@@ -83,7 +84,8 @@ public class PneuComponent extends BaseComponent{
     public void calculatePressure(Building b){
         ILaserPneu bPneu = (ILaserPneu)b;
         if(b.block.rotate){
-            var other = b.proximity.filter(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() && Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
+            var other = b.proximity.filter(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
+            Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
             if(!(other instanceof ILaserPneu otherPneu)) return;
             float thisP = bPneu.getPressure();
             float otherP = otherPneu.getPressure();
@@ -140,7 +142,8 @@ public class PneuComponent extends BaseComponent{
 
     @Override
     public void onSetStats(Block b){
-        b.stats.add(CDStat.pressureRange, Core.bundle.get("stat.pressure-range-format"), minOperatePressure, maxOperatePressure, explodePressure);
+        b.stats.add(CDStat.pressureRange, Core.bundle.get("stat.pressure-range-format"),
+        minOperatePressure, maxOperatePressure, explodePressure);
         if(canProvidePressure) b.stats.add(CDStat.pressureOutput, outputPressure, CDStat.perConsume);
         if(canConsumePressure) b.stats.add(CDStat.pressureConsume, pressureConsume, CDStat.perConsume);
     }

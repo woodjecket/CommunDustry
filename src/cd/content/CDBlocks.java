@@ -17,7 +17,8 @@ import static mindustry.type.ItemStack.with;
 public class CDBlocks{
 
     public static Block
-    basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer, pneuConduit, chlorineExtractor, airCompressor, basicClF3Crafter, basicCO2Laser, basicLaserRepeater, fluorineExtractor, basicChipCrafter,
+    basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer, pneuConduit, chlorineExtractor, airCompressor, basicClF3Crafter,
+    basicCO2Laser, basicLaserRepeater, fluorineExtractor, basicChipCrafter,
     //env
     ashWall, ashFloor, ashBoulder, deadSapling, enrichedSandFloor, enrichedSandWall, enrichedSandBoulder,
     graniteFloor, graniteWall, graniteBoulder,

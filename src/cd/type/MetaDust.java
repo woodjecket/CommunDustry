@@ -3,7 +3,6 @@ package cd.type;
 import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.TextureAtlas.*;
-import arc.util.*;
 import mindustry.*;
 import mindustry.graphics.*;
 import mindustry.graphics.MultiPacker.*;
@@ -22,7 +21,7 @@ public class MetaDust extends Item{
         flammability = item.flammability * 1.3f;
         charge = item.charge * 0.8f;
         localizedName = Core.bundle.format("commumdustry-item-dust", item.localizedName);
-        Log.info(localizedName);
+        //Log.info(localizedName);
     }
 
     public MetaDust(Item item, Color c1, Color c2, Color c3){

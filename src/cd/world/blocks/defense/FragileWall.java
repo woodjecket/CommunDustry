@@ -27,7 +27,8 @@ public class FragileWall extends Wall{
 
     @Override
     public void setBars(){
-        addBar("damage", build -> new Bar(() -> Core.bundle.format("bar.damage-amount"), () -> Pal.health, () -> ((FragileWallBuilding)build).damagedAmount / brokenThreshold));
+        addBar("damage", build -> new Bar(() -> Core.bundle.format("bar.damage-amount"),
+        () -> Pal.health, () -> ((FragileWallBuilding)build).damagedAmount / brokenThreshold));
         super.setBars();
     }
 

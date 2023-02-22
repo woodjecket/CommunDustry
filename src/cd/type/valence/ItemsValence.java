@@ -71,8 +71,8 @@ public class ItemsValence{
             this.func = func;
         }
 
-        public Integer get(ValenceModule module){
-            return func.get(module);
+        public Integer get(ValenceModule param){
+            return func.get(param);
         }
 
         public Integer getNormal(ValenceModule module){

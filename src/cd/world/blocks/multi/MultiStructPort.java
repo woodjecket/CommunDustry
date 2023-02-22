@@ -59,7 +59,8 @@ public class MultiStructPort extends Block{
 
         @Override
         public boolean acceptItem(Building source, Item item){
-            return isInputItem && connectParent != null && connectParent.block.consumesItem(item) && items.get(item) + connectParent.items.get(item) < getMaximumAccepted(item) + connectParent.getMaximumAccepted(item);
+            return isInputItem && connectParent != null && connectParent.block.consumesItem(item) &&
+            items.get(item) + connectParent.items.get(item) < getMaximumAccepted(item) + connectParent.getMaximumAccepted(item);
         }
 
         @Override
@@ -82,8 +83,7 @@ public class MultiStructPort extends Block{
                         float arrangeRemains = (thisRemains + parentRemains) / 2f;
                         float thisTobeChange = thisRemains - arrangeRemains;
                         float parentToBeChange = parentRemains - arrangeRemains;
-                        //Vars.ui.showLabel(Strings.format("tA:@,pA:@,tR:@,pR:@,aR:@,tB:@,pB:@", thisAmount, parentAmount, thisRemains, parentRemains, arrangeRemains, thisTobeChange, parentToBeChange), 1, x, y);
-                        if(liquids.get(liquid) - thisTobeChange >= 0){
+                        if(liquids.get(liquid) + thisTobeChange >= 0){
                             liquids.remove(liquid, -thisTobeChange);
                             connectParent.handleLiquid(this, liquid, parentToBeChange);
                         }else{
@@ -97,7 +97,9 @@ public class MultiStructPort extends Block{
                         if(!connectParent.block.itemFilter[item.id]) continue;
                         if(connectParent.items.get(item) >= connectParent.block.itemCapacity) continue;
                         if(items.has(item)){
+                            //Log.info("Before: "+item+" "+items.get(item));
                             items.remove(item, 1);
+                            //Log.info("After "+item+" "+items.get(item));
                             connectParent.handleItem(this, item);
                         }
                     }
@@ -122,7 +124,7 @@ public class MultiStructPort extends Block{
         @Override
         public void read(Reads read, byte revision){
             super.read(read, revision);
-            int version = read.i();
+            int ignored = read.i();
         }
 
         @Override

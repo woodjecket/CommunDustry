@@ -72,14 +72,14 @@ public class Formula{
         AtomicInteger valence = new AtomicInteger(0),
         index = new AtomicInteger(0);
         AtomicReference<ValenceFunc> handleFunc = new AtomicReference<>();
-        items.each(i -> {
+        items.each(item -> {
             Seq<Item> tmpItems = items.copy();
             tmpItems.removeRange(index.get(), items.size - 1);
             Formula tmpFormula = new Formula(tmpItems);
-            int itemValence = ItemsValence.getValence(i, new ValenceModule(valence, tmpFormula, 0));
+            int itemValence = ItemsValence.getValence(item, new ValenceModule(valence, tmpFormula, 0));
             if(handleFunc.get() != null) valence.getAndAdd(handleFunc.get().getNormal(new ValenceModule(valence, tmpFormula, itemValence)));
             else valence.getAndAdd(itemValence);
-            if(getFunc(i) != null) handleFunc.set(getFunc(i).handleFunc);
+            if(getFunc(item) != null) handleFunc.set(getFunc(item).handleFunc);
             index.getAndIncrement();
         });
         updateValence(valence);
