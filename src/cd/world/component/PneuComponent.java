@@ -11,36 +11,30 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
+import mindustry.world.blocks.production.GenericCrafter.*;
 
 import static mindustry.Vars.*;
 
 public class PneuComponent extends BaseComponent{
     // For crafter
 
+    /** The default pressure when building */
+    public static final float standardPressure = 1f;
     /** Whether the building can provide pressure. */
     public boolean canProvidePressure;
-
     /** Pressure output per consume. */
     public float outputPressure = 1f;
-
     /** Whether the building can consume pressure. */
     public boolean canConsumePressure;
-
     /** Pressure consume per consume */
     public float pressureConsume = 0.1f;
 
-    /** If pressure is lower than this point, the crafter will nor work. */
-    public float minOperatePressure = 2f;
-
 
     //for all block
-
+    /** If pressure is lower than this point, the crafter will nor work. */
+    public float minOperatePressure = 2f;
     /** When the pressure approach this point it will explode. */
     public float explodePressure = 15f;
-
-    /** The default pressure when building */
-    public float standardPressure = 1f;
-
     /** If pressure is over this point, the building will not work. */
     public float maxOperatePressure = 10f;
 
@@ -60,11 +54,13 @@ public class PneuComponent extends BaseComponent{
     public boolean onShouldConsume(Building b){
         ILaserPneu bPneu = (ILaserPneu)b;
         return bPneu.getPressure() < maxOperatePressure &&
-        (canProvidePressure || bPneu.getPressure() > minOperatePressure);
+        (canProvidePressure || bPneu.getPressure() > minOperatePressure) &&
+        (!canConsumePressure || bPneu.getPressure() > pressureConsume)
+        ;
     }
 
     @Override
-    public void onCraft(Building b){
+    public void onCraft(GenericCrafterBuild b){
         ILaserPneu bPneu = (ILaserPneu)b;
         if(canProvidePressure) bPneu.setPressure(bPneu.getPressure() + outputPressure);
         if(canConsumePressure) bPneu.setPressure(bPneu.getPressure() - pressureConsume);
@@ -83,8 +79,7 @@ public class PneuComponent extends BaseComponent{
 
     public void calculatePressure(Building b){
         ILaserPneu bPneu = (ILaserPneu)b;
-        //noinspection ConstantValue
-        if(false/*b.block.rotate*/){
+        if(b.block.rotate){
             var other = b.proximity.filter(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
             Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
             if(!(other instanceof ILaserPneu otherPneu)) return;
@@ -106,13 +101,22 @@ public class PneuComponent extends BaseComponent{
                     otherPneu.setPressure(arrangeP);
                 }
             }
-            if(bPneu.getPressure() < standardPressure){
-                bPneu.setPressure((bPneu.getPressure() + standardPressure) / 2f + standardPressure / 10f);
-            }
+        }
+        if(bPneu.getPressure() < standardPressure){
+            bPneu.setPressure((bPneu.getPressure() + standardPressure) / 2f + standardPressure / 10f);
+        }
 
-            if(bPneu.getPressure() > explodePressure){
-                b.kill();
-            }
+        if(bPneu.getPressure() > explodePressure){
+            b.kill();
+        }
+
+    }
+
+    @Override
+    public void onDestroyed(Building b){
+        //Why?
+        if(state.rules.reactorExplosions){
+            onCreateExplosion(b);
         }
     }
 
@@ -130,14 +134,6 @@ public class PneuComponent extends BaseComponent{
             if(explosionShake > 0){
                 Effect.shake(explosionShake, explosionShakeDuration, b);
             }
-        }
-    }
-
-    @Override
-    public void onDestroyed(Building b){
-        //Why?
-        if(state.rules.reactorExplosions){
-            onCreateExplosion(b);
         }
     }
 

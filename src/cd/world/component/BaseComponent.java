@@ -2,6 +2,7 @@ package cd.world.component;
 
 import mindustry.gen.*;
 import mindustry.world.*;
+import mindustry.world.blocks.production.GenericCrafter.*;
 
 /** Basic components with no operation */
 public abstract class BaseComponent{
@@ -18,7 +19,7 @@ public abstract class BaseComponent{
     }
 
     /** Calls when building {@code craft} */
-    public void onCraft(Building b){
+    public void onCraft(GenericCrafterBuild b){
     }
 
     /** Calls when building {@code shouldConsume}, "and" relation */

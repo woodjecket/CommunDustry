@@ -127,7 +127,7 @@ public class MainMultiComponent extends BaseComponent{
             var m1 = m.getPorts();
             b.items.each((item, i) -> {
                 m1.filter(port -> {
-                    if(port.canOutputItem(item)){
+                    if(port.canOutputItem(item) && !b.block.itemFilter[item.id]){
                         return true;
                     }else{
                         getOff.add(port);
@@ -145,7 +145,7 @@ public class MainMultiComponent extends BaseComponent{
                 //Log.info(liquid);
                 m1.filter(port -> {
                     //Log.info(port + " " + (port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid))) + " " + liquid);
-                    if(port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid))){
+                    if(port.canOutputLiquid(liquid) && port.offsetPos.equals(liquidOutputPos.get(liquid) )&& !b.block.liquidFilter[liquid.id]){
                         return true;
                     }
                     getOff.add(port);

@@ -8,6 +8,7 @@ import arc.math.geom.*;
 import arc.util.*;
 import cd.entities.building.*;
 import cd.world.blocks.*;
+import cd.world.blocks.multi.*;
 import cd.world.stat.*;
 import mindustry.*;
 import mindustry.core.*;
@@ -15,13 +16,13 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
+import mindustry.world.blocks.production.GenericCrafter.*;
 
 import static arc.math.Mathf.*;
 import static java.lang.Math.*;
 import static mindustry.Vars.*;
 
 public class LaserComponent extends BaseComponent{
-    public static int lastChange = -1;
     public boolean acceptLaserEnergy;
     public boolean provideLaserEnergy;
     public float laserEnergyOutput;
@@ -141,10 +142,7 @@ public class LaserComponent extends BaseComponent{
     public void onUpdateTile(Building b){
         //世界每次有方块更新就让world.tileChanges变化，此处达到每次更新才重新计算的效果
         if(provideLaserEnergy){
-            if(lastChange != world.tileChanges){
-                lastChange = world.tileChanges;
-                updateChild(b);
-            }
+            updateChild(b);
             updateLaserEnergy(b);
         }
 
@@ -158,7 +156,8 @@ public class LaserComponent extends BaseComponent{
         }
         var childLaser = (ILaserBuilding)child;
         if(childLaser == null) return;
-        if(childLaser.getLaserEnergy() > ((IComp)child.block).getComp(LaserComponent.class).maxLaserEnergy) return;
+        if(child.block instanceof IComp comp && childLaser.getLaserEnergy() > comp.getComp(LaserComponent.class).maxLaserEnergy
+        || child.block instanceof MultiStructPort multi && childLaser.getLaserEnergy() > multi.maxLaserEnergy) return;
         if(bLaser.getLaserEnergy() < 0) return;
         var outRangeDst = max(attenuateRange, dst(b.tileX(), b.tileY(), child.tileX(), child.tileY())) - attenuateRange;
         var realEfficiency = laserTransportEfficiency * max((1 - outRangeDst * attenuatePercent), 0f);
@@ -169,7 +168,7 @@ public class LaserComponent extends BaseComponent{
     }
 
     @Override
-    public void onCraft(Building b){
+    public void onCraft(GenericCrafterBuild b){
         var bLaser = (ILaserBuilding)b;
         bLaser.changeLaserEnergy(bLaser.getLaserEnergy() > maxLaserEnergy ? 0 : laserEnergyOutput - consumeLaserEnergy);
     }
@@ -189,7 +188,7 @@ public class LaserComponent extends BaseComponent{
         for(int j = 1 + offset; j <= laserRange + offset; j++){
             //开启遍历，坐标x是此方块x+距离*方向乘数，y同理
             var other = world.build(b.tile.x + j * dir.x, b.tile.y + j * dir.y);
-            if(other == null) break;
+            if(other == null) continue;
             Log.info(other);
             if(other.block.size > 1 && other.tileX() != b.tile.x + j * dir.x){
                 break;

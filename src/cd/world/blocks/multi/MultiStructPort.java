@@ -1,15 +1,19 @@
 package cd.world.blocks.multi;
 
 import arc.*;
-import arc.graphics.*;
 import arc.math.geom.*;
 import arc.util.io.*;
 import cd.entities.building.*;
+import cd.world.blocks.*;
+import cd.world.component.*;
 import mindustry.*;
 import mindustry.gen.*;
+import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.*;
+
+import static cd.world.component.PneuComponent.standardPressure;
 
 public class MultiStructPort extends Block{
 
@@ -19,6 +23,7 @@ public class MultiStructPort extends Block{
     public boolean isOutputItem;
     public boolean isOutputLiquid;
     public boolean isInputPressure, isInputLaser;
+    public float maxLaserEnergy = 10f;
 
     public MultiStructPort(String name){
         super(name);
@@ -31,15 +36,14 @@ public class MultiStructPort extends Block{
     public void init(){
         super.init();
         removeBar("liquid");
-        addBar("laser-energy", (entity) -> new Bar(
-        () -> Core.bundle.format("bar.laser-energy", ((ILaserBuilding)entity).getLaserEnergy()),
-        () -> Color.valueOf("ffd9c2"),
-        () -> ((ILaserBuilding)entity).getLaserEnergy() / 10f
-        ));
+        addBar("pressure",
+        (entity) -> new Bar(
+        () -> Core.bundle.format("bar.pressure-amount", ((ILaserPneu)entity).getPressure()),
+        () -> Pal.lightOrange, () -> ((ILaserPneu)entity).getPressure() / 20f));
 
     }
 
-    public class MultiStructPortBuild extends Building implements ILaserBuilding,ILaserPneu{
+    public class MultiStructPortBuild extends Building implements ILaserBuilding, ILaserPneu{
         public Building connectParent;
         public Point2 offsetPos;
         public float pressure;
@@ -53,10 +57,6 @@ public class MultiStructPort extends Block{
             return isInputLiquid;
         }
 
-        public boolean isOutputItem(){
-            return isOutputItem;
-        }
-
         public boolean isOutputLiquid(){
             return isOutputLiquid;
         }
@@ -68,6 +68,9 @@ public class MultiStructPort extends Block{
             return isOutputItem() && items.get(item) < block.itemCapacity;
         }
 
+        public boolean isOutputItem(){
+            return isOutputItem;
+        }
 
         @Override
         public boolean acceptItem(Building source, Item item){
@@ -127,10 +130,24 @@ public class MultiStructPort extends Block{
                     }
                 }
                 if(isInputPressure && connectParent instanceof ILaserPneu pneu){
-                    pneu.setPressure(pressure);
+                    if(connectParent.block instanceof IComp comp){
+                        float min = Math.min(pressure - standardPressure,
+                        comp.getComp(PneuComponent.class).maxOperatePressure - pneu.getPressure() - 0.1f);
+                        if(pneu.getPressure() < comp.getComp(PneuComponent.class).maxOperatePressure){
+                            pneu.setPressure(min + pneu.getPressure());
+                            pressure -= min;
+                        }
+                    }
                 }
                 if(isInputLaser && connectParent instanceof ILaserBuilding laser){
-                    laser.setLaserEnergy(laserEnergy);
+                    if(connectParent.block instanceof IComp comp){
+                        if(laser.getLaserEnergy() < comp.getComp(LaserComponent.class).maxLaserEnergy){
+                            float min = Math.min(laserEnergy,
+                            comp.getComp(LaserComponent.class).maxLaserEnergy - laser.getLaserEnergy());
+                            laser.changeLaserEnergy(min);
+                            laserEnergy -= min;
+                        }
+                    }
                 }
             }
         }
@@ -162,7 +179,8 @@ public class MultiStructPort extends Block{
         }
 
         @Override
-        public void setLaserChild(Building b){}
+        public void setLaserChild(Building b){
+        }
 
         @Override
         public void changeLaserEnergy(float c){
@@ -186,7 +204,7 @@ public class MultiStructPort extends Block{
 
         @Override
         public void setLaserEnergy(float energy){
-            laserEnergy=energy;
+            laserEnergy = energy;
         }
 
         @Override
@@ -196,7 +214,7 @@ public class MultiStructPort extends Block{
 
         @Override
         public void setPressure(float pressure){
-            this.pressure=pressure;
+            this.pressure = pressure;
         }
     }
 
