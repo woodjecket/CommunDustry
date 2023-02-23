@@ -5,7 +5,6 @@ import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
-import arc.util.*;
 import cd.entities.building.*;
 import cd.world.blocks.*;
 import cd.world.blocks.multi.*;
@@ -189,15 +188,15 @@ public class LaserComponent extends BaseComponent{
             //开启遍历，坐标x是此方块x+距离*方向乘数，y同理
             var other = world.build(b.tile.x + j * dir.x, b.tile.y + j * dir.y);
             if(other == null) continue;
-            Log.info(other);
+            //Log.info(other);
             if(other.block.size > 1 && other.tileX() != b.tile.x + j * dir.x){
                 break;
             }
-            Log.info(other instanceof ILaserBuilding && !((ILaserBuilding)other).isAcceptLaserEnergy());
+            //Log.info(other instanceof ILaserBuilding && !((ILaserBuilding)other).isAcceptLaserEnergy());
             if(other instanceof ILaserBuilding && !((ILaserBuilding)other).isAcceptLaserEnergy()){
                 break;
             }
-            Log.info(other.team == Vars.player.team() && other instanceof ILaserBuilding l && l.isAcceptLaserEnergy());
+            //Log.info(other.team == Vars.player.team() && other instanceof ILaserBuilding l && l.isAcceptLaserEnergy());
             if(other.team == Vars.player.team() && other instanceof ILaserBuilding l && l.isAcceptLaserEnergy()){
                 bLaser.setLaserChild(other);
                 break;

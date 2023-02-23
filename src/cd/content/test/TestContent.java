@@ -20,6 +20,10 @@ import static mindustry.type.ItemStack.with;
 @SuppressWarnings("unused")
 public class TestContent{
     public static Seq<MetaDust> g = new Seq<>();
+    /*
+    * Chinese：thanatus是这个版本的代号，直接打版本号太长了所以在测试内容 前面加了这个名字
+    * */
+
     public static Block portIn = new MultiStructPort("thanatus-port-input"){{
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
         hasLiquids = true;
@@ -91,7 +95,7 @@ public class TestContent{
             new RotatedBlock(Blocks.diode, 1), -1, 3, new RotatedBlock(Blocks.plastaniumConveyor, 1),
             0, 3, new RotatedBlock(CDBlocks.basicCO2Laser, 1), 1, 3);
 
-            directionOf(Liquids.water, new Point2(0, -3), Liquids.slag, new Point2(-3, -1));
+            liquidDirectionOf(Liquids.water, new Point2(0, -3), Liquids.slag, new Point2(-3, -1));
         }}
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
@@ -188,7 +192,7 @@ public class TestContent{
         addComp(
         new MainMultiComponent(){{
             dataOf(portIn, -1, 1, portOut, 1, -1, portOut, 1, 1, Blocks.copperWall, -1, -1);
-            directionOf(Liquids.water, new Point2(1, -1), CDLiquids.H2O2, new Point2(1, 1));
+            liquidDirectionOf(Liquids.water, new Point2(1, -1), CDLiquids.H2O2, new Point2(1, 1));
         }}
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));

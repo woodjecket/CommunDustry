@@ -29,7 +29,6 @@ public class MultiStructPort extends Block{
         super(name);
         update = true;
         hasItems = hasLiquids = true;
-        rotate = true;
     }
 
     @Override

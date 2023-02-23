@@ -19,6 +19,7 @@ import static mindustry.Vars.tilesize;
 public class MainMultiComponent extends BaseComponent{
     private IMultiData data = new OMultiData();
     private ObjectMap<Liquid, Point2> liquidOutputPos = new ObjectMap<>();
+    private ObjectMap<Item, Point2> itemOutputPos = new ObjectMap<>();
 
     //Single-thread ONLY!!!!!!!
     private Seq<MultiStructPortBuild> getOff = new Seq<>();
@@ -127,7 +128,7 @@ public class MainMultiComponent extends BaseComponent{
             var m1 = m.getPorts();
             b.items.each((item, i) -> {
                 m1.filter(port -> {
-                    if(port.canOutputItem(item) && !b.block.itemFilter[item.id]){
+                    if(port.canOutputItem(item) && port.offsetPos.equals(itemOutputPos.get(item) ) && !b.block.itemFilter[item.id]){
                         return true;
                     }else{
                         getOff.add(port);
@@ -178,9 +179,15 @@ public class MainMultiComponent extends BaseComponent{
         data.valueOf(a);
     }
 
-    public void directionOf(Object... a){
+    public void liquidDirectionOf(Object... a){
         for(int i = 0; i < a.length - 1; i = i + 2){
             liquidOutputPos.put((Liquid)a[i], ((Point2)a[i + 1]).cpy());
+        }
+    }
+
+    public void itemDirectionOf(Object... a){
+        for(int i = 0; i < a.length - 1; i = i + 2){
+            itemOutputPos.put((Item)a[i], ((Point2)a[i + 1]).cpy());
         }
     }
 
@@ -235,6 +242,7 @@ public class MainMultiComponent extends BaseComponent{
         super.onEntityDraw(b);
         Draw.alpha(0.5f);
         data.getEachable().each(p -> {
+            Draw.alpha(0.5f);
             p.rotate(baseRotation);
             reserveCenter(b.block.size, p, baseRotation);
             int ctx = b.tileX() + p.x, cty = b.tileY() + p.y;
@@ -245,9 +253,11 @@ public class MainMultiComponent extends BaseComponent{
             if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.get(p).getBlock()){
                 if(!isSufficient(ctx, cty, Vars.world.build(ctx, cty), b) || !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
                     Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, (data.get(p).getRotation() + baseRotation) * 90);
+                    //Drawf.circles(dx,dy,4,Pal.accent);
                 }
             }else{
                 Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, (data.get(p).getRotation() + baseRotation) * 90);
+                //Drawf.circles(dx,dy,4,Pal.accent);
             }
         });
     }

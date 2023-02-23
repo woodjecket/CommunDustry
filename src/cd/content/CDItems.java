@@ -4,7 +4,8 @@ import arc.graphics.*;
 import mindustry.type.*;
 
 public class CDItems{
-    public static Item lanthanum, cerium, platinum, ice, basicChip;
+    public static Item lanthanum, cerium, platinum, ice, basicChip,
+    wax,bitumen;
 
     public static void load(){
         lanthanum = new Item("lanthanum", Color.valueOf("fc1c37")){{
@@ -22,5 +23,9 @@ public class CDItems{
         ice = new Item("ice", Color.valueOf("80b3c4"));
 
         basicChip = new Item("basic-chip", Color.valueOf("00ab66"));
+
+        wax = new Item("wax");
+
+        bitumen = new Item("bitumen");
     }
 }

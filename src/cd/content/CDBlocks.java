@@ -1,7 +1,9 @@
 package cd.content;
 
 import arc.graphics.*;
+import arc.math.geom.*;
 import cd.world.blocks.*;
+import cd.world.blocks.multi.*;
 import cd.world.component.*;
 import mindustry.content.*;
 import mindustry.gen.*;
@@ -19,6 +21,8 @@ public class CDBlocks{
     public static Block
     basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer, pneuConduit, chlorineExtractor, airCompressor, basicClF3Crafter,
     basicCO2Laser, basicLaserRepeater, fluorineExtractor, basicChipCrafter,
+    //multi-oil
+    basicLiquidInPort,basicLiquidOutPort,basicItemOutPort,basicStructBlock,basicStructBlockLarge,oilDistillatorTower,
     //env
     ashWall, ashFloor, ashBoulder, deadSapling, enrichedSandFloor, enrichedSandWall, enrichedSandBoulder,
     graniteFloor, graniteWall, graniteBoulder,
@@ -217,7 +221,8 @@ public class CDBlocks{
         }};
 
         basicChipCrafter = new ComponentCrafter("basic-chip-crafter"){{
-            requirements(Category.crafting, with(Items.plastanium, 40, Items.titanium, 100, Items.silicon, 150, Items.thorium, 80));
+            requirements(Category.crafting, with(Items.plastanium, 40,
+            Items.titanium, 100, Items.silicon, 150, Items.thorium, 80));
             outputItem = new ItemStack(CDItems.basicChip, 2);
             craftTime = 120f;
             size = 3;
@@ -241,6 +246,84 @@ public class CDBlocks{
                 acceptLaserEnergy = true;
                 consumeLaserEnergy = 0.5f;
             }});
+        }};
+
+        basicLiquidInPort = new MultiStructPort("basic-liquid-input-port"){{
+            requirements(Category.distribution, with(Items.copper,
+            40, Items.lead, 20, Items.silicon, 15,Items.metaglass,10));
+            isInputItem = false;
+            size = 3;
+        }};
+
+        basicLiquidOutPort = new MultiStructPort("basic-liquid-output-port"){{
+            requirements(Category.distribution, with(Items.copper,
+            40, Items.lead, 20, Items.silicon, 15,Items.metaglass,10));
+            isInputLiquid = isInputItem = false;
+            isOutputLiquid = true;
+            size= 2;
+        }};
+
+        basicItemOutPort = new MultiStructPort("basic-item-output-port"){{
+            requirements(Category.distribution, with(Items.copper, 40, Items.lead, 20, Items.silicon, 15));
+            isInputLiquid = isInputItem = false;
+            isOutputItem = true;
+            size= 2;
+        }};
+
+        basicStructBlock = new Block("basic-structure-block"){{
+            requirements(Category.distribution, with(Items.copper, 12, Items.lead, 15, Items.graphite, 5));
+            update = true;
+        }};
+
+        basicStructBlockLarge = new Block("basic-structure-block-large"){{
+            requirements(Category.distribution, with(Items.copper, 48, Items.lead, 60, Items.graphite, 20,Items.silicon,5));
+            update = true;
+            size = 2;
+        }};
+        oilDistillatorTower = new ComponentCrafter("oil-distillator-tower"){{
+            requirements(Category.crafting, with(Items.copper, 400,Items.lead, 400,Items.metaglass, 100,
+            Items.titanium, 100, Items.silicon, 150, Items.graphite, 80));
+            buildCostMultiplier = 0.1f;
+            size = 5;
+            addComp(new MainMultiComponent(){{
+                /**  1 2 3 4 5 6 7 8 9 0 A B C D E
+                 * 1 F F F F F F F F F F F F F F F
+                 * 2 F F F F F F F F F F F F F F F
+                 * 3 F F F F F F F F F F F F F F F
+                 * 4 F F F L L B B S A A L L F F F
+                 * 5 F F F L L B B S A A L L F F F
+                 * 6 F F F Y Y O O O O O T T F F F
+                 * 7 F F F Y Y O O O O O T T F F F
+                 * 8 F F F S S O O C O O S S F F F
+                 * 9 F F F Z Z O O O O O W W F F F
+                 * 0 F F F Z Z O O O O O W W F F F
+                 * A F F F L L S I I I S L L F F F
+                 * B F F F L L S I I I S L L F F F
+                 * C F F F F F F I I I F F F F F F
+                 * D F F F F F F F F F F F F F F F
+                 * E F F F F F F F F F F F F F F F
+                 * */
+                //Original Point is (8,8)
+                dataOf(basicLiquidOutPort,3,1,basicLiquidOutPort,3,-2,basicLiquidOutPort,-4,1,basicLiquidOutPort,-4,-2,
+                basicLiquidInPort,-1,-5,basicItemOutPort,1,3,basicItemOutPort,-2,3,
+                basicStructBlock,0,3,basicStructBlock,0,4,
+                basicStructBlock,3,0,basicStructBlock,4,0,basicStructBlock,-3,0,basicStructBlock,-4,0,
+                basicStructBlock,-2,-3,basicStructBlock,-2,-4,basicStructBlock,2,-3,basicStructBlock,2,-4,
+                basicStructBlockLarge,3,-4,basicStructBlockLarge,-4,-4,basicStructBlockLarge,3,3,basicStructBlockLarge,-4,3);
+                liquidDirectionOf(CDLiquids.petrol,new Point2(3,1),CDLiquids.kerosene,new Point2(3,-2),
+                CDLiquids.diesel,new Point2(-4,1),CDLiquids.lubricatingOil,new Point2(-4,-2));
+                itemDirectionOf(CDItems.bitumen,new Point2(1,3),CDItems.wax,new Point2(-2,3));
+            }});
+
+            consumeLiquid(Liquids.oil,2f);//real 120/s!
+            consumePower(2f)         ;
+
+            outputLiquids = LiquidStack.with(CDLiquids.petrol,15f/60f,CDLiquids.kerosene,15f/60f,
+            CDLiquids.diesel,15f/60f,CDLiquids.lubricatingOil,15f/60f);
+
+            outputItems = with(CDItems.bitumen,2,CDItems.wax,3);
+
+
         }};
     }
 }
