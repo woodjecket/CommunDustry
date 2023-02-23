@@ -5,7 +5,7 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.world.*;
 
-/** Stores the data for multi-struct. A wrapper to access data with the interface */
+/** Stores the data for multi-struct with {@code ObjectMap}. A wrapper to access data with the interface */
 public class OMultiData implements IMultiData{
     private ObjectMap<Point2, RotatedBlock> data = new ObjectMap<>();
     private Eachable<Point2> eachable;

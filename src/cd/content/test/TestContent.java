@@ -116,6 +116,9 @@ public class TestContent{
     public static ComponentCrafter smallCrafter = new ComponentCrafter("thanatus-small-crafter"){{
         addComp(
         new MainMultiComponent(){{
+/*            data = new SMultiData();
+            data.valueOf(Schematics.readBase64("bXNjaAF4nH2MSw7CMBBD3aaw6SWAfU6EWAzpQCPlp8lEFbenUbcIy5bfwjIMjMGUKDIMEWFeuDrxRX1OAM6Bnh"+
+            "wqxvtjwuxyKSx2oxBwcTnGFpdWVT5WV0qkrdqSRa1PpSluvxdre7N1Qi9lwfXPS27ab4ATDg17xu6ho+l81A5flxw4Gg=="));*/
             dataOf(portIn, -1, 1, Blocks.copperWall, 1, -1, Blocks.copperWall, 1, 1, Blocks.copperWall, -1, -1);
         }}
         );
