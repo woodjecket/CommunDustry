@@ -2,7 +2,7 @@ package cd.entities.building;
 
 import arc.math.geom.*;
 import arc.struct.*;
-import cd.world.blocks.multi.MultiStructPort.*;
+import cd.world.blocks.multi.structure.MultiStructPort.*;
 
 public interface IMulti{
     /**

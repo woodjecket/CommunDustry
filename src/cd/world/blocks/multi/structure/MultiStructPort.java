@@ -1,4 +1,4 @@
-package cd.world.blocks.multi;
+package cd.world.blocks.multi.structure;
 
 import arc.*;
 import arc.math.geom.*;
@@ -37,12 +37,12 @@ public class MultiStructPort extends Block{
         removeBar("liquid");
         addBar("pressure",
         (entity) -> new Bar(
-        () -> Core.bundle.format("bar.pressure-amount", ((ILaserPneu)entity).getPressure()),
-        () -> Pal.lightOrange, () -> ((ILaserPneu)entity).getPressure() / 20f));
+        () -> Core.bundle.format("bar.pressure-amount", ((IPneu)entity).getPressure()),
+        () -> Pal.lightOrange, () -> ((IPneu)entity).getPressure() / 20f));
 
     }
 
-    public class MultiStructPortBuild extends Building implements ILaserBuilding, ILaserPneu{
+    public class MultiStructPortBuild extends Building implements ILaser, IPneu{
         public Building connectParent;
         public Point2 offsetPos;
         public float pressure;
@@ -128,7 +128,7 @@ public class MultiStructPort extends Block{
                         if(liquids.get(liquid) > 0) dumpLiquid(liquid);
                     }
                 }
-                if(isInputPressure && connectParent instanceof ILaserPneu pneu){
+                if(isInputPressure && connectParent instanceof IPneu pneu){
                     if(connectParent.block instanceof IComp comp){
                         float min = Math.min(pressure - standardPressure,
                         comp.getComp(PneuComponent.class).maxOperatePressure - pneu.getPressure() - 0.1f);
@@ -138,7 +138,7 @@ public class MultiStructPort extends Block{
                         }
                     }
                 }
-                if(isInputLaser && connectParent instanceof ILaserBuilding laser){
+                if(isInputLaser && connectParent instanceof ILaser laser){
                     if(connectParent.block instanceof IComp comp){
                         if(laser.getLaserEnergy() < comp.getComp(LaserComponent.class).maxLaserEnergy){
                             float min = Math.min(laserEnergy,

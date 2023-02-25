@@ -1,4 +1,4 @@
-package cd.world.blocks.multi;
+package cd.world.blocks.multi.structure;
 
 import mindustry.world.*;
 

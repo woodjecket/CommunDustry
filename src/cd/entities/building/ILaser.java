@@ -3,7 +3,7 @@ package cd.entities.building;
 import mindustry.gen.*;
 
 /** Laser Building */
-public interface ILaserBuilding{
+public interface ILaser{
     int getLaserRange();
 
     Building getLaserChild();

@@ -6,7 +6,7 @@ import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
 import cd.entities.building.*;
-import cd.world.blocks.multi.MultiStructPort.*;
+import cd.world.blocks.multi.structure.MultiStructPort.*;
 import cd.world.component.*;
 import mindustry.entities.units.*;
 import mindustry.gen.*;
@@ -72,7 +72,7 @@ public class ComponentBlock extends Block implements IComp{
     }
 
 
-    public class ComponentBuild extends Building implements ILaserPneu, ILaserBuilding, IMulti{
+    public class ComponentBuild extends Building implements IPneu, ILaser, IMulti{
         //define pneumatic
         public float pressure;
         /** It can only have one child who can be given laser energy to. */

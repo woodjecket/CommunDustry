@@ -3,7 +3,7 @@ package cd.content;
 import arc.graphics.*;
 import arc.math.geom.*;
 import cd.world.blocks.*;
-import cd.world.blocks.multi.*;
+import cd.world.blocks.multi.structure.*;
 import cd.world.component.*;
 import mindustry.content.*;
 import mindustry.gen.*;

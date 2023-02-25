@@ -6,7 +6,7 @@ import arc.struct.*;
 import cd.content.*;
 import cd.type.*;
 import cd.world.blocks.*;
-import cd.world.blocks.multi.*;
+import cd.world.blocks.multi.structure.*;
 import cd.world.component.*;
 import mindustry.*;
 import mindustry.content.*;
@@ -21,8 +21,8 @@ import static mindustry.type.ItemStack.with;
 public class TestContent{
     public static Seq<MetaDust> g = new Seq<>();
     /*
-    * Chinese：thanatus是这个版本的代号，直接打版本号太长了所以在测试内容 前面加了这个名字
-    * */
+      Chinese：thanatus是这个版本的代号，直接打版本号太长了所以在测试内容前面加了这个名字
+    */
 
     public static Block portIn = new MultiStructPort("thanatus-port-input"){{
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
@@ -114,9 +114,10 @@ public class TestContent{
     }};
 
     public static ComponentCrafter smallCrafter = new ComponentCrafter("thanatus-small-crafter"){{
+        //noinspection CommentedOutCode
         addComp(
         new MainMultiComponent(){{
-/*            data = new SMultiData();
+            /*data = new SMultiData();
             data.valueOf(Schematics.readBase64("bXNjaAF4nH2MSw7CMBBD3aaw6SWAfU6EWAzpQCPlp8lEFbenUbcIy5bfwjIMjMGUKDIMEWFeuDrxRX1OAM6Bnh"+
             "wqxvtjwuxyKSx2oxBwcTnGFpdWVT5WV0qkrdqSRa1PpSluvxdre7N1Qi9lwfXPS27ab4ATDg17xu6ho+l81A5flxw4Gg=="));*/
             dataOf(portIn, -1, 1, Blocks.copperWall, 1, -1, Blocks.copperWall, 1, 1, Blocks.copperWall, -1, -1);
@@ -124,7 +125,7 @@ public class TestContent{
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
         craftEffect = CDFx.iceCraft;
-        outputLiquid = LiquidStack.with(Liquids.water, 6f/60f)[0];
+        outputLiquid = LiquidStack.with(Liquids.water, 6f / 60f)[0];
         craftTime = 60f;
         size = 1;
         hasPower = true;
@@ -240,7 +241,7 @@ public class TestContent{
         }},
         new MainMultiComponent(){{
             dataOf(portIn, -1, 1, portOut, 1, -1, laserIn, 1, 1, pressureIn, -1, -1,
-            Blocks.duo,0,1,Blocks.arc,0,-1,Blocks.hail,1,0,Blocks.scorch,-1,0);
+            Blocks.duo, 0, 1, Blocks.arc, 0, -1, Blocks.hail, 1, 0, Blocks.scorch, -1, 0);
         }});
     }};
 

@@ -7,7 +7,7 @@ import arc.math.*;
 import arc.math.geom.*;
 import cd.entities.building.*;
 import cd.world.blocks.*;
-import cd.world.blocks.multi.*;
+import cd.world.blocks.multi.structure.*;
 import cd.world.stat.*;
 import mindustry.*;
 import mindustry.core.*;
@@ -62,11 +62,11 @@ public class LaserComponent extends BaseComponent{
             int offset = b.size / 2;
             for(int j = 1 + offset; j <= laserRange + offset; j++){
                 var other = world.build(x + j * dir.x, y + j * dir.y);
-                if(other != null && !(other instanceof ILaserBuilding || other.block.underBullets)){
+                if(other != null && !(other instanceof ILaser || other.block.underBullets)){
                     break;
                 }
 
-                if(other instanceof ILaserBuilding l && other.team == player.team() && l.isProvideLaserEnergy(x, y)){
+                if(other instanceof ILaser l && other.team == player.team() && l.isProvideLaserEnergy(x, y)){
                     len = j;
                     from = other;
                     break;
@@ -93,10 +93,10 @@ public class LaserComponent extends BaseComponent{
         int offset = b.size / 2;
         for(int j = 1 + offset; j <= laserRange + offset; j++){
             var other = world.build(x + j * dir.x, y + j * dir.y);
-            if(other != null && !((other instanceof ILaserBuilding) || other.block.underBullets)){
+            if(other != null && !((other instanceof ILaser) || other.block.underBullets)){
                 break;
             }
-            if(other instanceof ILaserBuilding l && other.team == player.team() && l.isAcceptLaserEnergy()){
+            if(other instanceof ILaser l && other.team == player.team() && l.isAcceptLaserEnergy()){
                 maxLen = j;
                 dest = other;
                 break;
@@ -122,10 +122,10 @@ public class LaserComponent extends BaseComponent{
         if(provideLaserEnergy){
             var dir = Geometry.d4[b.rotation];
             if(!(((b.tile.x == bx) ? 0 : sign(bx - b.tile.x)) == dir.x && ((b.tile.y == by) ? 0 : sign(by - b.tile.y)) == dir.y)) return false;
-            if(((ILaserBuilding)b).getLaserChild() == null) return true;
+            if(((ILaser)b).getLaserChild() == null) return true;
             int nowDst = Math.max(abs(bx - b.tile.x), abs(by - b.tile.y));
-            int dst = Math.max(Math.abs(((ILaserBuilding)b).getLaserChild().tile.x - b.tile.x),
-            Math.abs(((ILaserBuilding)b).getLaserChild().tile.y - b.tile.y));
+            int dst = Math.max(Math.abs(((ILaser)b).getLaserChild().tile.x - b.tile.x),
+            Math.abs(((ILaser)b).getLaserChild().tile.y - b.tile.y));
             return nowDst < dst;
         }else{
             return false;
@@ -148,12 +148,12 @@ public class LaserComponent extends BaseComponent{
     }
 
     private void updateLaserEnergy(Posc b){
-        var bLaser = (ILaserBuilding)b;
+        var bLaser = (ILaser)b;
         Building child = null;
         if(bLaser.getLaserChild() != null){
             child = bLaser.getLaserChild();
         }
-        var childLaser = (ILaserBuilding)child;
+        var childLaser = (ILaser)child;
         if(childLaser == null) return;
         if(child.block instanceof IComp comp && childLaser.getLaserEnergy() > comp.getComp(LaserComponent.class).maxLaserEnergy
         || child.block instanceof MultiStructPort multi && childLaser.getLaserEnergy() > multi.maxLaserEnergy) return;
@@ -168,12 +168,12 @@ public class LaserComponent extends BaseComponent{
 
     @Override
     public void onCraft(GenericCrafterBuild b){
-        var bLaser = (ILaserBuilding)b;
+        var bLaser = (ILaser)b;
         bLaser.changeLaserEnergy(bLaser.getLaserEnergy() > maxLaserEnergy ? 0 : laserEnergyOutput - consumeLaserEnergy);
     }
 
     private void updateChild(Building b){
-        var bLaser = (ILaserBuilding)b;
+        var bLaser = (ILaser)b;
         //先前的子节点
         var prev = bLaser.getLaserChild();
         //方向乘数
@@ -192,16 +192,16 @@ public class LaserComponent extends BaseComponent{
             if(other.block.size > 1 && other.tileX() != b.tile.x + j * dir.x){
                 break;
             }
-            //Log.info(other instanceof ILaserBuilding && !((ILaserBuilding)other).isAcceptLaserEnergy());
-            if(other instanceof ILaserBuilding && !((ILaserBuilding)other).isAcceptLaserEnergy()){
+            //Log.info(other instanceof ILaser && !((ILaser)other).isAcceptLaserEnergy());
+            if(other instanceof ILaser && !((ILaser)other).isAcceptLaserEnergy()){
                 break;
             }
-            //Log.info(other.team == Vars.player.team() && other instanceof ILaserBuilding l && l.isAcceptLaserEnergy());
-            if(other.team == Vars.player.team() && other instanceof ILaserBuilding l && l.isAcceptLaserEnergy()){
+            //Log.info(other.team == Vars.player.team() && other instanceof ILaser l && l.isAcceptLaserEnergy());
+            if(other.team == Vars.player.team() && other instanceof ILaser l && l.isAcceptLaserEnergy()){
                 bLaser.setLaserChild(other);
                 break;
             }
-            if(!(other instanceof ILaserBuilding) && !other.block.underBullets){
+            if(!(other instanceof ILaser) && !other.block.underBullets){
                 break;
             }
         }
@@ -221,7 +221,7 @@ public class LaserComponent extends BaseComponent{
 
     @Override
     public void onEntityDraw(Building b){
-        var bLaser = (ILaserBuilding)b;
+        var bLaser = (ILaser)b;
         //如果设置里的激光可见度（laserOpacity）为0，还画个瘠铂
         if(Mathf.zero(Renderer.laserOpacity)) return;
         //宣告以下绘制在power层进行
@@ -234,7 +234,7 @@ public class LaserComponent extends BaseComponent{
         float w = laserBaseWidth + Mathf.absin(pulseScl, pulseMag);
         //四面开花
         //格子值存在，且（那个方块不是同类结点，格子的xy都和自己的不一样，格子后建造且他连接范围不比自己长，或者他连接范围就比自己短这四个条件满足其一）
-        if(bLaser.getLaserChild() != null && (!(bLaser.getLaserChild().block instanceof ILaserBuilding node) ||
+        if(bLaser.getLaserChild() != null && (!(bLaser.getLaserChild().block instanceof ILaser node) ||
         (bLaser.getLaserChild().tileX() != b.tileX() && bLaser.getLaserChild().tileY() != b.tileY()) ||
         (bLaser.getLaserChild().id > b.id && laserRange >= node.getLaserRange()) || laserRange > node.getLaserRange())){
             //我和他之间，是x轴距离更长还是y轴，挑个长的赋值给dst
@@ -260,9 +260,9 @@ public class LaserComponent extends BaseComponent{
     @Override
     public void onSetBars(Block b){
         b.addBar("laser-energy", (entity) -> new Bar(
-        () -> Core.bundle.format("bar.laser-energy", ((ILaserBuilding)entity).getLaserEnergy()),
+        () -> Core.bundle.format("bar.laser-energy", ((ILaser)entity).getLaserEnergy()),
         () -> laserColor2,
-        () -> ((ILaserBuilding)entity).getLaserEnergy() / maxLaserEnergy
+        () -> ((ILaser)entity).getLaserEnergy() / maxLaserEnergy
         ));
     }
 
@@ -275,6 +275,6 @@ public class LaserComponent extends BaseComponent{
 
     @Override
     public boolean onShouldConsume(Building b){
-        return provideLaserEnergy || !acceptLaserEnergy || ((ILaserBuilding)b).getLaserEnergy() > consumeLaserEnergy;
+        return provideLaserEnergy || !acceptLaserEnergy || ((ILaser)b).getLaserEnergy() > consumeLaserEnergy;
     }
 }

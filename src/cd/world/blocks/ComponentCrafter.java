@@ -5,7 +5,7 @@ import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.io.*;
 import cd.entities.building.*;
-import cd.world.blocks.multi.MultiStructPort.*;
+import cd.world.blocks.multi.structure.MultiStructPort.*;
 import cd.world.component.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.production.*;
@@ -64,7 +64,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
     }
 
 
-    public class ComponentCrafterBuild extends GenericCrafterBuild implements ILaserPneu, ILaserBuilding, IMulti{
+    public class ComponentCrafterBuild extends GenericCrafterBuild implements IPneu, ILaser, IMulti{
         //define pneumatic
         public float pressure;
         /** But it can only have one child who can be given laser energy to. */

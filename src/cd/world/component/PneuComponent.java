@@ -52,7 +52,7 @@ public class PneuComponent extends BaseComponent{
 
     @Override
     public boolean onShouldConsume(Building b){
-        ILaserPneu bPneu = (ILaserPneu)b;
+        IPneu bPneu = (IPneu)b;
         return bPneu.getPressure() < maxOperatePressure &&
         (canProvidePressure || bPneu.getPressure() > minOperatePressure) &&
         (!canConsumePressure || bPneu.getPressure() > pressureConsume)
@@ -61,14 +61,14 @@ public class PneuComponent extends BaseComponent{
 
     @Override
     public void onCraft(GenericCrafterBuild b){
-        ILaserPneu bPneu = (ILaserPneu)b;
+        IPneu bPneu = (IPneu)b;
         if(canProvidePressure) bPneu.setPressure(bPneu.getPressure() + outputPressure);
         if(canConsumePressure) bPneu.setPressure(bPneu.getPressure() - pressureConsume);
     }
 
     @Override
     public void onPlace(Building b){
-        ILaserPneu bPneu = (ILaserPneu)b;
+        IPneu bPneu = (IPneu)b;
         bPneu.setPressure(standardPressure);
     }
 
@@ -78,11 +78,11 @@ public class PneuComponent extends BaseComponent{
     }
 
     public void calculatePressure(Building b){
-        ILaserPneu bPneu = (ILaserPneu)b;
+        IPneu bPneu = (IPneu)b;
         if(b.block.rotate){
             var other = b.proximity.filter(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
             Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
-            if(!(other instanceof ILaserPneu otherPneu)) return;
+            if(!(other instanceof IPneu otherPneu)) return;
             float thisP = bPneu.getPressure();
             float otherP = otherPneu.getPressure();
             float arrangeP = (thisP + otherP) / 2f;
@@ -92,7 +92,7 @@ public class PneuComponent extends BaseComponent{
             }
         }else{
             for(Building other : b.proximity){
-                if(!(other instanceof ILaserPneu otherPneu)) continue;
+                if(!(other instanceof IPneu otherPneu)) continue;
                 float thisP = bPneu.getPressure();
                 float otherP = otherPneu.getPressure();
                 float arrangeP = (thisP + otherP) / 2f;
@@ -122,7 +122,7 @@ public class PneuComponent extends BaseComponent{
 
     @Override
     public void onCreateExplosion(Building b){
-        ILaserPneu bPneu = (ILaserPneu)b;
+        IPneu bPneu = (IPneu)b;
         if(bPneu.getPressure() > explodePressure){
             if(explosionDamage > 0){
                 Damage.damage(b.x, b.y, explosionRadius * tilesize, explosionDamage);
@@ -149,7 +149,7 @@ public class PneuComponent extends BaseComponent{
     public void onSetBars(Block b){
         b.addBar("pressure",
         (entity) -> new Bar(
-        () -> Core.bundle.format("bar.pressure-amount", ((ILaserPneu)entity).getPressure()),
-        () -> Pal.lightOrange, () -> ((ILaserPneu)entity).getPressure() / explodePressure));
+        () -> Core.bundle.format("bar.pressure-amount", ((IPneu)entity).getPressure()),
+        () -> Pal.lightOrange, () -> ((IPneu)entity).getPressure() / explodePressure));
     }
 }

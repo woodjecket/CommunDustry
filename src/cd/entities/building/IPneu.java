@@ -1,7 +1,7 @@
 package cd.entities.building;
 
 /** Pressure building */
-public interface ILaserPneu{
+public interface IPneu{
     float getPressure();
 
     void setPressure(float pressure);
