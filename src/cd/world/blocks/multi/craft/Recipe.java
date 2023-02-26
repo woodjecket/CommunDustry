@@ -17,7 +17,7 @@ public class Recipe{
     public float power;
     public float heat;
 
-    public Seq<Consume> consumers;
+    public Seq<Consume> consumers = new Seq<>();
 
     //For Commundustry
 

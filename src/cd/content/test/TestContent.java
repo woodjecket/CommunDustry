@@ -27,11 +27,15 @@ public class TestContent{
 
     public static Block cdMultiA = new CDMultiCrafter("anepsion-multi-crafter-a"){{
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
-        recipes = Seq.with(new RecipePair(new Recipe(){{
-            liquids = Seq.with(LiquidStack.with(Liquids.water,6f/60f));
-        }},new Recipe(){{
-            items = Seq.with(with(CDItems.ice,1));
-        }}));
+        recipes = Seq.with(new RecipePair(){{
+            in = new Recipe(){{
+                liquids = Seq.with(LiquidStack.with(Liquids.water, 6f / 60f));
+            }};
+            out = new Recipe(){{
+                items = Seq.with(with(CDItems.ice, 1));
+            }};
+            craftTime = 60f;
+        }});
     }};
 
     public static Block portIn = new MultiStructPort("thanatus-port-input"){{

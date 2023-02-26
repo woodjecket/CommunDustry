@@ -3,6 +3,7 @@ package cd.world.blocks.multi.craft;
 import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
+import arc.util.*;
 import arc.util.io.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -76,7 +77,7 @@ public class CDMultiCrafter extends Block{
         @Override
         public void placed(){
             super.placed();
-
+            Log.info(pairs);
             if(pairs.isEmpty()) setRecipes(defaultSelection);
         }
 
@@ -84,7 +85,7 @@ public class CDMultiCrafter extends Block{
             pairs.clear();
             for(var index : indexes){
                 RecipePair pair;
-                if(index > recipes.size || index == -1){
+                if(index >= recipes.size || index == -1){
                     pair = RecipePair.EMPTY_RECIPE_PAIR;
                 }else{
                     pair = recipes.get(index);
@@ -106,6 +107,101 @@ public class CDMultiCrafter extends Block{
         @Override
         public void buildConfiguration(Table table){
             configure(new int[]{0});
+        }
+
+        //This is the REAL method to calculate efficiency, controlling the crafter to work
+        @Override
+        public void updateConsumption(){
+
+            //everything is valid when cheating
+            if(cheating()){
+                potentialEfficiency = enabled && productionValid() ? 1f : 0f;
+                efficiency = optionalEfficiency = shouldConsume() ? potentialEfficiency : 0f;
+                updateEfficiencyMultiplier();
+                return;
+            }
+
+            //disabled -> nothing works
+            if(!enabled){
+                potentialEfficiency = efficiency = optionalEfficiency = 0f;
+                return;
+            }
+
+            boolean prevValid = efficiency > 0, updated = shouldConsume() && productionValid();
+
+            float minEfficiency = 1f;
+
+            //first pass: get the minimum efficiency of any consumer
+            for(var cons : block.nonOptionalConsumers){
+                minEfficiency = Math.min(minEfficiency, cons.efficiency(this));
+            }
+
+            //same for optionals
+            for(var cons : block.optionalConsumers){
+                optionalEfficiency = Math.min(optionalEfficiency, cons.efficiency(this));
+            }
+
+
+            //Commundustry Hack Here
+            float e = 0f;
+            for(var pair:pairs){
+                if(hasItems){//act as if a normal ConsumeItems
+                    for(var stack : pair.in.items){
+                        e = items.has(stack.item, stack.amount) ? 1f : 0f;
+                    }
+                }
+
+                if(hasLiquids){
+                    //act as if a normal ConsumeLiquids
+                    float ed = edelta();
+                    if(ed <= 0.00000001f) e = 0f;
+                    float min = 1f;
+                    for(var stack : pair.in.liquids){
+                        min = Math.min(liquids.get(stack.liquid) / (stack.amount * ed), min);
+                    }
+                    e = Math.min(min, e);
+                }
+
+                //act as if a normal ConsumePower
+                var powerE = hasPower ?  power.status:1f;
+                e = Math.min(powerE,e);
+
+                if(heatRequirement()!=0f){//act as if HeatCrafter's
+                    float over = Math.max(heat - heatRequirement(), 0f);
+                    float heatE = Mathf.clamp(heat / heatRequirement()) + over / heatRequirement();
+                    e = Math.min(heatE, e);
+                }
+
+                //load consumer
+                for(var cons : pair.in.consumers){
+                    e = Math.min(e, cons.efficiency(this));
+                }
+
+                //Laser and pressure coming soon
+            }
+            minEfficiency = Math.min(e,minEfficiency);
+            //Hack done
+
+            //efficiency is now this minimum value
+            efficiency = minEfficiency;
+            optionalEfficiency = Math.min(optionalEfficiency, minEfficiency);
+
+            //assign "potential"
+            potentialEfficiency = efficiency;
+
+            //no updating means zero efficiency
+            if(!update){
+                efficiency = optionalEfficiency = 0f;
+            }
+
+            updateEfficiencyMultiplier();
+
+            //second pass: update every consumer based on efficiency
+            if(update && prevValid && efficiency > 0){
+                for(var cons : block.updateConsumers){
+                    cons.update(this);
+                }
+            }
         }
 
         @Override
@@ -176,18 +272,20 @@ public class CDMultiCrafter extends Block{
         @Override
         public boolean shouldConsume(){
             for(var pair : pairs){
-                if(pair.out.items != null){
+                if(!pair.out.items.isEmpty()){
                     for(var output : pair.out.items){
                         if(items.get(output.item) + output.amount > itemCapacity){
+                            Log.info("item @ over",output.item);
                             return false;
                         }
                     }
                 }
-                if(pair.out.liquids != null && !ignoreLiquidFullness){
+                if(!pair.out.liquids.isEmpty() && !ignoreLiquidFullness){
                     boolean allFull = true;
                     for(var output : pair.out.liquids){
                         if(liquids.get(output.liquid) >= liquidCapacity - 0.001f){
                             if(!dumpExtraLiquid){
+                                Log.info("liquid @ over",output.liquid);
                                 return false;
                             }
                         }else{
@@ -198,6 +296,7 @@ public class CDMultiCrafter extends Block{
 
                     //if there is no space left for any liquid, it can't reproduce
                     if(allFull){
+                        Log.info("Liquid all full!");
                         return false;
                     }
                 }
@@ -248,6 +347,7 @@ public class CDMultiCrafter extends Block{
         public float getProgressIncrease(float baseTime){
             //limit progress increase by maximum amount of liquid it can produce
             float scaling = 1f, max = 1f;
+            Log.info(pairs);
             for(var pair : pairs){
                 if(pair.out.liquids != null){
                     max = 0f;

@@ -4,7 +4,7 @@ import mindustry.content.*;
 import mindustry.entities.*;
 
 @SuppressWarnings("FieldNotUsedInToString")
-public final class RecipePair{
+public class RecipePair{
     public static final RecipePair EMPTY_RECIPE_PAIR = new RecipePair(Recipe.EMPTY_RECIPE,Recipe.EMPTY_RECIPE);
     public Recipe in, out;
     public float craftTime;
