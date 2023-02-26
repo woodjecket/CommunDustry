@@ -1,12 +1,24 @@
 package cd.world.blocks.multi.craft;
 
+import mindustry.content.*;
+import mindustry.entities.*;
+
+@SuppressWarnings("FieldNotUsedInToString")
 public final class RecipePair{
     public static final RecipePair EMPTY_RECIPE_PAIR = new RecipePair(Recipe.EMPTY_RECIPE,Recipe.EMPTY_RECIPE);
     public Recipe in, out;
+    public float craftTime;
+
+    public Effect craftEffect = Fx.none;
+    public Effect updateEffect = Fx.none;
+    public float updateEffectChance = 0.04f;
+    public int[] liquidOutputDirections = {-1};
 
     public RecipePair(Recipe in, Recipe out){
         this.in =in;
         this.out = out;
+        this.in.parent = this;
+        this.out.parent = this;
     }
 
     public RecipePair(){}
@@ -19,13 +31,15 @@ public final class RecipePair{
         RecipePair that = (RecipePair)obj;
 
         if(!in.equals(that.in)) return false;
+        if(craftTime != that.craftTime) return false;
         return out.equals(that.out);
     }
 
     @Override
     public int hashCode(){
         int result = in.hashCode();
-        result = 424 * result + out.hashCode();
+        result = 4 * result + out.hashCode();
+        result = 24 * result + Float.floatToIntBits(craftTime);
         return result;
     }
 
@@ -34,6 +48,7 @@ public final class RecipePair{
         return "RecipePair{" +
         "in=" + in +
         ", out=" + out +
+        ", craftTime=" + craftTime +
         '}';
     }
 }

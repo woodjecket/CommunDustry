@@ -6,6 +6,7 @@ import arc.struct.*;
 import cd.content.*;
 import cd.type.*;
 import cd.world.blocks.*;
+import cd.world.blocks.multi.craft.*;
 import cd.world.blocks.multi.structure.*;
 import cd.world.component.*;
 import mindustry.*;
@@ -21,8 +22,17 @@ import static mindustry.type.ItemStack.with;
 public class TestContent{
     public static Seq<MetaDust> g = new Seq<>();
     /*
-      Chinese：thanatus是这个版本的代号，直接打版本号太长了所以在测试内容前面加了这个名字
+      Chinese：anepsion是这个版本的代号，直接打版本号太长了所以在测试内容前面加了这个名字
     */
+
+    public static Block cdMultiA = new CDMultiCrafter("anepsion-multi-crafter-a"){{
+        requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
+        recipes = Seq.with(new RecipePair(new Recipe(){{
+            liquids = Seq.with(LiquidStack.with(Liquids.water,6f/60f));
+        }},new Recipe(){{
+            items = Seq.with(with(CDItems.ice,1));
+        }}));
+    }};
 
     public static Block portIn = new MultiStructPort("thanatus-port-input"){{
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
@@ -114,13 +124,10 @@ public class TestContent{
     }};
 
     public static ComponentCrafter smallCrafter = new ComponentCrafter("thanatus-small-crafter"){{
-        //noinspection CommentedOutCode
         addComp(
         new MainMultiComponent(){{
-            /*data = new SMultiData();
-            data.valueOf(Schematics.readBase64("bXNjaAF4nH2MSw7CMBBD3aaw6SWAfU6EWAzpQCPlp8lEFbenUbcIy5bfwjIMjMGUKDIMEWFeuDrxRX1OAM6Bnh"+
-            "wqxvtjwuxyKSx2oxBwcTnGFpdWVT5WV0qkrdqSRa1PpSluvxdre7N1Qi9lwfXPS27ab4ATDg17xu6ho+l81A5flxw4Gg=="));*/
-            dataOf(portIn, -1, 1, Blocks.copperWall, 1, -1, Blocks.copperWall, 1, 1, Blocks.copperWall, -1, -1);
+            dataOf(portIn, -1, 1, Blocks.copperWall, 1, -1,
+            Blocks.copperWall, 1, 1, Blocks.copperWall, -1, -1);
         }}
         );
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
@@ -215,7 +222,8 @@ public class TestContent{
     }};
 
     public static Block superCrafter = new ComponentCrafter("thanatus-super-crafter"){{
-        requirements(Category.crafting, with(Items.plastanium, 40, Items.titanium, 100, Items.silicon, 150, Items.thorium, 80));
+        requirements(Category.crafting, with(Items.plastanium, 40, Items.titanium, 100,
+        Items.silicon, 150, Items.thorium, 80));
         outputItem = new ItemStack(CDItems.basicChip, 2);
         craftTime = 120f;
         size = 1;

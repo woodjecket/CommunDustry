@@ -2,19 +2,22 @@ package cd.world.blocks.multi.craft;
 
 import arc.struct.*;
 import mindustry.type.*;
+import mindustry.world.consumers.*;
 
 import java.util.*;
 
 /** Stores data of recipe.*/
-public final class Recipe{
+public class Recipe{
     public static final Recipe EMPTY_RECIPE = new Recipe();
+    @SuppressWarnings("FieldNotUsedInToString")
+    public RecipePair parent;
 
     public Seq<ItemStack> items = new Seq<>();
     public Seq<LiquidStack> liquids = new Seq<>();
     public float power;
     public float heat;
 
-    public float craftTime;
+    public Seq<Consume> consumers;
 
     //For Commundustry
 
@@ -32,8 +35,8 @@ public final class Recipe{
         if(Float.compare(recipe.heat, heat) != 0) return false;
         if(Float.compare(recipe.pressure, pressure) != 0) return false;
         if(Float.compare(recipe.laser, laser) != 0) return false;
-        if(Float.compare(recipe.craftTime, craftTime) != 0) return false;
         if(!Objects.equals(items, recipe.items)) return false;
+        if(!Objects.equals(consumers, recipe.consumers)) return false;
         return Objects.equals(liquids, recipe.liquids);
     }
 
@@ -45,7 +48,7 @@ public final class Recipe{
         result = 14 * result + (heat == 0.0f ? 0 : Float.floatToIntBits(heat));
         result = 19 * result + (pressure == 0.0f ? 0 : Float.floatToIntBits(pressure));
         result = 19 * result + (laser == 0.0f ? 0 : Float.floatToIntBits(laser));
-        result = 810 * result + (laser == 0.0f ? 0 : Float.floatToIntBits(craftTime));
+        result = 910 * result + (consumers != null ? consumers.hashCode() : 0);
         return result;
     }
 
@@ -54,11 +57,11 @@ public final class Recipe{
         return "Recipe{" +
         "items=" + items +
         ", liquids=" + liquids +
+        ", consumer=" + consumers +
         ", power=" + power +
         ", heat=" + heat +
         ", pressure=" + pressure +
         ", laser=" + laser +
-        ", craftTime=" + craftTime +
         ", object=" + super.toString() +
         '}';
     }
