@@ -1,5 +1,6 @@
 package cd.world.blocks.multi.craft;
 
+import arc.func.*;
 import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
@@ -7,6 +8,7 @@ import arc.util.*;
 import arc.util.io.*;
 import mindustry.gen.*;
 import mindustry.type.*;
+import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.heat.*;
 import mindustry.world.consumers.*;
@@ -64,6 +66,40 @@ public class CDMultiCrafter extends Block{
         }
     }
 
+    @Override
+    public void setBars(){
+        super.setBars();
+        //no need for dynamic liquid bar
+        removeBar("liquid");
+        //set up liquid bars for liquid outputs
+            Seq<Liquid> seq = new Seq<>();
+            recipes.each(pair -> {
+                pair.in.liquids.each(s -> seq.add(s.liquid));
+                pair.out.liquids.each(s -> seq.add(s.liquid));
+            });
+            //then display output buffer
+            for(var liquid : seq){
+                addLiquidBar(liquid);
+            }
+
+    }
+
+    @Override
+    public boolean rotatedOutput(int x, int y){
+        return false;
+    }
+
+    @Override
+    public void load(){
+        super.load();
+
+        drawer.load(this);
+    }
+
+    public OrderedMap<String, Func<Building, Bar>> getBarMap(){
+        return barMap;
+    }
+
     public class CDMultiCrafterBuild extends Building implements HeatBlock, HeatConsumer{
         public float[] sideHeat = new float[4];
         public float heat;
@@ -98,6 +134,26 @@ public class CDMultiCrafter extends Block{
             }
         }
 
+        @Override
+        public void displayBars(Table table){
+            for(Func<Building, Bar> bar : block.listBars()){
+                var map = getBarMap();
+                Seq<Liquid> seq = new Seq<>();
+                pairs.each(p -> {
+                    p.in.liquids.each(s -> seq.add(s.liquid));
+                    p.out.liquids.each(s -> seq.add(s.liquid));
+                });
+                for(var liquid : seq){
+                    if(map.findKey(bar, false).contains(liquid.name)){
+                        var result = bar.get(this);
+                        if(result == null) continue;
+                        table.add(result).growX();
+                        table.row();
+                    }
+                }
+            }
+        }
+
         public float recipePower(){
             float total = 0f;
             for(var pair : pairs){
@@ -109,7 +165,8 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void buildConfiguration(Table table){
-            configure(new int[]{0,1});
+            configure(new int[]{0, 1});
+
         }
 
         //This is the REAL method to calculate efficiency, controlling the crafter to work
