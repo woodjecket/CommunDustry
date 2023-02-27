@@ -45,22 +45,22 @@ public class CDMultiCrafter extends Block{
     @Override
     public void init(){
         super.init();
-        for(var recipe:recipes){
+        for(var recipe : recipes){
             if(!recipe.in.items.isEmpty()){
                 hasItems = true;
-                recipe.in.items.each(s->itemFilter[s.item.id] = true);
+                recipe.in.items.each(s -> itemFilter[s.item.id] = true);
             }
             if(!recipe.out.items.isEmpty()){
                 hasItems = true;
             }
             if(!recipe.in.liquids.isEmpty()){
                 hasLiquids = true;
-                recipe.in.liquids.each(s->liquidFilter[s.liquid.id] = true);
+                recipe.in.liquids.each(s -> liquidFilter[s.liquid.id] = true);
             }
             if(!recipe.out.liquids.isEmpty()){
                 hasLiquids = true;
             }
-            if(recipe.in.power!=0f||recipe.out.power!=0f) hasPower = true;
+            if(recipe.in.power != 0f || recipe.out.power != 0f) hasPower = true;
         }
     }
 
@@ -73,6 +73,8 @@ public class CDMultiCrafter extends Block{
         /*Every recipe has its progress. It is between 0 and 1. Each frame, if enabled,
          * it will add some number*/
         public ObjectFloatMap<RecipePair> craftTimes = new ObjectFloatMap<>();
+        /*Every recipe has its own efficiency, and there is always a building efficiency*/
+        public ObjectFloatMap<RecipePair> efficiencies = new ObjectFloatMap<>();
 
         @Override
         public void placed(){
@@ -92,6 +94,7 @@ public class CDMultiCrafter extends Block{
                 }
                 pairs.add(pair);
                 craftTimes.put(pair, 0f);
+                efficiencies.put(pair, 0f);
             }
         }
 
@@ -106,7 +109,7 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void buildConfiguration(Table table){
-            configure(new int[]{0});
+            configure(new int[]{0,1});
         }
 
         //This is the REAL method to calculate efficiency, controlling the crafter to work
@@ -142,45 +145,60 @@ public class CDMultiCrafter extends Block{
             }
 
 
-            //Commundustry Hack Here
-            float e = 0f;
-            for(var pair:pairs){
-                if(hasItems){//act as if a normal ConsumeItems
-                    for(var stack : pair.in.items){
-                        e = items.has(stack.item, stack.amount) ? 1f : 0f;
-                    }
+            for(var pair : pairs){
+                //Commundustry Hack Here
+                float e = 1f;
+                //Log.info(pair);
+
+                //act as if a normal ConsumeItems
+                for(var stack : pair.in.items){
+                    e = items.has(stack.item, stack.amount) ? e : 0f;
                 }
 
-                if(hasLiquids){
+                //Log.info("After items: " + e);
+
+                if(!pair.in.liquids.isEmpty()){
                     //act as if a normal ConsumeLiquids
-                    float ed = edelta();
-                    if(ed <= 0.00000001f) e = 0f;
                     float min = 1f;
+                    float ed = edelta();
+                    if(ed <= 0.00000001f || ed > ed){
+                        min = 0f;
+                    }
                     for(var stack : pair.in.liquids){
                         min = Math.min(liquids.get(stack.liquid) / (stack.amount * ed), min);
+
+                        if(liquids.get(stack.liquid) / (stack.amount * delta()) > 0){
+                            min = liquids.get(stack.liquid) / (stack.amount * delta());
+                        }
+
                     }
                     e = Math.min(min, e);
                 }
 
-                //act as if a normal ConsumePower
-                var powerE = hasPower ?  power.status:1f;
-                e = Math.min(powerE,e);
+                //Log.info("After liquids: " + e);
 
-                if(heatRequirement()!=0f){//act as if HeatCrafter's
+
+                if(heatRequirement() != 0f){
+                    //act as if HeatCrafter's
                     float over = Math.max(heat - heatRequirement(), 0f);
                     float heatE = Mathf.clamp(heat / heatRequirement()) + over / heatRequirement();
                     e = Math.min(heatE, e);
                 }
+
+                //Log.info("After heat: " + e);
 
                 //load consumer
                 for(var cons : pair.in.consumers){
                     e = Math.min(e, cons.efficiency(this));
                 }
 
+                //Log.info("After consumers: " + e);
                 //Laser and pressure coming soon
+                float increment = Math.min(e, minEfficiency) - efficiencies.get(pair, 0f);
+                efficiencies.increment(pair, 0f, increment);
+                //Hack done
             }
-            minEfficiency = Math.min(e,minEfficiency);
-            //Hack done
+
 
             //efficiency is now this minimum value
             efficiency = minEfficiency;
@@ -190,18 +208,65 @@ public class CDMultiCrafter extends Block{
             potentialEfficiency = efficiency;
 
             //no updating means zero efficiency
-            if(!update){
+            if(!updated){
                 efficiency = optionalEfficiency = 0f;
             }
 
             updateEfficiencyMultiplier();
 
             //second pass: update every consumer based on efficiency
-            if(update && prevValid && efficiency > 0){
+            if(updated && prevValid && efficiency > 0){
                 for(var cons : block.updateConsumers){
                     cons.update(this);
                 }
+                pairs.each(pair -> pair.in.liquids.each(s -> liquids.remove(s.liquid, s.amount)));
+                pairs.each(pair -> pair.in.consumers.each(c -> c.update, c -> c.trigger(this)));
             }
+        }
+
+        @Override
+        public boolean shouldConsume(){
+            for(var pair : pairs){
+                if(!pair.out.items.isEmpty()){
+                    for(var output : pair.out.items){
+                        if(items.get(output.item) + output.amount > itemCapacity){
+                            //Log.info("item @ over", output.item);
+                            return false;
+                        }
+                    }
+                }
+                if(!pair.out.liquids.isEmpty() && !ignoreLiquidFullness){
+                    boolean allFull = true;
+                    for(var output : pair.out.liquids){
+                        if(liquids.get(output.liquid) >= liquidCapacity - 0.001f){
+                            if(!dumpExtraLiquid){
+                                //Log.info("liquid @ over", output.liquid);
+                                return false;
+                            }
+                        }else{
+                            //if there's still space left, it's not full for all liquids
+                            allFull = false;
+                        }
+                    }
+
+                    //if there is no space left for any liquid, it can't reproduce
+                    if(allFull){
+                        //Log.info("Liquid all full!");
+                        return false;
+                    }
+                }
+            }
+
+            return enabled;
+        }
+
+        @Override
+        public float heatRequirement(){
+            float total = 0f;
+            for(var pair : pairs){
+                total += pair.in.heat;
+            }
+            return total;
         }
 
         @Override
@@ -231,21 +296,12 @@ public class CDMultiCrafter extends Block{
             return heat / total;
         }
 
+        //endregion
+
         @Override
         public float[] sideHeat(){
             return sideHeat;
         }
-
-        @Override
-        public float heatRequirement(){
-            float total = 0f;
-            for(var pair : pairs){
-                total += pair.in.heat;
-            }
-            return total;
-        }
-
-        //endregion
 
         //region crafter
         @Override
@@ -270,42 +326,6 @@ public class CDMultiCrafter extends Block{
         }
 
         @Override
-        public boolean shouldConsume(){
-            for(var pair : pairs){
-                if(!pair.out.items.isEmpty()){
-                    for(var output : pair.out.items){
-                        if(items.get(output.item) + output.amount > itemCapacity){
-                            Log.info("item @ over",output.item);
-                            return false;
-                        }
-                    }
-                }
-                if(!pair.out.liquids.isEmpty() && !ignoreLiquidFullness){
-                    boolean allFull = true;
-                    for(var output : pair.out.liquids){
-                        if(liquids.get(output.liquid) >= liquidCapacity - 0.001f){
-                            if(!dumpExtraLiquid){
-                                Log.info("liquid @ over",output.liquid);
-                                return false;
-                            }
-                        }else{
-                            //if there's still space left, it's not full for all liquids
-                            allFull = false;
-                        }
-                    }
-
-                    //if there is no space left for any liquid, it can't reproduce
-                    if(allFull){
-                        Log.info("Liquid all full!");
-                        return false;
-                    }
-                }
-            }
-
-            return enabled;
-        }
-
-        @Override
         public float warmup(){
             return warmup;
         }
@@ -314,21 +334,23 @@ public class CDMultiCrafter extends Block{
         public void updateTile(){
             for(var pair : pairs){
                 if(efficiency > 0){
+                    if(efficiencies.get(pair, 0f) > 0){
+                        Log.info(pair);
+                        craftTimes.increment(pair, 0, getProgressIncrease(pair.craftTime));
+                        warmup = Mathf.approachDelta(warmup, 1f, warmupSpeed);
 
-                    craftTimes.increment(pair, 0, getProgressIncrease(pair.craftTime));
-                    warmup = Mathf.approachDelta(warmup, 1f, warmupSpeed);
-
-                    //continuously output based on efficiency
-                    if(pair.out.liquids != null){
-                        float inc = getProgressIncrease(1f);
-                        for(var output : pair.out.liquids){
-                            handleLiquid(this, output.liquid, Math.min(output.amount * inc,
-                            liquidCapacity - liquids.get(output.liquid)));
+                        //continuously output based on efficiency
+                        if(pair.out.liquids != null){
+                            float inc = getProgressIncrease(1f);
+                            for(var output : pair.out.liquids){
+                                handleLiquid(this, output.liquid, Math.min(output.amount * inc,
+                                liquidCapacity - liquids.get(output.liquid)));
+                            }
                         }
-                    }
 
-                    if(wasVisible && Mathf.chanceDelta(pair.updateEffectChance / pairs.size)){
-                        pair.updateEffect.at(x + Mathf.range(size * 4f), y + Mathf.range(size << 2));
+                        if(wasVisible && Mathf.chanceDelta(pair.updateEffectChance / pairs.size)){
+                            pair.updateEffect.at(x + Mathf.range(size * 4f), y + Mathf.range(size << 2));
+                        }
                     }
                 }else{
                     warmup = Mathf.approachDelta(warmup, 0f, warmupSpeed);
@@ -339,7 +361,7 @@ public class CDMultiCrafter extends Block{
                     craft(pair);
                 }
 
-                dumpRecipeOutput(pair.out);
+                dumpRecipeOutput(pair);
             }
         }
 
@@ -347,7 +369,7 @@ public class CDMultiCrafter extends Block{
         public float getProgressIncrease(float baseTime){
             //limit progress increase by maximum amount of liquid it can produce
             float scaling = 1f, max = 1f;
-            Log.info(pairs);
+            //Log.info(pairs);
             for(var pair : pairs){
                 if(pair.out.liquids != null){
                     max = 0f;
@@ -382,26 +404,25 @@ public class CDMultiCrafter extends Block{
 
         }
 
-        public void dumpRecipeOutput(Recipe recipe){
-            if(recipe.items != null && timer(timerDump, dumpTime / timeScale)){
-                for(ItemStack output : recipe.items){
+        public void dumpRecipeOutput(RecipePair recipe){
+            if(recipe.out.items != null && timer(timerDump, dumpTime / timeScale)){
+                for(ItemStack output : recipe.out.items){
                     dump(output.item);
                 }
             }
 
-            if(recipe.liquids.toArray() != null){
-                for(int i = 0; i < recipe.liquids.size; i++){
-                    int dir = recipe.parent.liquidOutputDirections.length > i ?
-                    recipe.parent.liquidOutputDirections[i] : -1;
-                    dumpLiquid(recipe.liquids.toArray()[i].liquid, 2f, dir);
+            if(recipe.out.liquids.toArray() != null){
+                for(int i = 0; i < recipe.out.liquids.size; i++){
+                    int dir = recipe.liquidOutputDirections.length > i ?
+                    recipe.liquidOutputDirections[i] : -1;
+                    dumpLiquid(recipe.out.liquids.toArray()[i].liquid, 2f, dir);
                 }
             }
         }
 
         public void consume(RecipePair pair){
             pair.in.items.each(s -> items.remove(s));
-            pair.in.liquids.each(s -> liquids.remove(s.liquid, s.amount));
-            pair.in.consumers.each(c -> c.trigger(this));
+            pair.in.consumers.each(c -> !c.update, c -> c.trigger(this));
         }
         //endregion
     }

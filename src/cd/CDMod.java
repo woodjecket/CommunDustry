@@ -2,7 +2,6 @@ package cd;
 
 import arc.*;
 import arc.util.*;
-import arc.util.Log.*;
 import cd.content.*;
 import cd.content.test.*;
 import mindustry.*;
@@ -17,7 +16,7 @@ public class CDMod extends Mod{
 
     public static void configure(){
         ///PlanetDialog.debugSelect = true;
-        Log.level = LogLevel.debug;
+        //Log.level = LogLevel.debug;
         var meta = Vars.mods.getMod(cd.CDMod.class).meta;
         meta.name = Core.bundle.get("mod.commumdustry.displayName");
         meta.description = Core.bundle.get("mod.commumdustry.description");

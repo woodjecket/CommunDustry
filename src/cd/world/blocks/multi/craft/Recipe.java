@@ -9,8 +9,6 @@ import java.util.*;
 /** Stores data of recipe.*/
 public class Recipe{
     public static final Recipe EMPTY_RECIPE = new Recipe();
-    @SuppressWarnings("FieldNotUsedInToString")
-    public RecipePair parent;
 
     public Seq<ItemStack> items = new Seq<>();
     public Seq<LiquidStack> liquids = new Seq<>();

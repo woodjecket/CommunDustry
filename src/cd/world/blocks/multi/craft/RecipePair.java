@@ -17,8 +17,6 @@ public class RecipePair{
     public RecipePair(Recipe in, Recipe out){
         this.in =in;
         this.out = out;
-        this.in.parent = this;
-        this.out.parent = this;
     }
 
     public RecipePair(){}
