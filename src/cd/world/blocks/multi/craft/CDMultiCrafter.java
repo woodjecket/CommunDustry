@@ -72,15 +72,15 @@ public class CDMultiCrafter extends Block{
         //no need for dynamic liquid bar
         removeBar("liquid");
         //set up liquid bars for liquid outputs
-            Seq<Liquid> seq = new Seq<>();
-            recipes.each(pair -> {
-                pair.in.liquids.each(s -> seq.add(s.liquid));
-                pair.out.liquids.each(s -> seq.add(s.liquid));
-            });
-            //then display output buffer
-            for(var liquid : seq){
-                addLiquidBar(liquid);
-            }
+        Seq<Liquid> seq = new Seq<>();
+        recipes.each(pair -> {
+            pair.in.liquids.each(s -> seq.add(s.liquid));
+            pair.out.liquids.each(s -> seq.add(s.liquid));
+        });
+        //then display output buffer
+        for(var liquid : seq){
+            addLiquidBar(liquid);
+        }
 
     }
 
@@ -136,15 +136,22 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void displayBars(Table table){
+            var map = getBarMap();
+            Seq<Liquid> seq = new Seq<>();
+            pairs.each(p -> {
+                p.in.liquids.each(s -> seq.add(s.liquid));
+                p.out.liquids.each(s -> seq.add(s.liquid));
+            });
             for(Func<Building, Bar> bar : block.listBars()){
-                var map = getBarMap();
-                Seq<Liquid> seq = new Seq<>();
-                pairs.each(p -> {
-                    p.in.liquids.each(s -> seq.add(s.liquid));
-                    p.out.liquids.each(s -> seq.add(s.liquid));
-                });
+                var barName = map.findKey(bar, false);
+                if(!barName.contains("liquid-")){
+                    var result = bar.get(this);
+                    if(result == null) continue;
+                    table.add(result).growX();
+                    table.row();
+                }
                 for(var liquid : seq){
-                    if(map.findKey(bar, false).contains(liquid.name)){
+                    if(barName.contains(liquid.name)){
                         var result = bar.get(this);
                         if(result == null) continue;
                         table.add(result).growX();
