@@ -4,7 +4,6 @@ import arc.func.*;
 import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
-import arc.util.*;
 import arc.util.io.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -16,7 +15,7 @@ import mindustry.world.draw.*;
 import mindustry.world.meta.*;
 
 /**
- * MultiCrafter. Refers from Li plum's MultiCrafterLib, but fix a bug.
+ * MultiCrafter.
  * Support both single or multiple selective and concurrent mode
  */
 public class CDMultiCrafter extends Block{
@@ -71,7 +70,7 @@ public class CDMultiCrafter extends Block{
         super.setBars();
         //no need for dynamic liquid bar
         removeBar("liquid");
-        //set up liquid bars for liquid outputs
+        //set up liquid bars for liquid
         Seq<Liquid> seq = new Seq<>();
         recipes.each(pair -> {
             pair.in.liquids.each(s -> seq.add(s.liquid));
@@ -105,48 +104,24 @@ public class CDMultiCrafter extends Block{
         public float heat;
         public float warmup;
         public RecipeView recipeView = new RecipeView();
-        public Seq<RecipeDO> crafts = recipeView.getCrafts();
-        public Seq<RecipePair> pairs = recipeView.getPairs();
 
-        /*Every recipe has its progress. It is between 0 and 1. Each frame, if enabled,
-         * it will add some number*/
-        public ObjectFloatMap<RecipePair> craftTimes = new ObjectFloatMap<>();
-        /*Every recipe has its own efficiency, and there is always a building efficiency*/
-        public ObjectFloatMap<RecipePair> efficiencies = new ObjectFloatMap<>();
-
-        public void eachCrafts(Cons<? super RecipeDO> cons){
-            crafts.each(cons);
-        }
 
         @Override
         public void placed(){
+            //If there is no recipe, then set it
             super.placed();
-            Log.info(crafts);
-            if(crafts.isEmpty()) setRecipes(defaultSelection);
+            if(recipeView.isCraftsEmpty()) setRecipes(defaultSelection);
         }
 
         public void setRecipes(int[] indexes){
-            pairs.clear();
-            for(var index : indexes){
-                RecipePair pair;
-                if(index >= recipes.size || index == -1){
-                    pair = RecipePair.EMPTY_RECIPE_PAIR;
-                }else{
-                    pair = recipes.get(index);
-                }
-                crafts.add(new RecipeDO(pair,0f,0f));
-                pairs.add(pair);
-                craftTimes.put(pair, 0f);
-                efficiencies.put(pair, 0f);
-            }
+            recipeView.setRecipe(indexes);
         }
 
         @Override
         public void displayBars(Table table){
-            //FIXME Why I use this
             var map = getBarMap();
             Seq<Liquid> seq = new Seq<>();
-            pairs.each(p -> {
+            recipeView.getPairs().each(p -> {
                 p.in.liquids.each(s -> seq.add(s.liquid));
                 p.out.liquids.each(s -> seq.add(s.liquid));
             });
@@ -171,7 +146,7 @@ public class CDMultiCrafter extends Block{
 
         public float recipePower(){
             float total = 0f;
-            for(var pair : pairs){
+            for(var pair : recipeView.getPairs()){
                 total += pair.out.power;
                 total -= pair.in.power;
             }
@@ -181,7 +156,6 @@ public class CDMultiCrafter extends Block{
         @Override
         public void buildConfiguration(Table table){
             configure(new int[]{0, 1});
-
         }
 
         //This is the REAL method to calculate efficiency, controlling the crafter to work
@@ -217,7 +191,8 @@ public class CDMultiCrafter extends Block{
             }
 
 
-            for(var pair : pairs){
+            for(var recipeDO : recipeView.getCrafts()){
+                var pair = recipeDO.pair;
                 //Commundustry Hack Here
                 float e = 1f;
                 //Log.info(pair);
@@ -266,9 +241,8 @@ public class CDMultiCrafter extends Block{
 
                 //Log.info("After consumers: " + e);
                 //Laser and pressure coming soon
-                float increment = Math.min(e, minEfficiency) - efficiencies.get(pair, 0f);
-                efficiencies.increment(pair, 0f, increment);
-                crafts.get(1).efficiency = Math.min(e, minEfficiency);
+
+                recipeDO.efficiency = Math.min(e, minEfficiency);
                 //Hack done
             }
 
@@ -292,18 +266,17 @@ public class CDMultiCrafter extends Block{
                 for(var cons : block.updateConsumers){
                     cons.update(this);
                 }
-                pairs.each(pair -> pair.in.liquids.each(s -> liquids.remove(s.liquid, s.amount)));
-                pairs.each(pair -> pair.in.consumers.each(c -> c.update, c -> c.trigger(this)));
+                recipeView.getPairs().each(pair -> pair.in.liquids.each(s -> liquids.remove(s.liquid, s.amount)));
+                recipeView.getPairs().each(pair -> pair.in.consumers.each(c -> c.update, c -> c.trigger(this)));
             }
         }
 
         @Override
         public boolean shouldConsume(){
-            for(var pair : pairs){
+            for(var pair : recipeView.getPairs()){
                 if(!pair.out.items.isEmpty()){
                     for(var output : pair.out.items){
                         if(items.get(output.item) + output.amount > itemCapacity){
-                            //Log.info("item @ over", output.item);
                             return false;
                         }
                     }
@@ -313,7 +286,6 @@ public class CDMultiCrafter extends Block{
                     for(var output : pair.out.liquids){
                         if(liquids.get(output.liquid) >= liquidCapacity - 0.001f){
                             if(!dumpExtraLiquid){
-                                //Log.info("liquid @ over", output.liquid);
                                 return false;
                             }
                         }else{
@@ -324,19 +296,17 @@ public class CDMultiCrafter extends Block{
 
                     //if there is no space left for any liquid, it can't reproduce
                     if(allFull){
-                        //Log.info("Liquid all full!");
                         return false;
                     }
                 }
             }
-
             return enabled;
         }
 
         @Override
         public float heatRequirement(){
             float total = 0f;
-            for(var pair : pairs){
+            for(var pair : recipeView.getPairs()){
                 total += pair.in.heat;
             }
             return total;
@@ -363,18 +333,18 @@ public class CDMultiCrafter extends Block{
         @Override
         public float heatFrac(){
             float total = 0f;
-            for(var pair : pairs){
+            for(var pair : recipeView.getPairs()){
                 total += pair.out.heat;
             }
             return heat / total;
         }
 
-        //endregion
 
         @Override
         public float[] sideHeat(){
             return sideHeat;
         }
+        //endregion
 
         //region crafter
         @Override
@@ -405,13 +375,12 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void updateTile(){
-            for(var pair : pairs){
+            for(var recipeDO : recipeView.getCrafts()){
+                var pair = recipeDO.pair;
                 if(efficiency > 0){
-                    if(efficiencies.get(pair, 0f) > 0){
-                        Log.info(pair);
-                        craftTimes.increment(pair, 0, getProgressIncrease(pair.craftTime));
+                    if(recipeDO.efficiency > 0){
+                        recipeDO.progress += getProgressIncrease(pair, pair.craftTime);
                         warmup = Mathf.approachDelta(warmup, 1f, warmupSpeed);
-
                         //continuously output based on efficiency
                         if(pair.out.liquids != null){
                             float inc = getProgressIncrease(1f);
@@ -420,8 +389,7 @@ public class CDMultiCrafter extends Block{
                                 liquidCapacity - liquids.get(output.liquid)));
                             }
                         }
-
-                        if(wasVisible && Mathf.chanceDelta(pair.updateEffectChance / pairs.size)){
+                        if(wasVisible && Mathf.chanceDelta(pair.updateEffectChance / recipeView.getPairs().size)){
                             pair.updateEffect.at(x + Mathf.range(size * 4f), y + Mathf.range(size << 2));
                         }
                     }
@@ -430,34 +398,33 @@ public class CDMultiCrafter extends Block{
                 }
 
 
-                if(craftTimes.get(pair, 0f) >= 1f){
-                    craft(pair);
+                if(recipeDO.progress >= 1f){
+                    craft(recipeDO);
                 }
 
                 dumpRecipeOutput(pair);
             }
         }
 
-        @Override
-        public float getProgressIncrease(float baseTime){
+
+        public float getProgressIncrease(RecipePair pair, float baseTime){
             //limit progress increase by maximum amount of liquid it can produce
             float scaling = 1f, max = 1f;
             //Log.info(pairs);
-            for(var pair : pairs){
-                if(pair.out.liquids != null){
-                    max = 0f;
-                    for(var s : pair.out.liquids){
-                        float value = (liquidCapacity - liquids.get(s.liquid)) / (s.amount * edelta());
-                        scaling = Math.min(scaling, value);
-                        max = Math.max(max, value);
-                    }
+            if(pair.out.liquids != null){
+                max = 0f;
+                for(var s : pair.out.liquids){
+                    float value = (liquidCapacity - liquids.get(s.liquid)) / (s.amount * edelta());
+                    scaling = Math.min(scaling, value);
+                    max = Math.max(max, value);
                 }
             }
             //when dumping excess take the maximum value instead of the minimum.
-            return super.getProgressIncrease(baseTime) * (dumpExtraLiquid ? Math.min(max, 1f) : scaling);
+            return getProgressIncrease(baseTime) * (dumpExtraLiquid ? Math.min(max, 1f) : scaling);
         }
 
-        public void craft(RecipePair pair){
+        public void craft(RecipeDO crafts){
+            var pair = crafts.pair;
             consume(pair);
 
             if(pair.out.items != null){
@@ -471,10 +438,7 @@ public class CDMultiCrafter extends Block{
             if(wasVisible){
                 pair.craftEffect.at(x, y);
             }
-
-            var aim = craftTimes.get(pair, 0f) % 1f;
-            craftTimes.increment(pair, 0f, aim - craftTimes.get(pair, 0f));
-
+            crafts.progress %= 1f;
         }
 
         public void dumpRecipeOutput(RecipePair recipe){
@@ -504,6 +468,7 @@ public class CDMultiCrafter extends Block{
 
         private Seq<RecipeDO> crafts = new Seq<>();
         private Seq<RecipePair> pairs = new Seq<>();
+
         public void setRecipe(int[] indexes){
             pairs.clear();
             for(var index : indexes){
@@ -513,7 +478,7 @@ public class CDMultiCrafter extends Block{
                 }else{
                     pair = recipes.get(index);
                 }
-                crafts.add(new RecipeDO(pair,0f,0f));
+                crafts.add(new RecipeDO(pair, 0f, 0f));
                 pairs.add(pair);
             }
         }
@@ -524,6 +489,10 @@ public class CDMultiCrafter extends Block{
 
         public Seq<RecipePair> getPairs(){
             return pairs;
+        }
+
+        public boolean isCraftsEmpty(){
+            return crafts.isEmpty();
         }
     }
 }
