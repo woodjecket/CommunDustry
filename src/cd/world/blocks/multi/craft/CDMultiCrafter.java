@@ -104,7 +104,9 @@ public class CDMultiCrafter extends Block{
         public float[] sideHeat = new float[4];
         public float heat;
         public float warmup;
-        public Seq<RecipePair> pairs = new Seq<>();
+        public RecipeView recipeView = new RecipeView();
+        public Seq<RecipeDO> crafts = recipeView.getCrafts();
+        public Seq<RecipePair> pairs = recipeView.getPairs();
 
         /*Every recipe has its progress. It is between 0 and 1. Each frame, if enabled,
          * it will add some number*/
@@ -112,11 +114,15 @@ public class CDMultiCrafter extends Block{
         /*Every recipe has its own efficiency, and there is always a building efficiency*/
         public ObjectFloatMap<RecipePair> efficiencies = new ObjectFloatMap<>();
 
+        public void eachCrafts(Cons<? super RecipeDO> cons){
+            crafts.each(cons);
+        }
+
         @Override
         public void placed(){
             super.placed();
-            Log.info(pairs);
-            if(pairs.isEmpty()) setRecipes(defaultSelection);
+            Log.info(crafts);
+            if(crafts.isEmpty()) setRecipes(defaultSelection);
         }
 
         public void setRecipes(int[] indexes){
@@ -128,6 +134,7 @@ public class CDMultiCrafter extends Block{
                 }else{
                     pair = recipes.get(index);
                 }
+                crafts.add(new RecipeDO(pair,0f,0f));
                 pairs.add(pair);
                 craftTimes.put(pair, 0f);
                 efficiencies.put(pair, 0f);
@@ -136,6 +143,7 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void displayBars(Table table){
+            //FIXME Why I use this
             var map = getBarMap();
             Seq<Liquid> seq = new Seq<>();
             pairs.each(p -> {
@@ -260,6 +268,7 @@ public class CDMultiCrafter extends Block{
                 //Laser and pressure coming soon
                 float increment = Math.min(e, minEfficiency) - efficiencies.get(pair, 0f);
                 efficiencies.increment(pair, 0f, increment);
+                crafts.get(1).efficiency = Math.min(e, minEfficiency);
                 //Hack done
             }
 
@@ -489,5 +498,32 @@ public class CDMultiCrafter extends Block{
             pair.in.consumers.each(c -> !c.update, c -> c.trigger(this));
         }
         //endregion
+    }
+
+    public class RecipeView{
+
+        private Seq<RecipeDO> crafts = new Seq<>();
+        private Seq<RecipePair> pairs = new Seq<>();
+        public void setRecipe(int[] indexes){
+            pairs.clear();
+            for(var index : indexes){
+                RecipePair pair;
+                if(index >= recipes.size || index == -1){
+                    pair = RecipePair.EMPTY_RECIPE_PAIR;
+                }else{
+                    pair = recipes.get(index);
+                }
+                crafts.add(new RecipeDO(pair,0f,0f));
+                pairs.add(pair);
+            }
+        }
+
+        public Seq<RecipeDO> getCrafts(){
+            return crafts;
+        }
+
+        public Seq<RecipePair> getPairs(){
+            return pairs;
+        }
     }
 }
