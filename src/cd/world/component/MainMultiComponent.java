@@ -22,7 +22,7 @@ public class MainMultiComponent extends BaseComponent{
     private ObjectMap<Item, Point2> itemOutputPos = new ObjectMap<>();
 
     //Single-thread ONLY!!!!!!!
-    private Seq<MultiStructPortBuild> getOff = new Seq<>();
+    private Seq<MultiStructPortBuild> getOff = new Seq<>(false);
 
     private static boolean isSufficient(int checkX, int checkY, Building building, Building main){
         /*

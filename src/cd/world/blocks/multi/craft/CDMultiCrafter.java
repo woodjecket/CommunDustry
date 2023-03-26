@@ -5,6 +5,7 @@ import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.io.*;
+import cd.ui.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.ui.*;
@@ -155,7 +156,14 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void buildConfiguration(Table table){
-            configure(new int[]{0, 1});
+            MultiCrafterSelection.buildTable(CDMultiCrafter.this,table,recipes,this::getIndexes,
+            this::configure,false);
+        }
+
+        public IntSeq getIndexes(){
+            var ins = new IntSeq(false,recipes.size);
+            recipeView.getPairs().each(p->ins.add(recipes.indexOf(p)));
+            return ins;
         }
 
         //This is the REAL method to calculate efficiency, controlling the crafter to work
