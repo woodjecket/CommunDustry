@@ -1,10 +1,13 @@
 package cd;
 
 import arc.*;
+import arc.struct.*;
 import arc.util.*;
 import cd.content.*;
 import cd.content.test.*;
 import mindustry.*;
+import mindustry.content.*;
+import mindustry.game.EventType.*;
 import mindustry.mod.*;
 
 public class CDMod extends Mod{
@@ -21,6 +24,20 @@ public class CDMod extends Mod{
         meta.name = Core.bundle.get("mod.commumdustry.displayName");
         meta.description = Core.bundle.get("mod.commumdustry.description");
         meta.author = Core.bundle.get("mod.commumdustry.author");
+
+        Events.on(ClientLoadEvent.class,e->{
+            var set = new IntSet();
+            var dustBase = Core.atlas.getPixmap(Items.pyratite.fullIcon);
+            for(int x = 0; x < dustBase.width; x++){
+                for(int y = 0; y < dustBase.height; y++){
+                    int rawColor = dustBase.get(x, y);
+                    set.add(rawColor);
+                }
+            }
+            Log.info(set.size);
+        });
+
+
     }
 
     @Override

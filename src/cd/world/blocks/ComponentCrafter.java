@@ -64,7 +64,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
     }
 
 
-    public class ComponentCrafterBuild extends GenericCrafterBuild implements IPneu, ILaser, IMulti{
+    public class ComponentCrafterBuild extends GenericCrafterBuild implements IPneu, ILaser, IMulti, ICompEntity{
         //define pneumatic
         public float pressure;
         /** But it can only have one child who can be given laser energy to. */
@@ -72,6 +72,8 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
         /** The laser energy now */
         public float laserEnergy;
         private Seq<MultiStructPortBuild> ports = new Seq<>();
+
+        public ObjectMap<Class<? extends ComponentData>, ComponentData> data = new ObjectMap<>();
 
 
         public float getPressure(){
@@ -134,12 +136,14 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
             if(hasPressure) pressure = read.f();
             if(buildNumber < 2) return;
             if(hasLaser) laserEnergy = read.f();
+            if(buildNumber < 3) return;
+            eachRead(read,revision);
         }
 
         @Override
         public void write(Writes write){
             super.write(write);
-            write.i(2);
+            write.i(3);
             if(hasPressure) write.f(pressure);
             if(hasLaser) write.f(laserEnergy);
         }
@@ -154,7 +158,8 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
         }
 
         public boolean isProvideLaserEnergy(int bx, int by){
-            return getComp(LaserComponent.class) != null && getComp(LaserComponent.class).isProvideLaserEnergy(this, bx, by);
+            return getComp(LaserComponent.class) != null && getComp(LaserComponent.class)
+            .isProvideLaserEnergy(this, bx, by);
         }
 
 
@@ -191,6 +196,11 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
         @Override
         public Seq<MultiStructPortBuild> getPorts(){
             return ports;
+        }
+
+        @Override
+        public ObjectMap<Class<? extends ComponentData>, ComponentData> data(){
+            return data;
         }
     }
 
