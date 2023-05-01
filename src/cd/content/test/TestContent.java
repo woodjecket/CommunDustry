@@ -33,25 +33,29 @@ public class TestContent{
 
     public static Block cdMultiB = new CDMultiCrafter("anepsion-multi-crafter-b"){{
         requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
-        defaultSelection = new int[]{0,1};
+        defaultSelection = new int[]{0, 1};
         recipes = Seq.with(new RecipePair(){{
-            in = new Recipe(){{
-                liquids = Seq.with(LiquidStack.with(Liquids.water, 6f / 60f));
-            }};
-            out = new Recipe(){{
-                items = Seq.with(with(CDItems.ice, 1));
-            }};
-            craftTime = 60f;
-        }},
+                               in = new Recipe(){{
+                                   liquids = Seq.with(LiquidStack.with(Liquids.water, 6f / 60f));
+                               }};
+                               out = new Recipe(){{
+                                   items = Seq.with(with(CDItems.ice, 1));
+                               }};
+                               craftTime = 60f;
+                           }},
         new RecipePair(){{
             in = new Recipe(){{
-                items = Seq.with(with(CDItems.cerium, 2,Items.silicon,3));
+                items = Seq.with(with(CDItems.cerium, 2, Items.silicon, 3));
             }};
             out = new Recipe(){{
                 liquids = Seq.with(LiquidStack.with(Liquids.slag, 12f / 60f));
             }};
             craftTime = 60f;
         }});
+    }};
+
+    public static CDMultiCrafter cdMultiC = new CDMultiCrafter("anepsion-multi-crafter-c"){{
+        requirements(Category.crafting, with(Items.copper, 20, Items.silicon, 15, Items.titanium, 15));
     }};
 
     public static void load(){
@@ -64,6 +68,24 @@ public class TestContent{
                 g.add(new MetaDust(in));
             }
         }
+        g.each(i -> cdMultiC.recipes.add(new RecipePair(){{
+                in = new Recipe(){{
+                    items.add(new ItemStack(i.item, 1));
+                    if(i.item.charge != 0f){
+                        power = 1f;
+                    }
+                    if(i.item.explosiveness != 0f){
+                        liquids.add(new LiquidStack(Liquids.cryofluid, 12f / 60f));
+                    }
+                }};
+                out = new Recipe(){{
+                    items.add(new ItemStack(i, 1));
+                    if(i.item.flammability != 0f){
+                        liquids.add(new LiquidStack(Liquids.slag, 12f / 60f));
+                    }
+                }};
+            craftTime = 30f;
+            }}));
     }
 
 

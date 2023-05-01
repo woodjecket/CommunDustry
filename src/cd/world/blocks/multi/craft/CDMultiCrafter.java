@@ -157,21 +157,16 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void buildConfiguration(Table table){
-            /*MultiCrafterSelection.buildTable(CDMultiCrafter.this,table,recipes,this::getIndexes,
-            this::configure,false);*/
             //Thanks for Singularity
             table.table(Tex.buttonTrans, prescripts -> {
                 prescripts.defaults().grow().marginTop(0).marginBottom(0).marginRight(5).marginRight(5);
-
-                prescripts.add(Core.bundle.get("What is it?")).padLeft(5).padTop(5).padBottom(5);
+                prescripts.add(Core.bundle.get("select-recipe")).padLeft(5).padTop(5).padBottom(5);
                 prescripts.row();
-
                 prescripts.pane(buttons -> {
                     for(int i = 0; i < recipes.size; i++){
                         //For lambda
                         int s = i;
                         RecipePair p = recipes.get(i);
-
                         buttons.left().button(t -> {
                             t.left().defaults().left();
                             buildRecipeSimple(p, t);
@@ -187,25 +182,21 @@ public class CDMultiCrafter extends Block{
         }
 
         private void recipeSelect(int index){
-            if(!recipeView.selected(index)){
-                recipeView.select(index);
-            }else {
+            if(recipeView.selected(index)){
                 recipeView.unselect(index);
+            }else{
+                recipeView.select(index);
             }
         }
 
+        @SuppressWarnings("MethodMayBeStatic")
         private void buildRecipeSimple(RecipePair pair, Table table){
-            pair.out.buildTable(table);
-            table.image(Icon.right).padLeft(8).padRight(8).size(30);
             pair.in.buildTable(table);
+            table.image(Icon.right).padLeft(8).padRight(8).size(30);
+            pair.out.buildTable(table);
         }
 
 
-        public IntSeq getIndexes(){
-            var ins = new IntSeq(false, recipes.size);
-            recipeView.getPairs().each(p -> ins.add(recipes.indexOf(p)));
-            return ins;
-        }
 
         //This is the REAL method to calculate efficiency, controlling the crafter to work
         @Override
@@ -496,11 +487,11 @@ public class CDMultiCrafter extends Block{
                 }
             }
 
-            if(recipe.out.liquids.toArray() != null){
+            if(recipe.out.liquids!= null){
                 for(int i = 0; i < recipe.out.liquids.size; i++){
                     int dir = recipe.liquidOutputDirections.length > i ?
                     recipe.liquidOutputDirections[i] : -1;
-                    dumpLiquid(recipe.out.liquids.toArray()[i].liquid, 2f, dir);
+                    dumpLiquid(recipe.out.liquids.get(i).liquid, 2f, dir);
                 }
             }
         }

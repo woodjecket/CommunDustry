@@ -78,9 +78,7 @@ public class MultiCrafterSelection{
 
         if(block != null){
             pane.setScrollYForce(block.selectScroll);
-            pane.update(() -> {
-                block.selectScroll = pane.getScrollY();
-            });
+            pane.update(() -> block.selectScroll = pane.getScrollY());
         }
 
         pane.setOverscroll(false, false);
@@ -138,9 +136,7 @@ public class MultiCrafterSelection{
         pane.setScrollingDisabled(true, false);
         if(block != null){
             pane.setScrollYForce(block.selectScroll);
-            pane.update(() -> {
-                block.selectScroll = pane.getScrollY();
-            });
+            pane.update(() -> block.selectScroll = pane.getScrollY());
         }
         pane.setOverscroll(false, false);
         main.add(pane).maxHeight(160);
