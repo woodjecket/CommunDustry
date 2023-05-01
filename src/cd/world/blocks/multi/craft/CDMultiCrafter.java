@@ -96,6 +96,12 @@ public class CDMultiCrafter extends Block{
         drawer.load(this);
     }
 
+    @Override
+    public void setStats(){
+        super.setStats();
+        recipes.each(r -> r.buildStats(this));
+    }
+
     public OrderedMap<String, Func<Building, Bar>> getBarMap(){
         return barMap;
     }
@@ -141,6 +147,7 @@ public class CDMultiCrafter extends Block{
                         if(result == null) continue;
                         table.add(result).growX();
                         table.row();
+                        break;
                     }
                 }
             }
@@ -181,14 +188,6 @@ public class CDMultiCrafter extends Block{
             table.row();
         }
 
-        private void recipeSelect(int index){
-            if(recipeView.selected(index)){
-                recipeView.unselect(index);
-            }else{
-                recipeView.select(index);
-            }
-        }
-
         @SuppressWarnings("MethodMayBeStatic")
         private void buildRecipeSimple(RecipePair pair, Table table){
             pair.in.buildTable(table);
@@ -196,7 +195,13 @@ public class CDMultiCrafter extends Block{
             pair.out.buildTable(table);
         }
 
-
+        private void recipeSelect(int index){
+            if(recipeView.selected(index)){
+                recipeView.unselect(index);
+            }else{
+                recipeView.select(index);
+            }
+        }
 
         //This is the REAL method to calculate efficiency, controlling the crafter to work
         @Override
@@ -437,7 +442,6 @@ public class CDMultiCrafter extends Block{
                     warmup = Mathf.approachDelta(warmup, 0f, warmupSpeed);
                 }
 
-
                 if(recipeDO.progress >= 1f){
                     craft(recipeDO);
                 }
@@ -487,7 +491,7 @@ public class CDMultiCrafter extends Block{
                 }
             }
 
-            if(recipe.out.liquids!= null){
+            if(recipe.out.liquids != null){
                 for(int i = 0; i < recipe.out.liquids.size; i++){
                     int dir = recipe.liquidOutputDirections.length > i ?
                     recipe.liquidOutputDirections[i] : -1;
@@ -516,22 +520,6 @@ public class CDMultiCrafter extends Block{
             }
         }
 
-        public Seq<RecipeDO> getCrafts(){
-            return crafts;
-        }
-
-        public Seq<RecipePair> getPairs(){
-            return pairs;
-        }
-
-        public boolean selected(int index){
-            return numbers.contains(index);
-        }
-
-        public boolean isCraftsEmpty(){
-            return crafts.isEmpty();
-        }
-
         public void select(int index){
             if(selected(index)){
                 throw new IllegalArgumentException("WHat happened?");
@@ -545,6 +533,22 @@ public class CDMultiCrafter extends Block{
             crafts.add(new RecipeDO(pair, 0f, 0f));
             pairs.add(pair);
             numbers.addUnique(index);
+        }
+
+        public boolean selected(int index){
+            return numbers.contains(index);
+        }
+
+        public Seq<RecipeDO> getCrafts(){
+            return crafts;
+        }
+
+        public Seq<RecipePair> getPairs(){
+            return pairs;
+        }
+
+        public boolean isCraftsEmpty(){
+            return crafts.isEmpty();
         }
 
         public void unselect(int index){

@@ -173,16 +173,16 @@ public class ComponentBlock extends Block implements IComp{
         }
 
         @Override
+        public void setLaserEnergy(float energy){
+            laserEnergy = energy;
+        }
+
+        @Override
         public void addPorts(MultiStructPortBuild b, Point2 p){
             if(!ports.contains(b)){
                 ports.add(b);
                 b.offsetPos = p;
             }
-        }
-
-        @Override
-        public void setLaserEnergy(float energy){
-            laserEnergy=energy;
         }
 
         @Override

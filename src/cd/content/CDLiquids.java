@@ -8,7 +8,7 @@ import static mindustry.content.Liquids.water;
 
 public class CDLiquids{
     public static Liquid fluorine, H2O2, chlorine, ClF3,
-    petrol,kerosene,diesel,lubricatingOil;
+    petrol, kerosene, diesel, lubricatingOil;
 
     public static void load(){
         fluorine = new Liquid("fluorine", Color.valueOf("9ec42b")){{

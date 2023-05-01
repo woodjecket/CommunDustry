@@ -120,34 +120,6 @@ public class ValenceMapDialog extends BaseDialog{
         updateItem();
     }
 
-    public void updateItem(){
-        itemPane.setWidget(buildItems());
-        itemPane.invalidateHierarchy();
-        allValence = formula.getValence();
-    }
-
-    public void updateFormula(){
-        pane.setWidget(buildFormula());
-        pane.invalidateHierarchy();
-        allValence = formula.getValence();
-    }
-
-    public Table buildItems(){
-        Table itemTable = new Table();
-        ((Building)building).items.each((i, a) -> {
-            itemTable.table(Tex.underline, table -> {
-                table.add(new ItemDisplay(i, (int)Mathf.maxZero(a - formula.count(i))));
-                table.table().grow();
-                if(a - formula.count(i) > 0) table.button(Icon.rightOpenSmall, () -> {
-                    ((Buildingc)building).configure(i);
-                    ((Buildingc)building).configure(1);
-                }).padBottom(10);
-            }).growX().height(80);
-            itemTable.row();
-        });
-        return itemTable;
-    }
-
     public Table buildFormula(){
         Table pane1 = new Table();
         AtomicInteger index = new AtomicInteger(0);
@@ -166,6 +138,12 @@ public class ValenceMapDialog extends BaseDialog{
             }
         });
         return pane1;
+    }
+
+    public void updateFormula(){
+        pane.setWidget(buildFormula());
+        pane.invalidateHierarchy();
+        allValence = formula.getValence();
     }
 
     public void buildMap(){
@@ -214,5 +192,27 @@ public class ValenceMapDialog extends BaseDialog{
         };
         mapPane.clearListeners();
         mapTable.stack(mapPane, selectTable).growY();
+    }
+
+    public Table buildItems(){
+        Table itemTable = new Table();
+        ((Building)building).items.each((i, a) -> {
+            itemTable.table(Tex.underline, table -> {
+                table.add(new ItemDisplay(i, (int)Mathf.maxZero(a - formula.count(i))));
+                table.table().grow();
+                if(a - formula.count(i) > 0) table.button(Icon.rightOpenSmall, () -> {
+                    ((Buildingc)building).configure(i);
+                    ((Buildingc)building).configure(1);
+                }).padBottom(10);
+            }).growX().height(80);
+            itemTable.row();
+        });
+        return itemTable;
+    }
+
+    public void updateItem(){
+        itemPane.setWidget(buildItems());
+        itemPane.invalidateHierarchy();
+        allValence = formula.getValence();
     }
 }

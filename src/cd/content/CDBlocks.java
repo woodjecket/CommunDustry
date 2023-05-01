@@ -19,10 +19,12 @@ import static mindustry.type.ItemStack.with;
 public class CDBlocks{
 
     public static Block
-    basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer, pneuConduit, chlorineExtractor, airCompressor, basicClF3Crafter,
+    basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer,
+    pneuConduit, chlorineExtractor, airCompressor, basicClF3Crafter,
     basicCO2Laser, basicLaserRepeater, fluorineExtractor, basicChipCrafter,
     //multi-oil
-    basicLiquidInPort,basicLiquidOutPort,basicItemOutPort,basicStructBlock,basicStructBlockLarge,oilDistillatorTower,
+    basicLiquidInPort, basicLiquidOutPort, basicItemOutPort,
+    basicStructBlock, basicStructBlockLarge, oilDistillatorTower,
     //env
     ashWall, ashFloor, ashBoulder, deadSapling, enrichedSandFloor, enrichedSandWall, enrichedSandBoulder,
     graniteFloor, graniteWall, graniteBoulder,
@@ -141,14 +143,16 @@ public class CDBlocks{
                 canConsumePressure = true;
                 pressureConsume = 1f;
             }});
-            requirements(Category.crafting, with(Items.copper, 30, Items.lead, 30, Items.silicon, 50, Items.metaglass, 50));
+            requirements(Category.crafting, with(Items.copper, 30, Items.lead, 30,
+            Items.silicon, 50, Items.metaglass, 50));
             outputLiquid = new LiquidStack(CDLiquids.chlorine, 5f / 60f);
             craftTime = 60f;
             size = 3;
             consumePower(0.1f);
         }};
         airCompressor = new ComponentCrafter("air-compressor"){{
-            requirements(Category.crafting, with(Items.copper, 40, Items.graphite, 35, Items.lead, 50, Items.silicon, 35));
+            requirements(Category.crafting, with(Items.copper, 40, Items.graphite,
+            35, Items.lead, 50, Items.silicon, 35));
             craftTime = 90f;
             size = 2;
             hasItems = true;
@@ -192,7 +196,8 @@ public class CDBlocks{
             rotateDraw = true;
         }};
         fluorineExtractor = new ComponentCrafter("fluorine-extractor"){{
-            requirements(Category.crafting, with(Items.copper, 30, Items.lead, 60, Items.silicon, 25, Items.metaglass, 50));
+            requirements(Category.crafting, with(Items.copper, 30, Items.lead, 60,
+            Items.silicon, 25, Items.metaglass, 50));
             craftTime = 120f;
             size = 3;
             hasItems = true;
@@ -250,38 +255,40 @@ public class CDBlocks{
 
         basicLiquidInPort = new MultiStructPort("basic-liquid-input-port"){{
             requirements(Category.distribution, with(Items.copper,
-            40, Items.lead, 20, Items.silicon, 15,Items.metaglass,10));
+            40, Items.lead, 20, Items.silicon, 15, Items.metaglass, 10));
             isInputItem = false;
             size = 3;
         }};
 
         basicLiquidOutPort = new MultiStructPort("basic-liquid-output-port"){{
             requirements(Category.distribution, with(Items.copper,
-            40, Items.lead, 20, Items.silicon, 15,Items.metaglass,10));
+            40, Items.lead, 20, Items.silicon, 15, Items.metaglass, 10));
             isInputLiquid = isInputItem = false;
             isOutputLiquid = true;
-            size= 2;
+            size = 2;
         }};
 
         basicItemOutPort = new MultiStructPort("basic-item-output-port"){{
             requirements(Category.distribution, with(Items.copper, 40, Items.lead, 20, Items.silicon, 15));
             isInputLiquid = isInputItem = false;
             isOutputItem = true;
-            size= 2;
+            size = 2;
         }};
 
         basicStructBlock = new Block("basic-structure-block"){{
-            requirements(Category.distribution, with(Items.copper, 12, Items.lead, 15, Items.graphite, 5));
+            requirements(Category.distribution, with(Items.copper, 12, Items.lead, 15,
+            Items.graphite, 5));
             update = true;
         }};
 
         basicStructBlockLarge = new Block("basic-structure-block-large"){{
-            requirements(Category.distribution, with(Items.copper, 48, Items.lead, 60, Items.graphite, 20,Items.silicon,5));
+            requirements(Category.distribution, with(Items.copper, 48, Items.lead, 60,
+            Items.graphite, 20, Items.silicon, 5));
             update = true;
             size = 2;
         }};
         oilDistillatorTower = new ComponentCrafter("oil-distillator-tower"){{
-            requirements(Category.crafting, with(Items.copper, 400,Items.lead, 400,Items.metaglass, 100,
+            requirements(Category.crafting, with(Items.copper, 400, Items.lead, 400, Items.metaglass, 100,
             Items.titanium, 100, Items.silicon, 150, Items.graphite, 80));
             buildCostMultiplier = 0.1f;
             size = 5;
@@ -304,24 +311,27 @@ public class CDBlocks{
                  * E F F F F F F F F F F F F F F F
                  * */
                 //Original Point is (8,8)
-                dataOf(basicLiquidOutPort,3,1,basicLiquidOutPort,3,-2,basicLiquidOutPort,-4,1,basicLiquidOutPort,-4,-2,
-                basicLiquidInPort,-1,-5,basicItemOutPort,1,3,basicItemOutPort,-2,3,
-                basicStructBlock,0,3,basicStructBlock,0,4,
-                basicStructBlock,3,0,basicStructBlock,4,0,basicStructBlock,-3,0,basicStructBlock,-4,0,
-                basicStructBlock,-2,-3,basicStructBlock,-2,-4,basicStructBlock,2,-3,basicStructBlock,2,-4,
-                basicStructBlockLarge,3,-4,basicStructBlockLarge,-4,-4,basicStructBlockLarge,3,3,basicStructBlockLarge,-4,3);
-                liquidDirectionOf(CDLiquids.petrol,new Point2(3,1),CDLiquids.kerosene,new Point2(3,-2),
-                CDLiquids.diesel,new Point2(-4,1),CDLiquids.lubricatingOil,new Point2(-4,-2));
-                itemDirectionOf(CDItems.bitumen,new Point2(1,3),CDItems.wax,new Point2(-2,3));
+                dataOf(basicLiquidOutPort, 3, 1, basicLiquidOutPort, 3, -2, basicLiquidOutPort, -4, 1,
+                basicLiquidOutPort, -4, -2,
+                basicLiquidInPort, -1, -5, basicItemOutPort, 1, 3, basicItemOutPort, -2, 3,
+                basicStructBlock, 0, 3, basicStructBlock, 0, 4,
+                basicStructBlock, 3, 0, basicStructBlock, 4, 0, basicStructBlock, -3, 0, basicStructBlock, -4, 0,
+                basicStructBlock, -2, -3, basicStructBlock, -2, -4, basicStructBlock, 2, -3, basicStructBlock, 2, -4,
+                basicStructBlockLarge, 3, -4, basicStructBlockLarge, -4, -4, basicStructBlockLarge, 3, 3,
+                basicStructBlockLarge, -4, 3);
+                liquidDirectionOf(CDLiquids.petrol, new Point2(3, 1), CDLiquids.kerosene,
+                new Point2(3, -2),
+                CDLiquids.diesel, new Point2(-4, 1), CDLiquids.lubricatingOil, new Point2(-4, -2));
+                itemDirectionOf(CDItems.bitumen, new Point2(1, 3), CDItems.wax, new Point2(-2, 3));
             }});
 
-            consumeLiquid(Liquids.oil,2f);//real 120/s!
-            consumePower(2f)         ;
+            consumeLiquid(Liquids.oil, 2f);//real 120/s!
+            consumePower(2f);
 
-            outputLiquids = LiquidStack.with(CDLiquids.petrol,15f/60f,CDLiquids.kerosene,15f/60f,
-            CDLiquids.diesel,15f/60f,CDLiquids.lubricatingOil,15f/60f);
+            outputLiquids = LiquidStack.with(CDLiquids.petrol, 15f / 60f, CDLiquids.kerosene, 15f / 60f,
+            CDLiquids.diesel, 15f / 60f, CDLiquids.lubricatingOil, 15f / 60f);
 
-            outputItems = with(CDItems.bitumen,2,CDItems.wax,3);
+            outputItems = with(CDItems.bitumen, 2, CDItems.wax, 3);
 
 
         }};

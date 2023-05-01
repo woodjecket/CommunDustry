@@ -176,7 +176,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
 
         @Override
         public void setLaserEnergy(float energy){
-            laserEnergy=energy;
+            laserEnergy = energy;
         }
 
         @Override

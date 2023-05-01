@@ -1,8 +1,17 @@
 package cd.world.blocks.multi.craft;
 
+import arc.scene.style.*;
+import arc.scene.ui.*;
+import arc.scene.ui.layout.*;
+import arc.struct.*;
+import cd.world.stat.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.entities.*;
+import mindustry.gen.*;
+import mindustry.graphics.*;
+import mindustry.world.*;
+import mindustry.world.meta.*;
 
 import java.util.concurrent.atomic.*;
 
@@ -30,21 +39,21 @@ public class RecipePair{
 
     public UnlockableContent iconItem(){
         if(iconItem == null){
-            if(out.items.any())iconItem = out.items.get(0).item;
-            if(in.items.any())iconItem = in.items.get(0).item;
+            if(out.items.any()) iconItem = out.items.get(0).item;
+            if(in.items.any()) iconItem = in.items.get(0).item;
         }
         return iconItem;
     }
 
-    public boolean isAllUnlocked(){
+    public boolean hasLockedItem(){
         AtomicBoolean atomicBoolean = new AtomicBoolean(true);
         in.items.each(i -> !i.item.unlockedNow() &&
         !state.rules.hiddenBuildItems.contains(i.item) &&
         !i.item.isHidden(), i -> atomicBoolean.set(true));
         out.items.each(i -> !i.item.unlockedNow() &&
         !state.rules.hiddenBuildItems.contains(i.item) &&
-        !i.item.isHidden(),i -> atomicBoolean.set(true));
-        return atomicBoolean.get();
+        !i.item.isHidden(), i -> atomicBoolean.set(true));
+        return !atomicBoolean.get();
     }
 
     @Override
@@ -75,4 +84,64 @@ public class RecipePair{
         ", craftTime=" + craftTime +
         '}';
     }
+
+    public void buildStats(Block block){
+
+        block.stats.add(CDStats.recipes, t -> {
+            t.left().row();
+            Table details = new Table(Tex.pane);
+            var stat = genStats();
+            for(StatCat cat : stat.toMap().keys()){
+                OrderedMap<Stat, Seq<StatValue>> map = stat.toMap().get(cat);
+                if(map.size == 0) continue;
+
+                for(Stat state : map.keys()){
+                    t.table(inset -> {
+                        inset.left();
+                        inset.add("[lightgray]" + state.localized() + ":[] ").left();
+                        Seq<StatValue> arr = map.get(state);
+                        for(StatValue value : arr){
+                            value.display(inset);
+                            inset.add().size(10f);
+                        }
+                    }).fillX().padLeft(10);
+                    t.row();
+                }
+            }
+            t.table(((TextureRegionDrawable)Tex.whiteui).tint(Pal.darkestGray), ta -> {
+                ta.left().defaults().left();
+                in.buildTable(t);
+                t.image(Icon.right).padLeft(8).padRight(8).size(30);
+                out.buildTable(t);
+            }).margin(5).left().growX().fillY().pad(3).get()
+            .addListener(new Tooltip(tip -> tip.add(details)){{
+                allowMobile = true;
+            }});
+            t.row();
+        });
+
+    }
+
+    public Stats genStats(){
+        Stats stats = new Stats();
+        for(var item : in.items){
+            stats.add(Stat.input, item);
+        }
+        for(var liquid : in.liquids){
+            stats.add(Stat.input, liquid.liquid, liquid.amount, false);
+        }
+        if(in.power != 0f) stats.add(Stat.powerUse, in.power * 60f, StatUnit.powerSecond);
+        if(in.heat != 0f) stats.add(Stat.input, in.heat, StatUnit.powerSecond);
+
+        for(var item : out.items){
+            stats.add(Stat.output, item);
+        }
+        for(var liquid : out.liquids){
+            stats.add(Stat.output, liquid.liquid, liquid.amount, false);
+        }
+        if(out.power != 0f) stats.add(Stat.basePowerGeneration, out.power * 60f, StatUnit.powerSecond);
+        if(out.heat != 0f) stats.add(Stat.output, out.heat, StatUnit.powerSecond);
+        return stats;
+    }
 }
+

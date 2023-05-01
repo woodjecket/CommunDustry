@@ -13,6 +13,11 @@ public class MetaDust extends Item{
     public Item item;
     private int[] palettei;
 
+    public MetaDust(Item item, Color c1, Color c2, Color c3){
+        this(item);
+        palettei = new int[]{c1.rgba8888(), c2.rgba8888(), c3.rgba8888()};
+    }
+
     public MetaDust(Item item){
         super(item.name + "-dust", item.color);
         this.item = item;
@@ -22,11 +27,6 @@ public class MetaDust extends Item{
         charge = item.charge * 0.8f;
         localizedName = Core.bundle.format("commumdustry-item-dust", item.localizedName);
         //Log.info(localizedName);
-    }
-
-    public MetaDust(Item item, Color c1, Color c2, Color c3){
-        this(item);
-        palettei = new int[]{c1.rgba8888(), c2.rgba8888(), c3.rgba8888()};
     }
 
     public MetaDust(Item item, String c1, String c2, String c3){

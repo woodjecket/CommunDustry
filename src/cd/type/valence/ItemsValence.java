@@ -10,8 +10,8 @@ import java.util.concurrent.atomic.*;
 public class ItemsValence{
     public static ObjectMap<Item, ValenceMap> map = new ObjectMap<>();
 
-    public static boolean hasValence(Item item){
-        return map.containsKey(item);
+    public static void setValence(Item item, int valence){
+        setValence(item, new ValenceFunc((module) -> valence));
     }
 
     public static void setValence(Item item, ValenceFunc valence){
@@ -21,8 +21,12 @@ public class ItemsValence{
         }
     }
 
-    public static void setValence(Item item, int valence){
-        setValence(item, new ValenceFunc((module) -> valence));
+    public static boolean hasValence(Item item){
+        return map.containsKey(item);
+    }
+
+    public static ValenceMap getFunc(Item item){
+        return map.get(item);
     }
 
     public static void setHandle(Item item, ValenceFunc handle){
@@ -40,10 +44,6 @@ public class ItemsValence{
 
     public static Integer getHandleValence(Item item, ValenceModule module){
         return map.get(item).handleFunc.getNormal(module);
-    }
-
-    public static ValenceMap getFunc(Item item){
-        return map.get(item);
     }
 
     public static class ValenceMap{
@@ -71,12 +71,12 @@ public class ItemsValence{
             this.func = func;
         }
 
-        public Integer get(ValenceModule param){
-            return func.get(param);
-        }
-
         public Integer getNormal(ValenceModule module){
             return module.formulaBefore != null ? get(module) : null;
+        }
+
+        public Integer get(ValenceModule param){
+            return func.get(param);
         }
     }
 

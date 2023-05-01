@@ -64,6 +64,10 @@ public class Formula{
         updateValence(new AtomicInteger(0));
     }
 
+    private void updateValence(AtomicInteger valence){
+        valenceAtomicInteger.set(valence.get());
+    }
+
     public boolean any(){
         return items.any();
     }
@@ -77,17 +81,14 @@ public class Formula{
             tmpItems.removeRange(index.get(), items.size - 1);
             Formula tmpFormula = new Formula(tmpItems);
             int itemValence = ItemsValence.getValence(item, new ValenceModule(valence, tmpFormula, 0));
-            if(handleFunc.get() != null) valence.getAndAdd(handleFunc.get().getNormal(new ValenceModule(valence, tmpFormula, itemValence)));
+            if(handleFunc.get() != null)
+                valence.getAndAdd(handleFunc.get().getNormal(new ValenceModule(valence, tmpFormula, itemValence)));
             else valence.getAndAdd(itemValence);
             if(getFunc(item) != null) handleFunc.set(getFunc(item).handleFunc);
             index.getAndIncrement();
         });
         updateValence(valence);
         return valence.get();
-    }
-
-    private void updateValence(AtomicInteger valence){
-        valenceAtomicInteger.set(valence.get());
     }
 
     public Seq<ItemStack> toStack(){
@@ -105,12 +106,12 @@ public class Formula{
         return items.count(i -> i == item);
     }
 
-    public Item last(){
-        return items.peek();
-    }
-
     public boolean lastIs(Item item){
         return last() == item;
+    }
+
+    public Item last(){
+        return items.peek();
     }
 
     public boolean has(Item item){

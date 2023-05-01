@@ -42,7 +42,7 @@ public class CatalyzerCrafterComponent extends BaseComponent{
 
     @Override
     public void onSetStats(Block b){
-        b.stats.add(CDStat.catalyzer, StatValues.items(true, catalyzer));
+        b.stats.add(CDStats.catalyzer, StatValues.items(true, catalyzer));
     }
 
     @Override

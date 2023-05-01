@@ -9,7 +9,7 @@ import mindustry.world.consumers.*;
 
 import java.util.*;
 
-/** Stores data of recipe.*/
+/** Stores data of recipe. */
 public class Recipe{
     public static final Recipe EMPTY_RECIPE = new Recipe();
 
@@ -69,23 +69,25 @@ public class Recipe{
 
     public void buildTable(Table table){
         boolean afterFirst = false;
-        for(var item: items){
-            if (afterFirst) table.add("+").fillX().pad(4);
+        for(var item : items){
+            if(afterFirst) table.add("+").fillX().pad(4);
             table.table(c -> {
                 c.defaults().padLeft(3).fill();
                 table.add(new ItemImage(item));
             }).fill();
             afterFirst = true;
         }
-        for(var liquid: liquids){
-            if (afterFirst) table.add("+").fillX().pad(4);
+        for(var liquid : liquids){
+            if(afterFirst) table.add("+").fillX().pad(4);
             table.table(c -> {
                 c.defaults().padLeft(3).fill();
-                table.add(new ItemImage(liquid.liquid.uiIcon,0));
+                table.add(new ItemImage(liquid.liquid.uiIcon, 0));
             }).fill();
             afterFirst = true;
         }
-        if(power!=0f)table.add(new ItemImage(Icon.power.getRegion(), (int)(power*60f)));
-        if(heat!=0f)table.add(new ItemImage(Icon.waves.getRegion(), (int)(heat)));
+        if(power != 0f) table.add(new ItemImage(Icon.power.getRegion(), (int)(power * 60f)));
+        if(heat != 0f) table.add(new ItemImage(Icon.waves.getRegion(), (int)(heat)));
     }
+
+
 }

@@ -69,23 +69,23 @@ public class TestContent{
             }
         }
         g.each(i -> cdMultiC.recipes.add(new RecipePair(){{
-                in = new Recipe(){{
-                    items.add(new ItemStack(i.item, 1));
-                    if(i.item.charge != 0f){
-                        power = 1f;
-                    }
-                    if(i.item.explosiveness != 0f){
-                        liquids.add(new LiquidStack(Liquids.cryofluid, 12f / 60f));
-                    }
-                }};
-                out = new Recipe(){{
-                    items.add(new ItemStack(i, 1));
-                    if(i.item.flammability != 0f){
-                        liquids.add(new LiquidStack(Liquids.slag, 12f / 60f));
-                    }
-                }};
+            in = new Recipe(){{
+                items.add(new ItemStack(i.item, 1));
+                if(i.item.charge != 0f){
+                    power = 1f;
+                }
+                if(i.item.explosiveness != 0f){
+                    liquids.add(new LiquidStack(Liquids.cryofluid, 12f / 60f));
+                }
+            }};
+            out = new Recipe(){{
+                items.add(new ItemStack(i, 1));
+                if(i.item.flammability != 0f){
+                    liquids.add(new LiquidStack(Liquids.slag, 12f / 60f));
+                }
+            }};
             craftTime = 30f;
-            }}));
+        }}));
     }
 
 

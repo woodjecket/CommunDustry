@@ -104,22 +104,6 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
         }
 
         @Override
-        public void updateDialog(){
-            if(!dialog.isShown()) return;
-            dialog.formula = formula;
-            dialog.allValence = formula.getValence();
-            dialog.updateFormula();
-            dialog.updateItem();
-            Log.info(dialog.allValence);
-        }
-
-        @Override
-        public void updateValence(){
-            output = resultMap.getResult(formula.getValence());
-            updateDialog();
-        }
-
-        @Override
         public void dumpOutputs(){
             if(output != null) dump(output.item);
         }
@@ -137,6 +121,22 @@ public class ValenceCrafter extends GenericCrafter implements ValenceBlock{
             progress %= 1f;
             consume();
             updateDialog();
+        }
+
+        @Override
+        public void updateValence(){
+            output = resultMap.getResult(formula.getValence());
+            updateDialog();
+        }
+
+        @Override
+        public void updateDialog(){
+            if(!dialog.isShown()) return;
+            dialog.formula = formula;
+            dialog.allValence = formula.getValence();
+            dialog.updateFormula();
+            dialog.updateItem();
+            Log.info(dialog.allValence);
         }
 
         @Override

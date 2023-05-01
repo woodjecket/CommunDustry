@@ -139,10 +139,10 @@ public class PneuComponent extends BaseComponent{
 
     @Override
     public void onSetStats(Block b){
-        b.stats.add(CDStat.pressureRange, Core.bundle.get("stat.pressure-range-format"),
+        b.stats.add(CDStats.pressureRange, Core.bundle.get("stat.pressure-range-format"),
         minOperatePressure, maxOperatePressure, explodePressure);
-        if(canProvidePressure) b.stats.add(CDStat.pressureOutput, outputPressure, CDStat.perConsume);
-        if(canConsumePressure) b.stats.add(CDStat.pressureConsume, pressureConsume, CDStat.perConsume);
+        if(canProvidePressure) b.stats.add(CDStats.pressureOutput, outputPressure, CDStats.perConsume);
+        if(canConsumePressure) b.stats.add(CDStats.pressureConsume, pressureConsume, CDStats.perConsume);
     }
 
     @Override

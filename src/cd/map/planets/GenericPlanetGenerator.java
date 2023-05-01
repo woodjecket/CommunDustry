@@ -36,7 +36,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     public Block deadTree = CDBlocks.deadSapling;
     public Block[][] blocks = {
     {hotRiverTile, hotRiverTile, Blocks.basalt, Blocks.basalt, Blocks.basalt,
-     CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
+    CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
     {hotRiverTile, hotRiverTile, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor},
     {coldRiverTile, coldRiverTile, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.snow},
     {coldRiverTile, coldRiverTile, Blocks.dirt, Blocks.dirt, Blocks.mud, Blocks.grass, CDBlocks.vine}
@@ -62,12 +62,6 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         }catch(NoSuchFieldException | IllegalAccessException e){
             throw new RuntimeException(e);
         }
-    }
-
-    public float rawHeight1(Vec3 position){
-        position = Tmp.v33.set(position).scl(scl);
-        return (Mathf.pow(Simplex.noise3d(seed, 7, 0.5f, 1f / 3f, position.x, position.y, position.z),
-        2.3f) + riverLiquidOffset) / (1f + riverLiquidOffset);
     }
 
     @Override
@@ -453,6 +447,12 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         return naval;
     }
 
+    public float rawHeight1(Vec3 position){
+        position = Tmp.v33.set(position).scl(scl);
+        return (Mathf.pow(Simplex.noise3d(seed, 7, 0.5f, 1f / 3f, position.x, position.y, position.z),
+        2.3f) + riverLiquidOffset) / (1f + riverLiquidOffset);
+    }
+
     public void genOres(){
         Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead);
         float poles = Math.abs(sector.tile.v.y);
@@ -501,6 +501,14 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         });
     }
 
+    @Override
+    public Color getColor(Vec3 position){
+        Block block1 = getBlock1(position);
+        //replace salt with sand color
+        if(block1 == Blocks.salt) return Blocks.sand.mapColor;
+        return Tmp.c1.set(block1.mapColor).a(1f - block1.albedo);
+    }
+
     public Block getBlock1(Vec3 position){
         float height1 = rawHeight1(position);
         Tmp.v31.set(position);
@@ -521,14 +529,6 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         }else{
             return res;
         }
-    }
-
-    @Override
-    public Color getColor(Vec3 position){
-        Block block1 = getBlock1(position);
-        //replace salt with sand color
-        if(block1 == Blocks.salt) return Blocks.sand.mapColor;
-        return Tmp.c1.set(block1.mapColor).a(1f - block1.albedo);
     }
 
     @Override
@@ -554,13 +554,6 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             connected.add(this);
         }
 
-        void join(int x1, int y1, int x2, int y2){
-            float nscl = rand.random(100f, 140f) * 6f; //(600.0,840.0)
-            int stroke = rand.random(3, 9);//(3,9)
-            brush(
-            pathfind(x1, y1, x2, y2, tile -> (tile.solid() ? 50f : 0f) + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan), stroke);
-        }
-
         void connect(Room to){
             // if it has already been added or it is just itself then return
             if(!connected.add(to) || to == this) return;
@@ -582,6 +575,29 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
 
             join(x, y, mx, my);
             join(mx, my, to.x, to.y);
+        }
+
+        void join(int x1, int y1, int x2, int y2){
+            float nscl = rand.random(100f, 140f) * 6f; //(600.0,840.0)
+            int stroke = rand.random(3, 9);//(3,9)
+            brush(
+            pathfind(x1, y1, x2, y2, tile -> (tile.solid() ? 50f : 0f) + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan), stroke);
+        }
+
+        void connectLiquid(Room to){
+            if(to == this) return;
+
+            Vec2 midpoint = Tmp.v1.set(to.x, to.y).add(x, y).scl(0.5f);
+            rand.nextFloat();
+
+            //add randomized offset to avoid straight lines
+            midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
+            midpoint.sub(width / 2f, height / 2f).limit(width / 2f / Mathf.sqrt3).add(width / 2f, height / 2f);
+
+            int mx = (int)midpoint.x, my = (int)midpoint.y;
+
+            joinLiquid(x, y, mx, my);
+            joinLiquid(mx, my, to.x, to.y);
         }
 
         void joinLiquid(int x1, int y1, int x2, int y2){
@@ -612,22 +628,6 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
                     }
                 }
             });
-        }
-
-        void connectLiquid(Room to){
-            if(to == this) return;
-
-            Vec2 midpoint = Tmp.v1.set(to.x, to.y).add(x, y).scl(0.5f);
-            rand.nextFloat();
-
-            //add randomized offset to avoid straight lines
-            midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
-            midpoint.sub(width / 2f, height / 2f).limit(width / 2f / Mathf.sqrt3).add(width / 2f, height / 2f);
-
-            int mx = (int)midpoint.x, my = (int)midpoint.y;
-
-            joinLiquid(x, y, mx, my);
-            joinLiquid(mx, my, to.x, to.y);
         }
     }
 

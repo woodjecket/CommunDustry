@@ -99,7 +99,7 @@ public class MainMultiComponent extends BaseComponent{
                  * 2 0/1/2/3 2/3/0/1
                  * 3 0/1/2/3 3/0/1/2*/
                 boolean b1 = isSufficient(ctx, cty, building, build) &&
-                             b.get() && isProperRotation(baseRotation, p, building);
+                b.get() && isProperRotation(baseRotation, p, building);
                 b.set(b1);
                 if(b1 && building instanceof MultiStructPortBuild ms){
                     ms.connectParent = build;
@@ -256,7 +256,7 @@ public class MainMultiComponent extends BaseComponent{
             float dx = (ctx + bSize / 2f - 0.5f) * tilesize, dy = (cty + bSize / 2f - 0.5f) * tilesize;
             if(Vars.world.build(ctx, cty) != null && Vars.world.build(ctx, cty).block == data.get(p).getBlock()){
                 if(!isSufficient(ctx, cty, Vars.world.build(ctx, cty), b) ||
-                   !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
+                !isProperRotation(baseRotation, p, Vars.world.build(ctx, cty))){
                     Draw.rect(data.get(p).getBlock().uiIcon, dx, dy, (data.get(p).getRotation() + baseRotation) * 90);
                     //Drawf.circles(dx,dy,4,Pal.accent);
                 }

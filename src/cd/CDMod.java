@@ -14,15 +14,6 @@ public class CDMod extends Mod{
         Log.info("Loaded CDMod constructor.");
     }
 
-    public static void configure(){
-        ///PlanetDialog.debugSelect = true;
-        //Log.level = LogLevel.debug;
-        var meta = Vars.mods.getMod(cd.CDMod.class).meta;
-        meta.name = Core.bundle.get("mod.commumdustry.displayName");
-        meta.description = Core.bundle.get("mod.commumdustry.description");
-        meta.author = Core.bundle.get("mod.commumdustry.author");
-    }
-
     @Override
     public void loadContent(){
         configure();
@@ -39,6 +30,15 @@ public class CDMod extends Mod{
         Log.debug("Loaded planets.");
         if(test) TestContent.load();
 
+    }
+
+    public static void configure(){
+        ///PlanetDialog.debugSelect = true;
+        //Log.level = LogLevel.debug;
+        var meta = Vars.mods.getMod(cd.CDMod.class).meta;
+        meta.name = Core.bundle.get("mod.commumdustry.displayName");
+        meta.description = Core.bundle.get("mod.commumdustry.description");
+        meta.author = Core.bundle.get("mod.commumdustry.author");
     }
 
 }

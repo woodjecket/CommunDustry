@@ -11,13 +11,13 @@ import cd.world.component.*;
  */
 @SuppressWarnings("unchecked")
 public interface IComp{
-    ObjectMap<Class<? extends BaseComponent>, BaseComponent> components();
-
     /** Return the component related to the type param */
     @Nullable
     default <C extends BaseComponent> C getComp(Class<C> type){
         return (C)components().getNull(type);
     }
+
+    ObjectMap<Class<? extends BaseComponent>, BaseComponent> components();
 
     /** Add components */
     default void addComp(BaseComponent... c){
@@ -30,15 +30,15 @@ public interface IComp{
         }
     }
 
-    /** Return a iterator for components to apply or calculate */
-    default Iterable<BaseComponent> listComps(){
-        return components().values();
-    }
-
     /** Apply a consumer-lambda to all components */
     default void executeAllComps(Cons<? super BaseComponent> operator){
         for(var i : listComps()){
             operator.get(i);
         }
+    }
+
+    /** Return a iterator for components to apply or calculate */
+    default Iterable<BaseComponent> listComps(){
+        return components().values();
     }
 }
