@@ -1,7 +1,10 @@
 package cd.world.blocks.multi.craft;
 
+import arc.scene.ui.layout.*;
 import arc.struct.*;
+import mindustry.gen.*;
 import mindustry.type.*;
+import mindustry.ui.*;
 import mindustry.world.consumers.*;
 
 import java.util.*;
@@ -62,5 +65,27 @@ public class Recipe{
         ", laser=" + laser +
         ", object=" + super.toString() +
         '}';
+    }
+
+    public void buildTable(Table table){
+        boolean afterFirst = false;
+        for(var item: items){
+            if (afterFirst) table.add("+").fillX().pad(4);
+            table.table(c -> {
+                c.defaults().padLeft(3).fill();
+                table.add(new ItemImage(item));
+            }).fill();
+            afterFirst = true;
+        }
+        for(var liquid: liquids){
+            if (afterFirst) table.add("+").fillX().pad(4);
+            table.table(c -> {
+                c.defaults().padLeft(3).fill();
+                table.add(new ItemImage(liquid.liquid.uiIcon,0));
+            }).fill();
+            afterFirst = true;
+        }
+        if(power!=0f)table.add(new ItemImage(Icon.power.getRegion(), (int)(power*60f)));
+        if(heat!=0f)table.add(new ItemImage(Icon.waves.getRegion(), (int)(heat)));
     }
 }

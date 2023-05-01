@@ -1,11 +1,11 @@
 package cd.world.blocks.multi.craft;
 
+import arc.*;
 import arc.func.*;
 import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.io.*;
-import cd.ui.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.ui.*;
@@ -120,6 +120,7 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void displayBars(Table table){
+            //TODO let displayBars() create and manage Bar instead of init()
             var map = getBarMap();
             Seq<Liquid> seq = new Seq<>();
             recipeView.getPairs().each(p -> {
@@ -156,13 +157,53 @@ public class CDMultiCrafter extends Block{
 
         @Override
         public void buildConfiguration(Table table){
-            MultiCrafterSelection.buildTable(CDMultiCrafter.this,table,recipes,this::getIndexes,
-            this::configure,false);
+            /*MultiCrafterSelection.buildTable(CDMultiCrafter.this,table,recipes,this::getIndexes,
+            this::configure,false);*/
+            //Thanks for Singularity
+            table.table(Tex.buttonTrans, prescripts -> {
+                prescripts.defaults().grow().marginTop(0).marginBottom(0).marginRight(5).marginRight(5);
+
+                prescripts.add(Core.bundle.get("What is it?")).padLeft(5).padTop(5).padBottom(5);
+                prescripts.row();
+
+                prescripts.pane(buttons -> {
+                    for(int i = 0; i < recipes.size; i++){
+                        //For lambda
+                        int s = i;
+                        RecipePair p = recipes.get(i);
+
+                        buttons.left().button(t -> {
+                            t.left().defaults().left();
+                            buildRecipeSimple(p, t);
+                        }, Styles.underlineb, () -> recipeSelect(s))
+                        .update(b -> b.setChecked(recipeView.selected(s)))
+                        .fillY().growX().left().margin(5).marginTop(8).marginBottom(8).pad(4);
+                        buttons.row();
+                    }
+                }).fill().maxHeight(280);
+            });
+
+            table.row();
         }
 
+        private void recipeSelect(int index){
+            if(!recipeView.selected(index)){
+                recipeView.select(index);
+            }else {
+                recipeView.unselect(index);
+            }
+        }
+
+        private void buildRecipeSimple(RecipePair pair, Table table){
+            pair.out.buildTable(table);
+            table.image(Icon.right).padLeft(8).padRight(8).size(30);
+            pair.in.buildTable(table);
+        }
+
+
         public IntSeq getIndexes(){
-            var ins = new IntSeq(false,recipes.size);
-            recipeView.getPairs().each(p->ins.add(recipes.indexOf(p)));
+            var ins = new IntSeq(false, recipes.size);
+            recipeView.getPairs().each(p -> ins.add(recipes.indexOf(p)));
             return ins;
         }
 
@@ -414,7 +455,6 @@ public class CDMultiCrafter extends Block{
             }
         }
 
-
         public float getProgressIncrease(RecipePair pair, float baseTime){
             //limit progress increase by maximum amount of liquid it can produce
             float scaling = 1f, max = 1f;
@@ -476,18 +516,12 @@ public class CDMultiCrafter extends Block{
 
         private Seq<RecipeDO> crafts = new Seq<>();
         private Seq<RecipePair> pairs = new Seq<>();
+        private IntSeq numbers = new IntSeq();
 
         public void setRecipe(int[] indexes){
             pairs.clear();
             for(var index : indexes){
-                RecipePair pair;
-                if(index >= recipes.size || index == -1){
-                    pair = RecipePair.EMPTY_RECIPE_PAIR;
-                }else{
-                    pair = recipes.get(index);
-                }
-                crafts.add(new RecipeDO(pair, 0f, 0f));
-                pairs.add(pair);
+                select(index);
             }
         }
 
@@ -499,8 +533,34 @@ public class CDMultiCrafter extends Block{
             return pairs;
         }
 
+        public boolean selected(int index){
+            return numbers.contains(index);
+        }
+
         public boolean isCraftsEmpty(){
             return crafts.isEmpty();
+        }
+
+        public void select(int index){
+            if(selected(index)){
+                throw new IllegalArgumentException("WHat happened?");
+            }
+            RecipePair pair;
+            if(index >= recipes.size || index == -1){
+                pair = RecipePair.EMPTY_RECIPE_PAIR;
+            }else{
+                pair = recipes.get(index);
+            }
+            crafts.add(new RecipeDO(pair, 0f, 0f));
+            pairs.add(pair);
+            numbers.addUnique(index);
+        }
+
+        public void unselect(int index){
+            int address = numbers.indexOf(index);
+            numbers.removeIndex(address);
+            crafts.remove(address);
+            pairs.remove(address);
         }
     }
 }
