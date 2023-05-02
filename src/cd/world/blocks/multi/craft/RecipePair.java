@@ -1,16 +1,13 @@
 package cd.world.blocks.multi.craft;
 
 import arc.scene.style.*;
-import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
-import cd.world.stat.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
-import mindustry.world.*;
 import mindustry.world.meta.*;
 
 import java.util.concurrent.atomic.*;
@@ -85,41 +82,15 @@ public class RecipePair{
         '}';
     }
 
-    public void buildStats(Block block){
-
-        block.stats.add(CDStats.recipes, t -> {
-            t.left().row();
-            Table details = new Table(Tex.pane);
-            var stat = genStats();
-            for(StatCat cat : stat.toMap().keys()){
-                OrderedMap<Stat, Seq<StatValue>> map = stat.toMap().get(cat);
-                if(map.size == 0) continue;
-
-                for(Stat state : map.keys()){
-                    t.table(inset -> {
-                        inset.left();
-                        inset.add("[lightgray]" + state.localized() + ":[] ").left();
-                        Seq<StatValue> arr = map.get(state);
-                        for(StatValue value : arr){
-                            value.display(inset);
-                            inset.add().size(10f);
-                        }
-                    }).fillX().padLeft(10);
-                    t.row();
-                }
-            }
-            t.table(((TextureRegionDrawable)Tex.whiteui).tint(Pal.darkestGray), ta -> {
-                ta.left().defaults().left();
-                in.buildTable(t);
-                t.image(Icon.right).padLeft(8).padRight(8).size(30);
-                out.buildTable(t);
-            }).margin(5).left().growX().fillY().pad(3).get()
-            .addListener(new Tooltip(tip -> tip.add(details)){{
-                allowMobile = true;
-            }});
-            t.row();
-        });
-
+    public Table buildStats(){
+        var recipeTable = new Table(Tex.pane);
+        var recipeStat = genStats();
+        buildBasicStats(recipeTable, recipeStat);
+        recipeTable.table(((TextureRegionDrawable)Tex.whiteui).tint(Pal.darkestGray), ta -> {
+            ta.left().defaults().left();
+            ta.add(genRecipe());
+        }).margin(5).left().growX().pad(3).growY().get();
+        return recipeTable;
     }
 
     public Stats genStats(){
@@ -142,6 +113,35 @@ public class RecipePair{
         if(out.power != 0f) stats.add(Stat.basePowerGeneration, out.power * 60f, StatUnit.powerSecond);
         if(out.heat != 0f) stats.add(Stat.output, out.heat, StatUnit.powerSecond);
         return stats;
+    }
+
+    /** Thanks Singularity */
+    private static void buildBasicStats(Table details, Stats stat){
+        for(StatCat cat : stat.toMap().keys()){
+            OrderedMap<Stat, Seq<StatValue>> map = stat.toMap().get(cat);
+            if(map.size == 0) continue;
+
+            for(Stat state : map.keys()){
+                details.table(inset -> {
+                    inset.left();
+                    inset.add("[lightgray]" + state.localized() + ":[] ").left();
+                    Seq<StatValue> arr = map.get(state);
+                    for(StatValue value : arr){
+                        value.display(inset);
+                        inset.add().size(10f);
+                    }
+                }).fillX().padLeft(10);
+                details.row();
+            }
+        }
+    }
+
+    private Table genRecipe(){
+        var table = new Table();
+        in.buildTable(table);
+        table.image(Icon.right).padLeft(8).padRight(8).size(30);
+        out.buildTable(table);
+        return table;
     }
 }
 

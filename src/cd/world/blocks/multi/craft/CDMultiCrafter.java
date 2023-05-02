@@ -6,6 +6,7 @@ import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.io.*;
+import cd.world.stat.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.ui.*;
@@ -99,7 +100,7 @@ public class CDMultiCrafter extends Block{
     @Override
     public void setStats(){
         super.setStats();
-        recipes.each(r -> r.buildStats(this));
+        recipes.each(r -> stats.add(CDStats.recipes, t -> t.row().add(r.buildStats()).left().row()));
     }
 
     public OrderedMap<String, Func<Building, Bar>> getBarMap(){
