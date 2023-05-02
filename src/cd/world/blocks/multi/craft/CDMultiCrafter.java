@@ -361,13 +361,31 @@ public class CDMultiCrafter extends Block{
         @Override
         public void read(Reads read, byte revision){
             super.read(read, revision);
-            var ignored = read.i();
+            var ver = read.i();
+/*            if(ver>=2){
+                var length = read.i();
+                Log.info(this+" read "+length);
+                for(int i = 0; i < length; i++){
+                    recipeView.select(read.i());
+                }
+            }*/
         }
 
         @Override
         public void write(Writes write){
             super.write(write);
             write.i(1);
+/*            write.i(2);
+
+            int length = recipeView.length();
+            write.i(length);
+            Log.info(this+" writes "+length);
+
+            for(int i = 0; i < length; i++){
+                int indexOf = recipeView.getNumbers().indexOf(i);
+                write.i(indexOf);
+                Log.info(this+" says "+indexOf+recipeView.getNumbers());
+            }*/
         }
 
         //region heat
@@ -523,7 +541,7 @@ public class CDMultiCrafter extends Block{
 
         public void select(int index){
             if(selected(index)){
-                throw new IllegalArgumentException("WHat happened?");
+                throw new IllegalArgumentException("What happened?");
             }
             RecipePair pair;
             if(index >= recipes.size || index == -1){
@@ -548,6 +566,10 @@ public class CDMultiCrafter extends Block{
             return pairs;
         }
 
+        public IntSeq getNumbers(){
+            return numbers;
+        }
+
         public boolean isCraftsEmpty(){
             return crafts.isEmpty();
         }
@@ -557,6 +579,10 @@ public class CDMultiCrafter extends Block{
             numbers.removeIndex(address);
             crafts.remove(address);
             pairs.remove(address);
+        }
+
+        public int length(){
+            return numbers.size;
         }
     }
 }
