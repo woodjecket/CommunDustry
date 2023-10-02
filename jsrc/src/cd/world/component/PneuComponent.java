@@ -77,10 +77,11 @@ public class PneuComponent extends BaseComponent{
         calculatePressure(b);
     }
 
+
     public void calculatePressure(Building b){
         IPneu bPneu = (IPneu)b;
         if(b.block.rotate){
-            var other = b.proximity.filter(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
+            var other = b.proximity.retainAll(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
             Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
             if(!(other instanceof IPneu otherPneu)) return;
             float thisP = bPneu.getPressure();

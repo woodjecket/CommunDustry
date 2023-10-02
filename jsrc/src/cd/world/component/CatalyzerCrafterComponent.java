@@ -1,6 +1,5 @@
 package cd.world.component;
 
-import arc.math.*;
 import cd.world.stat.*;
 import mindustry.gen.*;
 import mindustry.type.*;
@@ -57,12 +56,7 @@ public class CatalyzerCrafterComponent extends BaseComponent{
         return true;
     }
 
-    @Override
-    public void onUpdateTile(Building b){
-        if(Mathf.chanceDelta(catalyzerChance)){
-            b.items.remove(catalyzer[Mathf.random(catalyzer.length - 1)]);
-        }
-    }
+
 
     @Override
     public float onEfficiencyScale(Building b){
