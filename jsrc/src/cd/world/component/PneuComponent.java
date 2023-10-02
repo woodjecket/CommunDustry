@@ -3,6 +3,7 @@ package cd.world.component;
 import arc.*;
 import arc.audio.*;
 import arc.math.geom.*;
+import arc.util.io.*;
 import cd.content.*;
 import cd.entities.building.*;
 import cd.world.stat.*;
@@ -60,6 +61,13 @@ public class PneuComponent extends BaseComponent{
     }
 
     @Override
+    public void setData(Building b){
+        if(b instanceof ICompEntity ce){
+            ce.addData(new PneuComponentData());
+        }
+    }
+
+    @Override
     public void onCraft(GenericCrafterBuild b){
         IPneu bPneu = (IPneu)b;
         if(canProvidePressure) bPneu.setPressure(bPneu.getPressure() + outputPressure);
@@ -80,6 +88,7 @@ public class PneuComponent extends BaseComponent{
 
     public void calculatePressure(Building b){
         IPneu bPneu = (IPneu)b;
+        ICompEntity bComp = (ICompEntity)b;
         if(b.block.rotate){
             var other = b.proximity.retainAll(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
             Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
@@ -152,5 +161,19 @@ public class PneuComponent extends BaseComponent{
         (entity) -> new Bar(
         () -> Core.bundle.format("bar.pressure-amount", ((IPneu)entity).getPressure()),
         () -> Pal.lightOrange, () -> ((IPneu)entity).getPressure() / explodePressure));
+    }
+
+    public class PneuComponentData implements ComponentData{
+        public float pressure;
+
+        @Override
+        public void read(Reads read, byte revision){
+            pressure = read.f();
+        }
+
+        @Override
+        public void write(Writes write){
+            write.f(pressure);
+        }
     }
 }
