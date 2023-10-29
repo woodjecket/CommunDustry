@@ -1,7 +1,7 @@
 package cd.world.component
 
 import arc.math.Mathf
-import cd.world.component.CDBaseComp.{CDBlockComp, CDBuildingComp}
+import cd.world.component.CDComp.{CDBlockComp, CDBuildingComp}
 import cd.world.stat.CDStats
 import mindustry.`type`.ItemStack
 import mindustry.world.meta.StatValues;

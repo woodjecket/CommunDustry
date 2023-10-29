@@ -5,7 +5,7 @@ import arc.audio.Sound
 import arc.math.geom.Geometry
 import cd.content.CDFx
 import cd.util.SAMConversation.{lamdba2Boolf, lamdba2Floatp, lamdba2Func, lamdba2Prov}
-import cd.world.component.CDBaseComp.{CDBlockComp, CDBuildingComp}
+import cd.world.component.CDComp.{CDBlockComp, CDBuildingComp}
 import cd.world.component.PneuComp.standardPressure
 import cd.world.stat.CDStats
 import mindustry.Vars.{state, tilesize}
@@ -13,6 +13,7 @@ import mindustry.entities.{Damage, Effect}
 import mindustry.gen.{Building, Sounds}
 import mindustry.graphics.Pal
 import mindustry.ui.Bar
+
 
 trait PneuComp extends CDBlockComp {
 
@@ -108,13 +109,8 @@ trait PneuComp extends CDBlockComp {
     }
   }
 
-  trait PneuCrafterComp extends CDCrafterComp {
+  trait PneuCrafterComp  {
     this: PneuBuildingComp=>
-    override def craft(): Unit = {
-      super.craft()
-      if (canProvidePressure) pressure += outputPressure
-      if (canConsumePressure) pressure -= pressureConsume
-    }
   }
 
 }

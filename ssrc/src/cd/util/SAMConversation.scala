@@ -21,8 +21,16 @@ object SAMConversation {
     override def get(): Float = l.apply()
   }
 
+  implicit def lamdba2Boolp(l: () => Boolean): Boolp = new Boolp {
+    override def get(): Boolean = l.apply()
+  }
+
   implicit def lamdba2Boolf[T](l: T => Boolean): Boolf[T] = new Boolf[T] {
     override def get(v1:T): Boolean = l.apply(v1)
+  }
+
+  implicit def lamdba2Floatf[T](l: T => Float): Floatf[T] = new Floatf[T] {
+    override def get(v1: T): Float = l.apply(v1)
   }
 
   implicit def lamdba2Func[T,U](l:T => U): Func[T,U] = new Func[T,U] {
