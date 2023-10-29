@@ -2,41 +2,47 @@ package cd.struct
 
 import arc.scene.ui.layout.Table
 import cd.ui.Tablable
+import cd.util.SAMConversation.{lamdba2Floatf, lamdba2Prov}
 import mindustry.gen.Building
+import mindustry.world.Block
 import mindustry.world.consumers.Consume
 
 import scala.language.implicitConversions
 
 object CDCraft {
-  trait CDRecipePart extends Tablable{}
+  trait CDRecipePart extends Tablable {
+    def init(block: Block):Unit
+  }
 
   trait CDProduce extends CDRecipePart {
     /** Only trigger once in a craft process */
-    def triggerOnce(build:Building): Unit
+    def triggerOnce(build: Building): Unit
 
     /** Trigger each tick during a craft process. Generally, 1/tick == 60/s */
-    def triggerPerTick(build:Building): Unit
+    def triggerPerTick(build: Building, efficiency:Float): Unit
 
-    /**   Whether the build can produce the things this produce   */
-    def canProduce(build:Building): Boolean = build.shouldConsume()
+    /** Whether the build can produce the things this produce */
+    def canProduce(building: Building): Boolean
 
   }
 
 
   trait CDCondition extends CDRecipePart {
-    def sufficient(build: Building): Boolean
+    def sufficient(building: Building): Boolean
 
   }
 
   trait CDConsume extends CDRecipePart {
+    def sufficient(building: Building): Boolean = efficiency(building) != 0f && efficiencyScale(building) != 0f
+
     /** Only trigger once in a craft process */
     def triggerOnce(build: Building): Unit
 
     /** Trigger each tick during a craft process. Generally, 1/tick == 60/s */
-    def triggerPerTick(build: Building): Unit
+    def triggerPerTick(build: Building, efficiency:Float): Unit
 
     /** Return efficiency according to how this consume is supplied */
-    def efficiency(build: Building): Unit
+    def efficiency(build: Building): Float
 
     /** Return a scale for efficiency according to how this consume is supplied */
     def efficiencyScale(build: Building): Float
@@ -49,10 +55,13 @@ object CDCraft {
       override def triggerOnce(build: Building): Unit = c.trigger(build)
 
       /** Trigger each tick during a craft process. Generally, 1/tick == 60/s */
-      override def triggerPerTick(build: Building): Unit = c.update(build)
+      override def triggerPerTick(building: Building, efficiency:Float): Unit = {
+        c.update(building)
+        c.multiplier = (_:Building) => efficiency
+      }
 
       /** Return efficiency according to how this consume is supplied */
-      override def efficiency(build: Building): Unit = c.efficiency(build)
+      override def efficiency(build: Building): Float = c.efficiency(build)
 
       /** Return a scale for efficiency according to how this consume is supplied */
       override def efficiencyScale(build: Building): Float = c.efficiencyMultiplier(build)
@@ -60,6 +69,10 @@ object CDCraft {
       override def buildTable(build: Building, table: Table): Table = {
         c.build(build, table)
         table
+      }
+
+      override def init(block: Block): Unit = {
+        c.apply(block)
       }
     }
   }

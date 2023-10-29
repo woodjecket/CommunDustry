@@ -6,6 +6,7 @@ import arc.math.geom.*;
 import arc.util.io.*;
 import cd.content.*;
 import cd.entities.building.*;
+import cd.world.blocks.*;
 import cd.world.stat.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
@@ -60,12 +61,6 @@ public class PneuComponent extends BaseComponent{
         ;
     }
 
-    @Override
-    public void setData(Building b){
-        if(b instanceof ICompEntity ce){
-            ce.addData(new PneuComponentData());
-        }
-    }
 
     @Override
     public void onCraft(GenericCrafterBuild b){
@@ -88,7 +83,6 @@ public class PneuComponent extends BaseComponent{
 
     public void calculatePressure(Building b){
         IPneu bPneu = (IPneu)b;
-        ICompEntity bComp = (ICompEntity)b;
         if(b.block.rotate){
             var other = b.proximity.retainAll(o -> Geometry.d4[b.rotation].x == b.tileX() - o.tileX() &&
             Geometry.d4[b.rotation].y == b.tileY() - o.tileY());
@@ -163,7 +157,7 @@ public class PneuComponent extends BaseComponent{
         () -> Pal.lightOrange, () -> ((IPneu)entity).getPressure() / explodePressure));
     }
 
-    public class PneuComponentData implements ComponentData{
+    public class PneuComponentData extends ComponentData{
         public float pressure;
 
         @Override

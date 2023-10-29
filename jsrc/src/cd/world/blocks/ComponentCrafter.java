@@ -64,7 +64,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
     }
 
 
-    public class ComponentCrafterBuild extends GenericCrafterBuild implements IPneu, ILaser, IMulti, ICompEntity{
+    public class ComponentCrafterBuild extends GenericCrafterBuild implements IPneu, ILaser, IMulti{
         //define pneumatic
         public float pressure;
         /** But it can only have one child who can be given laser energy to. */
@@ -137,7 +137,7 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
             if(buildNumber < 2) return;
             if(hasLaser) laserEnergy = read.f();
             if(buildNumber < 3) return;
-            eachRead(read,revision);
+            read(read,revision);
         }
 
         @Override
@@ -198,10 +198,12 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
             return ports;
         }
 
-        @Override
+
         public ObjectMap<Class<? extends ComponentData>, ComponentData> data(){
             return data;
         }
+
+
     }
 
 
