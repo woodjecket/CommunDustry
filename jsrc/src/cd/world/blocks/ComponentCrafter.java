@@ -73,6 +73,8 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
         public float laserEnergy;
         private Seq<MultiStructPortBuild> ports = new Seq<>();
 
+        public ObjectMap<Class<? extends ComponentData>, ComponentData> data = new ObjectMap<>();
+
 
         public float getPressure(){
             return pressure;
@@ -134,12 +136,14 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
             if(hasPressure) pressure = read.f();
             if(buildNumber < 2) return;
             if(hasLaser) laserEnergy = read.f();
+            if(buildNumber < 3) return;
+            read(read,revision);
         }
 
         @Override
         public void write(Writes write){
             super.write(write);
-            write.i(2);
+            write.i(3);
             if(hasPressure) write.f(pressure);
             if(hasLaser) write.f(laserEnergy);
         }
@@ -154,7 +158,8 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
         }
 
         public boolean isProvideLaserEnergy(int bx, int by){
-            return getComp(LaserComponent.class) != null && getComp(LaserComponent.class).isProvideLaserEnergy(this, bx, by);
+            return getComp(LaserComponent.class) != null && getComp(LaserComponent.class)
+            .isProvideLaserEnergy(this, bx, by);
         }
 
 
@@ -192,6 +197,13 @@ public class ComponentCrafter extends GenericCrafter implements IComp{
         public Seq<MultiStructPortBuild> getPorts(){
             return ports;
         }
+
+
+        public ObjectMap<Class<? extends ComponentData>, ComponentData> data(){
+            return data;
+        }
+
+
     }
 
 

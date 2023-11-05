@@ -61,4 +61,7 @@ public abstract class BaseComponent{
     public void onSetBars(Block b){
     }
 
+    public void setData(Building b){
+    }
+
 }
