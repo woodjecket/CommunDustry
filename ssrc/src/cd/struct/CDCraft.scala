@@ -1,11 +1,11 @@
 package cd.struct
 
+import arc.scene.Element
 import arc.scene.ui.layout.Table
 import cd.ui.Tablable
-import cd.util.SAMConversation.{lamdba2Floatf, lamdba2Prov}
+import cd.util.SAMConversation.lamdba2Prov
 import mindustry.gen.Building
 import mindustry.world.Block
-import mindustry.world.consumers.Consume
 
 import scala.language.implicitConversions
 
@@ -15,6 +15,7 @@ object CDCraft {
   }
 
   trait CDProduce extends CDRecipePart {
+    def genReaction():Table
     /** Only trigger once in a craft process */
     def triggerOnce(build: Building): Unit
 
@@ -28,11 +29,14 @@ object CDCraft {
 
 
   trait CDCondition extends CDRecipePart {
+    def genReaction():Array[Element]
     def sufficient(building: Building): Boolean
 
   }
 
   trait CDConsume extends CDRecipePart {
+
+    def genReaction():Table
     def sufficient(building: Building): Boolean = efficiency(building) != 0f && efficiencyScale(building) != 0f
 
     /** Only trigger once in a craft process */
@@ -50,7 +54,7 @@ object CDCraft {
   }
 
   object CDConsume {
-    implicit def consume2CDC(c: Consume): CDConsume = new CDConsume {
+    /*implicit def consume2CDC(c: Consume): CDConsume = new CDConsume {
       /** Only trigger once in a craft process */
       override def triggerOnce(build: Building): Unit = c.trigger(build)
 
@@ -74,6 +78,6 @@ object CDCraft {
       override def init(block: Block): Unit = {
         c.apply(block)
       }
-    }
+    }*/
   }
 }

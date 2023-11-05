@@ -5,7 +5,7 @@ import cd.struct.CDCraft.CDConsume
 import cd.util.SAMConversation.{lamdba2Boolp, lamdba2Cons}
 import mindustry.`type`.ItemStack
 import mindustry.gen.Building
-import mindustry.ui.{ItemImage, ReqImage}
+import mindustry.ui.{ItemDisplay, ItemImage, ReqImage}
 import mindustry.world.Block
 
 class CDConsumeItems(val items: Array[ItemStack]) extends CDConsume {
@@ -37,5 +37,11 @@ class CDConsumeItems(val items: Array[ItemStack]) extends CDConsume {
 
   override def init(block: Block): Unit = {
     items.foreach(stack => block.itemFilter(stack.item.id) = true)
+  }
+
+  override def genReaction(): Table = {
+    new Table((ta: Table) => {
+      items.foreach(stack => ta.add(new ItemDisplay(stack.item, stack.amount)))
+    })
   }
 }

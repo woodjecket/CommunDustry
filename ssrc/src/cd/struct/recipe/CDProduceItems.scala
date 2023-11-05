@@ -2,13 +2,15 @@ package cd.struct.recipe
 
 import arc.scene.ui.layout.Table
 import cd.struct.CDCraft.CDProduce
+import cd.util.SAMConversation.{lamdba2Cons, lamdba2Floatp, lamdba2Prov}
 import mindustry.`type`.ItemStack
 import mindustry.gen.Building
+import mindustry.ui.ItemDisplay
 import mindustry.world.Block
 
 import scala.collection.convert.WrapAsJava.asJavaIterable
 
-class CDProduceItems(val items : Array[ItemStack]) extends CDProduce{
+class CDProduceItems(val items: Array[ItemStack]) extends CDProduce {
   /** Only trigger once in a craft process */
   override def triggerOnce(build: Building): Unit =
     build.items.add(items.toIterable)
@@ -24,4 +26,10 @@ class CDProduceItems(val items : Array[ItemStack]) extends CDProduce{
     table.add("Not now").getTable
 
   override def init(block: Block): Unit = {}
+
+  override def genReaction(): Table = {
+    new Table((ta: Table) => {
+      items.foreach (stack => ta.add(new ItemDisplay (stack.item, stack.amount)) )
+    })
+  }
 }

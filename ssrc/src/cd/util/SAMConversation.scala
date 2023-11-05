@@ -9,7 +9,7 @@ object SAMConversation {
     override def run(): Unit = l.apply()
   }
 
-  implicit def lamdba2Cons[T](l: T => Unit): Cons[T] = new Cons[T] {
+  implicit def lamdba2Cons[T,Ignored <: Any](l: T => Ignored): Cons[T] = new Cons[T] {
     override def get(t: T): Unit = l.apply(t)
   }
 
