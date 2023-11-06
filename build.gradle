@@ -6,31 +6,28 @@ targetCompatibility = 8
 sourceCompatibility = 17
 
 
-buildscript{
-    repositories{
-        mavenCentral()
+buildscript {
+    repositories {
+        maven {
+            allowInsecureProtocol true
+            url 'https://maven.aliyun.com/repository/public/'
+        }
+        //mavenCentral()
     }
 
-    ext{
+    ext {
         //the build number that this mod is made for
-        mindustryVersion = 'v146'
         scalaVersion = '2.11.12'
         sdkRoot = System.getenv('ANDROID_HOME') ?: System.getenv('ANDROID_SDK_ROOT')
     }
 
-    dependencies{
+    dependencies {
         classpath "org.scala-lang:scala-library:$scalaVersion"
         classpath 'com.guardsquare:proguard-gradle:7.3.2'
     }
 }
 
-repositories{
-    mavenCentral()
-    maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
-    maven{ url 'https://www.jitpack.io' }
-}
-
-ext{
+ext {
     //the build number that this mod is made for
     mindustryVersion = 'v146'
     sdkVersion = "29.0.3"
@@ -39,11 +36,11 @@ ext{
 }
 
 //java 8 backwards compatibility flag
-allprojects{
-    tasks.withType(JavaCompile){
+allprojects {
+    tasks.withType(JavaCompile) {
         options.compilerArgs.addAll(['--release', '8'])
     }
-    tasks.withType(ScalaCompile){
+    tasks.withType(ScalaCompile) {
         sourceCompatibility = 8
     }
 }
@@ -51,13 +48,18 @@ allprojects{
 
 apply plugin: "scala"
 
-repositories{
-    mavenCentral()
-    maven{ url 'https://www.jitpack.io' }
+repositories {
+    maven {
+        allowInsecureProtocol true
+        url 'https://maven.aliyun.com/repository/public/'
+    }
+    //mavenCentral()
+    maven { url 'https://www.jitpack.io' }
     google()
+
 }
 
-dependencies{
+dependencies {
     compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
     implementation project(':jsrc')
@@ -68,26 +70,25 @@ sourceSets.main.scala.srcDirs = ["ssrc/src"]
 
 
 //force arc version
-configurations.all{
-    resolutionStrategy.eachDependency{ details ->
-        if(details.requested.group == 'com.github.Anuken.Arc'){
-            details.useVersion "$mindustryVersion"
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.github.Anuken.Arc') {
         }
     }
 }
 
-task jarAndroid{
+task jarAndroid {
     dependsOn "myProguardTask"
 
-    doLast{
-        if(!sdkRoot || !new File(sdkRoot).exists()) throw new GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.");
+    doLast {
+        if (!sdkRoot || !new File(sdkRoot).exists()) throw new GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.");
 
-        def platformRoot = new File("$sdkRoot/platforms/").listFiles().sort().reverse().find{ f -> new File(f, "android.jar").exists() }
+        def platformRoot = new File("$sdkRoot/platforms/").listFiles().sort().reverse().find { f -> new File(f, "android.jar").exists() }
 
-        if(!platformRoot) throw new GradleException("No android.jar found. Ensure that you have an Android platform installed.")
+        if (!platformRoot) throw new GradleException("No android.jar found. Ensure that you have an Android platform installed.")
 
         //collect dependencies needed for desugaring
-        def dependencies = (configurations.compileClasspath.asList() + configurations.runtimeClasspath.asList() + [new File(platformRoot, "android.jar")]).collect{ "--classpath $it.path" }.join(" ")
+        def dependencies = (configurations.compileClasspath.asList() + configurations.runtimeClasspath.asList() + [new File(platformRoot, "android.jar")]).collect { "--classpath $it.path" }.join(" ")
 
         def d8Opt = System.getenv("os.name") != null && System.getenv("os.name").contains("Windows") ? "$sdkRoot\\build-tools\\$sdkVersion\\d8.bat" : 'd8'
 
@@ -97,77 +98,74 @@ task jarAndroid{
     }
 }
 
-jar{
+jar {
     archiveFileName = "${project.archivesBaseName}Desktop.jar"
 
-    from{
-        configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
-    from(rootDir){
+    from(rootDir) {
         include "mod.hjson"
     }
 
-    from("assets/"){
+    from("assets/") {
         include "**"
     }
 }
 
-task myProguardTask(type: proguard.gradle.ProGuardTask){
+task myProguardTask(type: proguard.gradle.ProGuardTask) {
     dependsOn "jar"
-
     injars file("$buildDir/libs/${project.archivesBaseName}Desktop.jar")
     outjars file("$buildDir/libs/${project.archivesBaseName}Mini.jar")
-
-    libraryjars "lib/core-v146.jar"
-    libraryjars "lib/core-v146-sources.jar"
-    libraryjars "lib/arc-core-v146.jar"
-    libraryjars "lib/arc-core-v146-sources.jar"
+    ignorewarnings()
     // Automatically handle the Java version of this build.
-    if(System.getProperty('java.version').startsWith('1.')){
+    if (System.getProperty('java.version').startsWith('1.')) {
         // Before Java 9, the runtime classes were packaged in a single jar file.
         libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-        libraryjars "${System.getProperty('java.home')}/lib/libraryjars \"${System.getProperty('java.home')}/lib/rt.jar\".jar"
-    }else{
+    } else {
         // As of Java 9, the runtime classes are packaged in modular jmod files.
         libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        // Add for Scala
-        libraryjars "${System.getProperty('java.home')}/jmods/java.management.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        libraryjars "${System.getProperty('java.home')}/jmods/java.desktop.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        libraryjars "${System.getProperty('java.home')}/jmods/jdk.unsupported.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+        //libraryjars "${System.getProperty('java.home')}/jmods/....."
     }
-    dontobfuscate()
     verbose()
-    android()
     //This can only deal with package that doesn't start with `scala`
     def srcDir = file("jsrc/src")
-    srcDir.eachFileRecurse{ file ->
-        if(file.isDirectory()){
+    srcDir.eachFileRecurse { file ->
+        if (file.isDirectory()) {
             println file.name
             keep("class ${file.name}.**{*;}")
         }
     }
 }
 
-task deploy(type: Jar){
+task deploy(type: Jar) {
     dependsOn jarAndroid
     dependsOn jar
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveFileName = "${project.archivesBaseName}.jar"
 
-    from{ [zipTree("$buildDir/libs/${project.archivesBaseName}Mini.jar"), zipTree("$buildDir/libs/${project.archivesBaseName}Android.jar")] }
+    from { [zipTree("$buildDir/libs/${project.archivesBaseName}Mini.jar"), zipTree("$buildDir/libs/${project.archivesBaseName}Android.jar")] }
 
-    doLast{
-        delete{
+    doLast {
+        delete {
             delete "$buildDir/libs/${project.archivesBaseName}Mini.jar"
             delete "$buildDir/libs/${project.archivesBaseName}Android.jar"
         }
     }
 }
 
-tasks.register('game'){
+tasks.register('gameWin') {
     dependsOn jar
-    doLast{
+    doLast {
+        "cmd /move /Y $buildDir\\libs\\${project.archivesBaseName}Desktop.jar C:\\Users\\dell\\AppData\\Roaming\\Mindustry\\mods".execute().waitForProcessOutput(System.out, System.err)
+        "\"E:\\mindustry-windows-64-bit\\Mindustry.exe".execute().waitForProcessOutput(System.out, System.err)
+    }
+}
+
+tasks.register('game') {
+    dependsOn jar
+    doLast {
         "mv -f $buildDir/libs/${project.archivesBaseName}Desktop.jar $buildDir/libs/mindustry_mod".execute().waitForProcessOutput(System.out, System.err)
         "/Users/abc/Mindustry.app/Contents/MacOS/Mindustry ; exit".execute().waitForProcessOutput(System.out, System.err)
     }

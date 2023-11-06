@@ -28,23 +28,25 @@ tasks.withType(JavaCompile){
 repositories{
     mavenCentral()
     maven{ url 'https://www.jitpack.io' }
-    google()
 }
 
 dependencies{
-    compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
 }
 
 
 //force arc version
+
 configurations.all{
     resolutionStrategy.eachDependency{ details ->
         if(details.requested.group == 'com.github.Anuken.Arc'){
-            details.useVersion "$mindustryVersion"
+
         }
     }
 }
+
 
 

@@ -37,7 +37,11 @@ trait CDBaseCrafter extends CDBlockComp {
   
   override def init(): Unit = {
     super.init()
-    recipes.map(_.map(_.init(this)))
+    recipes.foreach(r=>{
+      r.produce.init(this)
+      r.consume.init(this)
+      r.condition.init(this)
+    })
   }
   
   trait CDBaseCrafterBuild extends CDBuildingComp {
@@ -69,7 +73,7 @@ trait CDBaseCrafter extends CDBlockComp {
     
     override def updateTile(): Unit = {
       super.updateTile()
-      recipeEntity.foreach { recipeEntity =>
+      recipeEntity.filter(_.enabled).foreach { recipeEntity =>
         if(recipeEntity.sufficient(this)) {
           recipeEntity.triggerPerTick(this)
           if(recipeEntity.progress >= 1) {

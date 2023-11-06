@@ -1,49 +1,34 @@
-package cd.struct.recipe
+package cd.struct
 
 import arc.scene.ui.layout.Table
-import CDCraft.{CDCondition, CDConsume, CDProduce, CDRecipePart}
+import cd.struct.CDCraft.{CDCondition, CDConsume, CDProduce, CDRecipePart}
 import cd.ui.ElementArrow
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Floatp, lamdba2Prov}
 import mindustry.ctype.UnlockableContent
-import mindustry.gen.Building
+import mindustry.gen.{Building, Icon}
 
 case class Recipe(consume: CDConsume, produce: CDProduce,
-                  condition: CDCondition, iconItem: UnlockableContent, craftTime: Float) extends
-  Iterator[CDRecipePart] {
+                  condition: CDCondition, iconItem: UnlockableContent, craftTime: Float) {
   val serialVersionUID: Long = 732473L
-  private[this] var ordinal = -1
-
-
-  override def hasNext: Boolean = ordinal > 2
-
-  override def isTraversableAgain: Boolean = true
-
-  override def next(): CDRecipePart = {
-    ordinal += 1
-    ordinal match {
-      case 0 => consume
-      case 1 => produce
-      case 2 => condition
-      case 3 => ordinal -= 3; consume
-    }
-  }
 
   def genReactionTable(): Table = new Table((t: Table) => {
     //Reactants' table
-    t.add(consume.genReaction())
+    t.add(consume.genReaction()).pad(4f)
 
     //Conditions' table
     val conditionTable = new Table((ct: Table) => {
       ct.table((up: Table) => {
         up.add(condition.genReaction(): _*)
       }).row()
-      ct.add(new ElementArrow(96)).row()
+      ct.table((arrow: Table) => {
+        arrow.add(new ElementArrow(96))
+      }).fill().row()
       ct.add(new Table()).row()
     })
-    t.add(conditionTable)
+    t.add(conditionTable).fill()
 
     //Products' table
-    t.add(produce.genReaction());()
+    t.add(produce.genReaction()).pad(4f);()
   }
   )
 }

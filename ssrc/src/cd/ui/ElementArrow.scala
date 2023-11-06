@@ -1,18 +1,14 @@
 package cd.ui
 
-import arc.graphics.Color
-import arc.graphics.g2d.{Fill, Lines}
+import arc.fx.filters.CrtFilter.LineStyle
+import arc.graphics.{Color, Colors}
+import arc.graphics.g2d.{Draw, Fill, Lines}
 import arc.scene.Element
+import mindustry.graphics.Drawf
 
 class ElementArrow(val arrowLength: Float) extends Element {
-  width = arrowLength
-  height = 32
-  sizeChanged()
   override def draw(): Unit = {
-    Lines.stroke(16, Color.white)
-    Lines.line(x - arrowLength / 2, y, x + arrowLength / 2, y)
-    Fill.tri(x + arrowLength / 2 + 4, y,
-      x - arrowLength / 2 - 4, y + 16,
-      x - arrowLength / 2 - 4, y - 16)
+    Fill.rect(x,y,arrowLength,8f)
+    Fill.tri(x + arrowLength / 2 + 4, y, x + arrowLength / 2 - 6, y + 8, x + arrowLength / 2 - 6, y - 8)
   }
 }
