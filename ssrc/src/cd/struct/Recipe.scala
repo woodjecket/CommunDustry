@@ -2,9 +2,10 @@ package cd.struct
 
 import arc.scene.ui.layout.Table
 import cd.struct.CDCraft.{CDCondition, CDConsume, CDProduce, CDRecipePart}
+import cd.ui.ElementArrow
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Floatp, lamdba2Prov}
 import mindustry.ctype.UnlockableContent
-import mindustry.gen.{Building, Icon}
+import mindustry.gen.Building
 
 case class Recipe(consume: CDConsume, produce: CDProduce,
                   condition: CDCondition, iconItem: UnlockableContent, craftTime: Float) extends
@@ -36,15 +37,7 @@ case class Recipe(consume: CDConsume, produce: CDProduce,
       ct.table((up: Table) => {
         up.add(condition.genReaction(): _*)
       }).row()
-      ct.table((arrow: Table) => {
-        //TODO Automatic check
-        val lineNum: Int = 7
-        for (i <- 1 to lineNum ) {
-          arrow.image(Icon.lineSmall)
-        }
-        arrow.image(Icon.rightSmall)
-        ()
-      }).row()
+      ct.add(new ElementArrow(96)).row()
       ct.add(new Table()).row()
     })
     t.add(conditionTable)

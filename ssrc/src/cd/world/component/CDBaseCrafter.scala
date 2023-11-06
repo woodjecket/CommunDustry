@@ -81,7 +81,7 @@ trait CDBaseCrafter extends CDBlockComp {
     }
     
     override def shouldConsume(): Boolean =
-      recipeEntity.map { _.recipe.produce.canProduce(this) }.reduce(_ || _)
+      recipeEntity.exists { _.recipe.produce.canProduce(this) }
     
   }
 }

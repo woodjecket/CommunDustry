@@ -4,7 +4,7 @@ import arc.graphics.Color
 import cd.content.{Applyable, CDItems, CDLiquids}
 import cd.struct.recipe.{CDConditionExistItems, CDConsumeItems, CDProduceItems}
 import cd.util.SAMConversation.lamdba2Prov
-import cd.world.component.{CDBaseCrafter, CatalyzerComp, PneuComp}
+import cd.world.component.{CDBaseCrafter, CatalyzerComp, MultiBlockComp, PneuComp}
 import mindustry.`type`.{Category, ItemStack, LiquidStack}
 import mindustry.content.{Fx, Items, Liquids}
 import mindustry.gen.{Building, Sounds}
@@ -116,6 +116,18 @@ object TestContent extends Applyable {
       buildType = () => {
         new Building() with CDBaseCrafterBuild{}.asInstanceOf[Building]
       }
+    }
+  }
+  
+  val h: Block = new Block("aiko-multi-test-1") with CDBaseCrafter with MultiBlockComp{
+    {
+      requirements(Category.crafting, ItemStack.`with`(Items.copper, 150.asInstanceOf[AnyRef]))
+      
+      buildType = () => {
+        new Building() with CDBaseCrafterBuild with MultiBlockBuildingComp {}.asInstanceOf[Building]
+      }
+      
+      readStructure("bXNjaAF4nCWMOw7CMBBEJ7FDk4oLcIMtOA+iWOwFWdix5Y+inB4W8aaYmebBYjGwGyeB7dI6Vi/N1VB6yBuAU+SHxIb5drc4u1yKVNo5RopcX4KVQ6Unu57rgYvLKY3kR+v1IA7vTGnEHuhnpisWH7IXtVr8mTDDTB9Fx6wXRqP1Be8wKF8=")
     }
   }
 
