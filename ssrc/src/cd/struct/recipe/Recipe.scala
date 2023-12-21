@@ -1,7 +1,7 @@
-package cd.struct
+package cd.struct.recipe
 
 import arc.scene.ui.layout.Table
-import cd.struct.CDCraft.{CDCondition, CDConsume, CDProduce, CDRecipePart}
+import CDCraft.{CDCondition, CDConsume, CDProduce, CDRecipePart}
 import cd.ui.ElementArrow
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Floatp, lamdba2Prov}
 import mindustry.ctype.UnlockableContent

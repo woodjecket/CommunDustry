@@ -12,8 +12,8 @@ import mindustry.world.{Block, Tile}
 
 import scala.collection.mutable.ArrayBuffer
 
-
 trait MultiBlockComp extends CDBlockComp {
+  ???
   var structure: Array[Map[PointS, Block]] = null
   
   def readStructure(schematic: String): Unit = {

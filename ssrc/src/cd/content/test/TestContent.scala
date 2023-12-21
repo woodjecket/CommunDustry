@@ -4,7 +4,7 @@ import arc.graphics.Color
 import cd.content.{Applyable, CDItems, CDLiquids}
 import cd.struct.recipe.{CDConditionExistItems, CDConsumeItems, CDProduceItems}
 import cd.util.SAMConversation.lamdba2Prov
-import cd.world.component.{CDBaseCrafter, CatalyzerComp, MultiBlockComp, PneuComp}
+import cd.world.component.{CDBaseCrafter, CatalyzerComp, PneuComp}
 import mindustry.`type`.{Category, ItemStack, LiquidStack}
 import mindustry.content.{Fx, Items, Liquids}
 import mindustry.gen.{Building, Sounds}
@@ -15,6 +15,7 @@ import mindustry.world.draw.{DrawDefault, DrawFlame, DrawMulti}
 
 object TestContent extends Applyable {
   val a: Block = new GenericCrafter("aiko-a") with CatalyzerComp {
+    
     {
       requirements(Category.crafting, ItemStack.`with`(Items.lead, 20.asInstanceOf[AnyRef], Items.silicon, 60.asInstanceOf[AnyRef], Items.titanium, 80.asInstanceOf[AnyRef], Items.graphite, 100.asInstanceOf[AnyRef]))
       craftEffect = Fx.freezing
@@ -119,7 +120,7 @@ object TestContent extends Applyable {
     }
   }
   
-  val h: Block = new Block("aiko-multi-test-1") with CDBaseCrafter with MultiBlockComp{
+/*  val h: Block = new Block("aiko-multi-test-1") with CDBaseCrafter with MultiBlockComp{
     {
       requirements(Category.crafting, ItemStack.`with`(Items.copper, 150.asInstanceOf[AnyRef]))
       
@@ -129,6 +130,6 @@ object TestContent extends Applyable {
       
       readStructure("bXNjaAF4nCWMOw7CMBBEJ7FDk4oLcIMtOA+iWOwFWdix5Y+inB4W8aaYmebBYjGwGyeB7dI6Vi/N1VB6yBuAU+SHxIb5drc4u1yKVNo5RopcX4KVQ6Unu57rgYvLKY3kR+v1IA7vTGnEHuhnpisWH7IXtVr8mTDDTB9Fx6wXRqP1Be8wKF8=")
     }
-  }
+  }*/
 
 }

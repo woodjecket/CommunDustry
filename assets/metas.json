@@ -1,0 +1,63 @@
+{
+  "content": "itemDeclaration",
+  "version": "0.0.2-ALPHA",
+  "timestamp": 1700574516,
+  "items": [
+    {
+      "name": "lithium",
+      "classification": "soft-metal",
+      "meltingPoint": 453,
+      "boilingPoint": 1615,
+      "density": 0.534,
+      "hardness": 0.6,
+      "colors": [
+
+        "B52331",
+        "E05AC3",        "66191B"
+      ]
+    },
+    {
+      "name": "beryllium",
+      "classification": "hard-metal",
+      "meltingPoint": 1560,
+      "boilingPoint": 2743,
+      "density": 0.534,
+      "hardness": 5.5,
+      "resistivity": 0.04,
+      "colors": [
+
+        "009566",
+        "6DE57F",    "305852"
+      ]
+    },
+    {
+      "name": "boron",
+      "classification": "non-metal",
+      "meltingPoint": 2348,
+      "boilingPoint": 4273,
+      "density": 2.46,
+      "hardness": 9.3,
+      "colors": [
+        "646464",
+        "4F4F4F",
+        "7C7C7C"
+      ]
+    },
+    {
+      "name": "neodymium",
+      "classification": "hard-metal",
+      "meltingPoint": 1297,
+      "boilingPoint": 3347,
+      "density": 7.004,
+      "hardness": 6.5,
+      "resistivity": 0.06,
+      "thermalConductivity": 16.5,
+      "colors": [
+
+        "434343",
+        "646464","2D2D2D"
+      ]
+    }
+  ],
+  "alloy": []
+}

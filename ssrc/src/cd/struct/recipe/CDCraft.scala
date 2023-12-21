@@ -1,4 +1,4 @@
-package cd.struct
+package cd.struct.recipe
 
 import arc.scene.Element
 import arc.scene.ui.layout.Table

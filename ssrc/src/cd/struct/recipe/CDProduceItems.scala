@@ -1,7 +1,7 @@
 package cd.struct.recipe
 
 import arc.scene.ui.layout.Table
-import cd.struct.CDCraft.CDProduce
+import CDCraft.CDProduce
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Floatp, lamdba2Prov}
 import mindustry.`type`.ItemStack
 import mindustry.gen.Building

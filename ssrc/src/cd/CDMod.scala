@@ -4,6 +4,7 @@ import arc._
 import arc.util._
 import cd.content._
 import cd.content.test._
+import cd.struct.meta.Meta
 import mindustry._
 import mindustry.mod._
 
@@ -30,6 +31,7 @@ class CDMod extends Mod {
     CDBlocks.load()
     CDUnitTypes.load()
     CDPlanets.load()
-    if (test) TestContent()
+    if (test) {TestContent()
+    Meta.init()}
   }
 }

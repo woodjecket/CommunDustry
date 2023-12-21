@@ -5,9 +5,9 @@ import arc.Core
 import arc.scene.ui.Button
 import arc.scene.ui.layout.Table
 import arc.struct.EnumSet
-import cd.struct.CDCraft.{CDCondition, CDConsume, CDProduce}
-import cd.struct.Recipe
-import cd.struct.Recipe.RecipeEntity
+import cd.struct.recipe.CDCraft.{CDCondition, CDConsume, CDProduce}
+import cd.struct.recipe.Recipe.RecipeEntity
+import cd.struct.recipe.Recipe
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Runnable}
 import cd.world.component.CDComp.{CDBlockComp, CDBuildingComp}
 import mindustry.content.Items

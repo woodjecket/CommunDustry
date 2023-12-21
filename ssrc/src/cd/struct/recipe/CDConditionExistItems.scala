@@ -2,7 +2,7 @@ package cd.struct.recipe
 
 import arc.scene.Element
 import arc.scene.ui.layout.Table
-import cd.struct.CDCraft.CDCondition
+import CDCraft.CDCondition
 import cd.util.SAMConversation.{lamdba2Floatp, lamdba2Prov}
 import mindustry.`type`.ItemStack
 import mindustry.gen.Building
