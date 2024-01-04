@@ -31,7 +31,8 @@ class CDMod extends Mod {
     CDBlocks.load()
     CDUnitTypes.load()
     CDPlanets.load()
-    if (test) {TestContent()
-    Meta.init()}
+    if (test) {Meta.init()
+      TestContent()
+    }
   }
 }

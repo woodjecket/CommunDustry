@@ -5,13 +5,13 @@ import arc.graphics.g2d.TextureRegion
 import arc.graphics.{Color, Pixmap}
 import arc.util.serialization.{Json, JsonReader}
 import cd.CDMod
-import cd.struct.meta.Meta.genSprite
 import mindustry.Vars
 import mindustry.`type`.Item
 import mindustry.graphics.MultiPacker.PageType
 import mindustry.graphics.{Drawf, MultiPacker}
 
 import scala.collection.JavaConversions.iterableAsScalaIterable
+import scala.collection.mutable
 
 case class Meta(name: String) {
   var classification: String = null
@@ -20,7 +20,7 @@ case class Meta(name: String) {
   var colors: Array[Color] = Array[Color](Color.white, Color.red, Color.white)
   
   
-  val dust = new Item(s"$name-dust", colors(0)) {
+  val dust: Item = new Item(s"$name-dust", colors(0)) {
     {
       //cannot be mined
       hardness = Int.MaxValue
@@ -28,7 +28,7 @@ case class Meta(name: String) {
     
     override def createIcons(packer: MultiPacker): Unit = Meta.genSprite(packer, Meta.dustBaseRegion, this, colors)
   }
-  val ingot = new Item(s"$name-ingot", colors(0)) {
+  val ingot: Item = new Item(s"$name-ingot", colors(0)) {
     {
       //cannot be mined
       hardness = Int.MaxValue
@@ -40,6 +40,7 @@ case class Meta(name: String) {
 }
 
 object Meta {
+  val meta: mutable.Map[String,Meta] = mutable.Map[String,Meta]()
   lazy val dustBaseRegion: TextureRegion = Core.atlas.find("commumdustry-meta-dust")
   lazy val ingotBaseRegion: TextureRegion = Core.atlas.find("commumdustry-meta-ingot")
   
@@ -70,6 +71,7 @@ object Meta {
     for(i <- items) {
       val name = i.get("name")
       val metaItem = new Meta(name.asString())
+      meta += name.asString -> metaItem
       metaItem.classification = i.get("classification").asString()
       metaItem.meltingPoint = i.get("meltingPoint").asInt()
       metaItem.boilingPoint = i.get("boilingPoint").asInt()
