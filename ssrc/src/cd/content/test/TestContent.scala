@@ -1,14 +1,17 @@
 package cd.content.test
 
+import arc.Events
 import arc.graphics.Color
 import cd.content.{Applyable, CDItems, CDLiquids}
 import cd.struct.meta.Meta
 import cd.struct.recipe.{CDConditionExistItems, CDConsumeItems, CDProduceItems}
-import cd.util.SAMConversation.lamdba2Prov
+import cd.util.SAMConversation.{lamdba2Cons, lamdba2Prov}
 import cd.world.blocks.TrashBlock
 import cd.world.component.{CDBaseCrafter, CatalyzerComp, PneuComp}
 import mindustry.`type`.{Category, ItemStack, LiquidStack}
 import mindustry.content.{Fx, Items, Liquids}
+import mindustry.game.EventType.UnitDestroyEvent
+import mindustry.game.Team
 import mindustry.gen.{Building, Sounds}
 import mindustry.world.Block
 import mindustry.world.blocks.production.GenericCrafter
@@ -142,6 +145,19 @@ object TestContent extends Applyable {
       category = Category.crafting
       buildVisibility = BuildVisibility.shown
     }
+  }
+  
+  val trashBody = new TrashBlock("trash-body", Map(
+    CDItems.platinum -> 5,
+    CDItems.lanthanum -> 4,
+    CDItems.cerium -> 3
+  )) {
+    category = Category.crafting
+    buildVisibility = BuildVisibility.shown
+    Events.on(classOf[UnitDestroyEvent], (e: UnitDestroyEvent) => {
+      val tile = e.unit.tileOn()
+      if(tile.build == null) {tile.setBlock(this, Team.derelict)}
+    })
   }
   
 }

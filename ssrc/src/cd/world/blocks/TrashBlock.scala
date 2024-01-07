@@ -17,7 +17,7 @@ class TrashBlock(name: String, val treasure: Map[Item, Int]) extends Prop(name) 
     if(e.breaking && monitorList.contains(e.tile.build)) {
       treasure.map { p => (p._1, rand.random(0, p._2)) }
         .foreach(s => {
-          val coreBuild = e.team.core()
+          val coreBuild = e.unit.team.core()
           coreBuild.items.add(s._1, {
             Math.min(s._2, coreBuild.block.itemCapacity - coreBuild.items.get(s._1))
           })
@@ -25,12 +25,17 @@ class TrashBlock(name: String, val treasure: Map[Item, Int]) extends Prop(name) 
     }
   })
   destructible = true
+  breakable = true
   
   class TrashBuilding() extends Building() {
     monitorList += this
+    override def damage(damage: Float):Unit = {}
   }
 }
 
 object TrashBlock {
   val rand: Rand = new Rand()
+  
+  
+
 }
