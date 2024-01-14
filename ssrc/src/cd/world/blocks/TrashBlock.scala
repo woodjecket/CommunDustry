@@ -15,13 +15,12 @@ class TrashBlock(name: String, val treasure: Map[Item, Int]) extends Prop(name) 
   private val monitorList: ArrayBuffer[TrashBuilding] = ArrayBuffer.empty[TrashBuilding]
   Events.on(classOf[BlockBuildEndEvent], (e: BlockBuildEndEvent) => {
     if(e.breaking && monitorList.contains(e.tile.build)) {
-      treasure.map { p => (p._1, rand.random(0, p._2)) }
-        .foreach(s => {
-          val coreBuild = e.unit.team.core()
-          coreBuild.items.add(s._1, {
-            Math.min(s._2, coreBuild.block.itemCapacity - coreBuild.items.get(s._1))
-          })
+      treasure.foreach { s =>
+        val coreBuild = e.unit.team.core()
+        coreBuild.items.add(s._1, {
+          Math.min(rand.random(0, s._2), coreBuild.block.itemCapacity - coreBuild.items.get(s._1))
         })
+      }
     }
   })
   destructible = true
@@ -29,7 +28,8 @@ class TrashBlock(name: String, val treasure: Map[Item, Int]) extends Prop(name) 
   
   class TrashBuilding() extends Building() {
     monitorList += this
-    override def damage(damage: Float):Unit = {}
+    
+    override def damage(damage: Float): Unit = {}
   }
 }
 
@@ -37,5 +37,4 @@ object TrashBlock {
   val rand: Rand = new Rand()
   
   
-
 }

@@ -148,3 +148,9 @@ gradle-app.setting
 .DS_Store
 Thumbs.db
 android/libs/
+/ssrc/build/libs/ssrc-1.0.jar
+/jsrc/build/tmp/compileJava/previous-compilation-data.bin
+/ssrc/build/tmp/jar/MANIFEST.MF
+/jsrc/build/tmp/jar/MANIFEST.MF
+/jsrc/build/libs/jsrc-1.0.jar
+/ssrc/build/tmp/scala/compilerAnalysis/compileScala.mapping

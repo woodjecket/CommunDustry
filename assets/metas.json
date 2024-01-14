@@ -11,9 +11,9 @@
       "density": 0.534,
       "hardness": 0.6,
       "colors": [
-
         "B52331",
-        "E05AC3",        "66191B"
+        "E05AC3",
+        "66191B"
       ]
     },
     {
@@ -25,9 +25,9 @@
       "hardness": 5.5,
       "resistivity": 0.04,
       "colors": [
-
         "009566",
-        "6DE57F",    "305852"
+        "6DE57F",
+        "305852"
       ]
     },
     {
@@ -50,12 +50,88 @@
       "boilingPoint": 3347,
       "density": 7.004,
       "hardness": 6.5,
-      "resistivity": 0.06,
-      "thermalConductivity": 16.5,
       "colors": [
-
         "434343",
-        "646464","2D2D2D"
+        "646464",
+        "2D2D2D"
+      ]
+    },
+    {
+      "name": "iron",
+      "classification": "hard-metal",
+      "meltingPoint": 1808,
+      "boilingPoint": 3023,
+      "density": 4.5,
+      "hardness": 7.874,
+      "colors": [
+        "B6BEC4",
+        "8E9AA9",
+        "637284"
+      ]
+    },
+    {
+      "name": "nickel",
+      "classification": "hard-metal",
+      "meltingPoint": 1728,
+      "boilingPoint": 3003,
+      "density": 8.902,
+      "hardness": 4,
+      "colors": [
+        "D3C49C",
+        "C4B078",
+        "B3984E"
+      ]
+    },
+    {
+      "name": "chromium",
+      "classification": "hard-metal",
+      "meltingPoint": 2130,
+      "boilingPoint": 2945,
+      "density": 7.2,
+      "hardness": 9,
+      "colors": [
+        "EBCCCC",
+        "DEA9B4",
+        "D186A4"
+      ]
+    },
+    {
+      "name": "aluminum",
+      "classification": "hard-metal",
+      "meltingPoint": 933,
+      "boilingPoint": 2740,
+      "density": 2.702,
+      "hardness": 2.4,
+      "colors": [
+        "F0F0F0",
+        "BBC3C9",
+        "8E9EAA"
+      ]
+    },
+    {
+      "name": "kalium",
+      "classification": "soft-metal",
+      "meltingPoint": 336,
+      "boilingPoint": 1032,
+      "density": 0.862,
+      "hardness": 0.5,
+      "colors": [
+        "F0F0F0",
+        "BBC3C9",
+        "8E9EAA"
+      ]
+    },
+    {
+      "name": "sodium",
+      "classification": "soft-metal",
+      "meltingPoint": 453,
+      "boilingPoint": 1615,
+      "density": 0.971,
+      "hardness": 0.4,
+      "colors": [
+        "E9E9A9",
+        "C8CE72",
+        "C7C65F"
       ]
     }
   ],

@@ -22,6 +22,7 @@ import java.lang.reflect.*;
 import static mindustry.Vars.*;
 
 public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
+    public static Rand rand = new Rand();
     public BaseGenerator basegen = new BaseGenerator();
     public float scl = 5f;
     public float riverLiquidOffset = 0.07f;
@@ -542,7 +543,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
     }
 
     //see it just a black box
-    private class Room{
+    public class Room{
         int x, y, radius;
         ObjectSet<Room> connected = new ObjectSet<>();
 

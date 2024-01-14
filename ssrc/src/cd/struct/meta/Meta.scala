@@ -37,6 +37,7 @@ case class Meta(name: String) {
     override def createIcons(packer: MultiPacker): Unit = Meta.genSprite(packer, Meta.ingotBaseRegion, this, colors)
     
   }
+  
 }
 
 object Meta {
