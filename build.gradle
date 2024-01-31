@@ -136,7 +136,9 @@ task myProguardTask(type: proguard.gradle.ProGuardTask){
         libraryjars "${System.getProperty('java.home')}/jmods/java.desktop.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
         libraryjars "${System.getProperty('java.home')}/jmods/jdk.unsupported.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
     }
+    dontobfuscate()
     verbose()
+    android()
     //This can only deal with package that doesn't start with `scala`
     def srcDir = file("jsrc/src")
     srcDir.eachFileRecurse{ file ->
