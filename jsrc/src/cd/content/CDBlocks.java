@@ -36,9 +36,14 @@ public class CDBlocks{
         graniteWall = new StaticWall("granite-wall");
         permafrostWall = new StaticWall("permafrost-wall");
 
-        ashFloor = new Floor("ash-floor");
-        enrichedSandFloor = new Floor("enriched-sand-floor");
-        graniteFloor = new Floor("granite-floor");
+        ashFloor = new Floor("ash-floor",3);
+        enrichedSandFloor = new Floor("enriched-sand-floor",3);
+        graniteFloor = new Floor("granite-floor",3){
+            {
+                wall = graniteWall;
+                decoration = graniteBoulder;
+            }
+        };
         permafrostFloor = new Floor("permafrost-floor");
 
         ashBoulder = new Prop("ash-boulder"){{
@@ -52,6 +57,7 @@ public class CDBlocks{
         }};
         deadSapling = new StaticTree("dead-sapling");
         vine = new Prop("vine"){{
+            variants = 2;
             alwaysReplace = false;
             instantDeconstruct = false;
         }};

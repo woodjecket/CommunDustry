@@ -7,10 +7,11 @@ import cd.content.test._
 import cd.struct.meta.Meta
 import mindustry._
 import mindustry.mod._
+import mindustry.ui.dialogs.PlanetDialog
 
 object CDMod {
   def configure(): Unit = {
-    ///PlanetDialog.debugSelect = true;
+    PlanetDialog.debugSelect = true;
     //Log.level = LogLevel.debug;
     val meta = Vars.mods.getMod(classOf[CDMod]).meta
     meta.name = Core.bundle.get("mod.commumdustry.displayName")

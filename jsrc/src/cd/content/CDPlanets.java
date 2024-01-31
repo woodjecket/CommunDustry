@@ -11,9 +11,9 @@ public class CDPlanets{
     public static Planet meadtear;
 
     public static void load(){
-        meadtear = new Planet("meadtear-test-2.2.1-PRE-ALPHA", Planets.sun, 1f, 2){{
+        meadtear = new Planet("meadtear-test-2.2.1-PRE-ALPHA", Planets.sun, 1f, 3){{
             generator = new GenericPlanetGenerator();
-            meshLoader = () -> new HexMesh(this, 5);
+            meshLoader = () -> new HexMesh(this, 6);
             cloudMeshLoader = () -> new MultiMesh(
             new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("997b66").a(0.75f), 2, 0.42f, 1f, 0.43f),
             new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("6f6f91").a(0.5f), 2, 0.42f, 1.5f, 0.49f)
@@ -41,6 +41,7 @@ public class CDPlanets{
             prebuildBase = false;
 
         }};
+
     }
 }
 

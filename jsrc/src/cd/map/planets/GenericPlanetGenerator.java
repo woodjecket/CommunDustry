@@ -12,85 +12,144 @@ import mindustry.ai.BaseRegistry.*;
 import mindustry.content.*;
 import mindustry.game.*;
 import mindustry.maps.generators.*;
-import mindustry.maps.planet.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 
-import java.lang.reflect.*;
-
 import static mindustry.Vars.*;
 
-public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
-    public static Rand rand = new Rand();
+public class GenericPlanetGenerator extends PlanetGenerator{
+    public static Rand staticRand = new Rand();
     public BaseGenerator basegen = new BaseGenerator();
-    public float scl = 5f;
-    public float riverLiquidOffset = 0.07f;
-    public boolean genLakes;
-    public Liquid hotRiverLiquid = Liquids.slag;
-    public Block hotRiverTile = Blocks.slag;
-    public Liquid coldRiverLiquid = Liquids.water;
-    public Block coldRiverTile = Blocks.water;
+    private SpawnRoom spawn;
+    private float positionMultiplier = 10f;
+    private Seq<SpawnRoom> enemies = new Seq<>();
 
-    public boolean canHaveNaval;
-    public Block normalTree = CDBlocks.deadSapling;
-    public Block deadTree = CDBlocks.deadSapling;
-    public Block[][] blocks = {
-    {hotRiverTile, hotRiverTile, Blocks.basalt, Blocks.basalt, Blocks.basalt,
-    CDBlocks.graniteFloor, CDBlocks.graniteFloor, CDBlocks.enrichedSandFloor},
-    {hotRiverTile, hotRiverTile, Blocks.basalt, CDBlocks.graniteFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor, CDBlocks.ashFloor},
-    {coldRiverTile, coldRiverTile, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.snow},
-    {coldRiverTile, coldRiverTile, Blocks.dirt, Blocks.dirt, Blocks.mud, Blocks.grass, CDBlocks.vine}
-    };
+    @Override
+    public float getHeight(Vec3 position){
+        return noise3dvm(position, positionMultiplier, 3);
+    }
 
-    public ObjectMap<Block, Block> dec = ObjectMap.of(
-    Blocks.sporeMoss, Blocks.sporeCluster,
-    Blocks.moss, Blocks.sporeCluster,
-    Blocks.taintedWater, Blocks.water,
-    Blocks.darksandTaintedWater, Blocks.darksandWater
-    );
+    @Override
+    public Color getColor(Vec3 position){
+        Block block1 = getBlock1(position);
+        //replace salt with sand color
+        if(block1 == Blocks.salt) return Blocks.sand.mapColor;
+        //I AM ALMOST BLIND
+        if(block1 == Blocks.ice) return Tmp.c1.set(block1.mapColor);
+        return Tmp.c1.set(block1.mapColor).a(1f - block1.albedo);
+    }
 
-    public ObjectMap<Block, Block> tars = ObjectMap.of(
-    Blocks.sporeMoss, Blocks.shale,
-    Blocks.moss, Blocks.shale
-    );
-
-    {
-        try{
-            Field arrfield = SerpuloPlanetGenerator.class.getDeclaredField("arr");
-            arrfield.setAccessible(true);
-            arrfield.set(this, blocks);
-        }catch(NoSuchFieldException | IllegalAccessException e){
-            throw new RuntimeException(e);
+    @Override
+    public void genTile(Vec3 position, TileGen tile){
+        tile.floor = getBlock1(position);
+        tile.block = tile.floor.asFloor().wall;
+        if(Ridged.noise3d(seed + 1, position.x, position.y, position.z, 2, 22) > 0.31){
+            tile.block = Blocks.air;
         }
+    }
+
+    @Override
+    public void generate(Tiles tiles, Sector sec, int seed){
+        this.tiles = tiles;
+        this.seed = seed + baseSeed;
+        sector = sec;
+        width = tiles.width;
+        height = tiles.height;
+        staticRand.setSeed(sec.id + seed + baseSeed);
+        TileGen gen = new TileGen();
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                gen.reset();
+                //Commundustry hacked here
+                //Make the position on the sphere to generate river
+                Vec3 position = sector.rect.project(x / (float)tiles.width, y / (float)tiles.height).setLength(1f);
+                genTile(position, gen);
+                tiles.set(x, y, new Tile(x, y, gen.floor, gen.overlay, gen.overlay));
+            }
+        }
+
+        generate(tiles);
     }
 
     @Override
     public void generate(){
         cells(4);
         distort(10f, 12f);
+        clearBasedOnRoom();
+        cells(1);
+        distort(10f, 6f);
+    }
 
+    //TOOD Rewrite
+    private void genOres(){
+        Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead);
+        float poles = Math.abs(sector.tile.v.y);
+        float nmag = 0.5f;
+        float scl1 = 1f;
+        float addscl = 1.3f;
+
+        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.25f * addscl){
+            ores.add(Blocks.oreCoal);
+        }
+
+        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x + 1, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.5f * addscl){
+            ores.add(Blocks.oreTitanium);
+        }
+
+        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.7f * addscl){
+            ores.add(Blocks.oreThorium);
+        }
+
+        if(staticRand.chance(0.25)){
+            ores.add(Blocks.oreScrap);
+        }
+
+        FloatSeq frequencies = new FloatSeq();
+        for(int i = 0; i < ores.size; i++){
+            frequencies.add(staticRand.random(-0.1f, 0.01f) - i * 0.01f + poles * 0.04f);
+        }
+
+        pass((x, y) -> {
+            if(!floor.asFloor().hasSurface()) return;
+
+            int offsetX = x - 4, offsetY = y + 23;
+            for(int i = ores.size - 1; i >= 0; i--){
+                Block entry = ores.get(i);
+                float freq = frequencies.get(i);
+                if(Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + (i << 1)))) > 0.22f + i * 0.01 &&
+                Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + (i << 2)))) > 0.37f + freq){
+                    ore = entry;
+                    break;
+                }
+            }
+
+            if(ore == Blocks.oreScrap && staticRand.chance(0.33)){
+                floor = Blocks.metalFloorDamaged;
+            }
+        });
+    }
+
+    private void clearBasedOnRoom(){
         float constraint = 1.3f;
         float radius = width / 2f / Mathf.sqrt3;
-        int rooms = rand.random(2, 5);
-        Seq<Room> roomseq = new Seq<>();
+        int rooms = staticRand.random(2, 5);
+        Seq<SpawnRoom> roomseq = new Seq<>();
 
         for(int i = 0; i < rooms; i++){
-            Tmp.v1.trns(rand.random(360f), rand.random(radius / constraint));
+            Tmp.v1.trns(staticRand.random(360f), staticRand.random(radius / constraint));
             float rx = (width / 2f + Tmp.v1.x);
             float ry = (height / 2f + Tmp.v1.y);
             float maxrad = radius - Tmp.v1.len();
-            float rrad = Math.min(rand.random(9f, maxrad / 2f), 30f);
-            roomseq.add(new Room((int)rx, (int)ry, (int)rrad));
+            float rrad = Math.min(staticRand.random(9f, maxrad / 4f), 15f);
+            roomseq.add(new SpawnRoom((int)rx, (int)ry, (int)rrad));
         }
 
         //check positions on the map to place the player spawn. this needs to be in the corner of the map
-        Room spawn = null;
-        Seq<Room> enemies = new Seq<>();
         //Enemy base up to threat*4
-        int enemySpawns = rand.random(1, Math.max((int)(sector.threat * 4), 1));
-        int offset = rand.nextInt(360);
-        float length = width / 2.55f - rand.random(13, 23);
+        int enemySpawns = staticRand.random(1, Math.max((int)(sector.threat * 4), 1));
+        int offset = staticRand.nextInt(360);
+        float length = width / 2.55f - staticRand.random(13, 23);
         int angleStep = 5;
         int riverLiquidCheckRad = 5;
         for(int i = 0; i < 360; i += angleStep){
@@ -111,12 +170,12 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             }
 
             if(riverLiquidTiles <= 4 || (i + angleStep >= 360)){
-                roomseq.add(spawn = new Room(cx, cy, rand.random(8, 15)));
+                roomseq.add(spawn = new SpawnRoom(cx, cy, staticRand.random(8, 15)));
 
                 for(int j = 0; j < enemySpawns; j++){
-                    float enemyOffset = rand.range(60f);
+                    float enemyOffset = staticRand.range(60f);
                     Tmp.v1.set(cx - width / 2, cy - height / 2).rotate(180f + enemyOffset).add(width / 2, height / 2);
-                    Room espawn = new Room((int)Tmp.v1.x, (int)Tmp.v1.y, rand.random(8, 16));
+                    SpawnRoom espawn = new SpawnRoom((int)Tmp.v1.x, (int)Tmp.v1.y, staticRand.random(8, 16));
                     roomseq.add(espawn);
                     enemies.add(espawn);
                 }
@@ -126,165 +185,31 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         }
 
         //clear radius around each room
-        for(Room room : roomseq){
-            erase(room.x, room.y, room.radius);
+        for(SpawnRoom spawnRoom : roomseq){
+            erase(spawnRoom.x, spawnRoom.y, spawnRoom.radius);
         }
 
         //randomly connect rooms together
-        int connections = rand.random(Math.max(rooms - 1, 1), rooms + 3);
+        int connections = staticRand.random(Math.max(rooms - 1, 1), rooms + 3);
         for(int i = 0; i < connections; i++){
-            roomseq.random(rand).connect(roomseq.random(rand));
+            roomseq.random(staticRand).connect(roomseq.random(staticRand));
         }
 
-        for(Room room : roomseq){
-            spawn.connect(room);
+        for(SpawnRoom spawnRoom : roomseq){
+            spawn.connect(spawnRoom);
         }
+    }
 
-        Room fspawn = spawn;
+    private float noise3dvm(Vec3 vec3, float multiplier, int octaves){
+        return Ridged.noise3d(seed, vec3.x * multiplier, vec3.y * multiplier, vec3.z * multiplier, octaves, 1f);
+    }
 
-        cells(1);
-
-        boolean naval = checkNaval(spawn, enemies);
-
-        distort(10f, 6f);
-
-        //rivers
-        pass((x, y) -> {
-            if(block.solid) return;
-
-            Vec3 v = sector.rect.project(x, y);
-
-            float rr = Simplex.noise2d(sector.id, (float)2, 0.6f, 1f / 7f, x, y) * 0.1f;
-            float value = Ridged.noise3d(2, v.x, v.y, v.z, 1, 1f / 55f) + rr - rawHeight1(v) * 0f;
-            float rrscl = rr * 44 - 2;
-
-            if(value > 0.17f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)){
-                boolean deep = (value > 0.17f + 0.05f) && (!Mathf.within(x, y, fspawn.x, fspawn.y, rrscl));
-                boolean frozen = floor != Blocks.ice && floor != Blocks.iceSnow && floor != Blocks.snow && !floor.asFloor().isLiquid;
-                if(frozen){
-                    if(deep) floor = hotRiverTile;
-                    else floor = Blocks.hotrock;
-                }else{
-                    if(deep) floor = coldRiverTile;
-                    else floor = Blocks.ice;
-                }
-            }
-        });
-
-        //shoreline setup
-        pass((x, y) -> {
-            int deepRadius = 3;
-
-            if(floor.asFloor().isLiquid && floor.asFloor().shallow){
-                for(int cx = -deepRadius; cx <= deepRadius; cx++){
-                    for(int cy = -deepRadius; cy <= deepRadius; cy++){
-                        if((cx) * (cx) + (cy) * (cy) <= deepRadius * deepRadius){
-                            int wx = cx + x, wy = cy + y;
-
-                            Tile tile = tiles.get(wx, wy);
-                            if(tile != null && (!tile.floor().isLiquid || tile.block() != Blocks.air)){
-                                //found something solid, skip replacing anything
-                                return;
-                            }
-                        }
-                    }
-                }
-                var l = floor.asFloor().liquidDrop;
-                if(l == coldRiverLiquid){
-                    floor = (floor == Blocks.ice ? Blocks.ice : Blocks.snow);
-                }else if(l == hotRiverLiquid){
-                    floor = ((floor == Blocks.basalt) || (floor == CDBlocks.graniteFloor)) ? Blocks.hotrock : Blocks.basalt;
-                }
-            }
-        });
-
-
-        genOres();
-
-        trimDark();
-
-        median(2);
-
-        inverseFloodFill(tiles.getn(spawn.x, spawn.y));
-
-        tech();
-
-        pass((x, y) -> {
-            //tar
-            if(floor == Blocks.darksand){
-                if(Math.abs(0.5f - noise(x - 40, y, 2, 0.7, 80)) > 0.25f &&
-                Math.abs(0.5f - noise(x, y + sector.id * 10, 1, 1, 60)) > 0.41f && !(roomseq.contains(r -> Mathf.within(x, y, r.x, r.y, 15)))){
-                    floor = Blocks.tar;
-                }
-            }
-
-            //hotrock tweaks
-            if(floor == Blocks.basalt){
-                if(0.5f - noise(x - 90, y, 4, 0.8, 80) > 0.035){
-                    floor = Blocks.hotrock;
-                }else{
-                    ore = Blocks.air;
-                    boolean all = true;
-                    for(Point2 p : Geometry.d4){
-                        Tile other = tiles.get(x + p.x, y + p.y);
-                        if(other == null || (other.floor() != Blocks.hotrock && other.floor() != Blocks.magmarock)){
-                            all = false;
-                        }
-                    }
-                    if(all){
-                        floor = Blocks.magmarock;
-                    }
-                }
-            }else if(genLakes && floor != Blocks.ice && floor.asFloor().hasSurface()){
-                float noise = noise(x + 782, y, 5, 0.75f, 260f, 1f);
-                if(noise > 0.67f && !roomseq.contains(e -> Mathf.within(x, y, e.x, e.y, 14))){
-                    if(noise > 0.72f){
-                        floor = hotRiverTile;
-                    }else{
-                        floor = (floor == CDBlocks.graniteFloor ? floor : CDBlocks.enrichedSandFloor);
-                    }
-                }
-            }
-
-            if(rand.chance(0.0075)){
-                //random spore trees
-                boolean any = false;
-                boolean all = true;
-                for(Point2 p : Geometry.d4){
-                    Tile other = tiles.get(x + p.x, y + p.y);
-                    if(other != null && other.block() == Blocks.air){
-                        any = true;
-                    }else{
-                        all = false;
-                    }
-                }
-                if(any && ((block == CDBlocks.ashWall || block == CDBlocks.enrichedSandFloor) ||
-                (all && block == Blocks.air && floor == Blocks.snow && rand.chance(0.03)))){
-                    block = rand.chance(0.5) ? normalTree : deadTree;
-                }
-            }
-
-            //random stuff
-            dec:
-            {
-                for(int i = 0; i < 4; i++){
-                    Tile near = world.tile(x + Geometry.d4[i].x, y + Geometry.d4[i].y);
-                    if(near != null && near.block() != Blocks.air){
-                        break dec;
-                    }
-                }
-
-                if(rand.chance(0.01) && floor.asFloor().hasSurface() && block == Blocks.air){
-                    block = dec.get(floor, floor.asFloor().decoration);
-                }
-            }
-        });
-
+    private void genEnemy(Seq<SpawnRoom> enemies, boolean naval){
         float difficulty = sector.threat;
         ints.clear();
         ints.ensureCapacity(width * height / 4);
 
-        int ruinCount = rand.random(-2, 4);
+        int ruinCount = staticRand.random(-2, 4);
         if(ruinCount > 0){
             int padding = 25;
 
@@ -298,7 +223,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
                 }
             }
 
-            ints.shuffle(rand);
+            ints.shuffle(staticRand);
 
             int placed = 0;
             float diffRange = 0.4f;
@@ -312,15 +237,15 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
                     continue;
                 }
 
-                float range = difficulty + rand.random(diffRange);
+                float range = difficulty + staticRand.random(diffRange);
 
                 Tile tile = tiles.getn(x, y);
                 BasePart part = null;
                 if(tile.overlay().itemDrop != null){
                     part = bases.forResource(tile.drop()).getFrac(range);
-                }else if(tile.floor().liquidDrop != null && rand.chance(0.05)){
+                }else if(tile.floor().liquidDrop != null && staticRand.chance(0.05)){
                     part = bases.forResource(tile.floor().liquidDrop).getFrac(range);
-                }else if(rand.chance(0.05)){ //ore-less parts are less likely to occur.
+                }else if(staticRand.chance(0.05)){ //ore-less parts are less likely to occur.
                     part = bases.parts.getFrac(range);
                 }
 
@@ -332,7 +257,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
                         for(int j = 1; j <= 2; j++){
                             for(Point2 p : Geometry.d8){
                                 Tile t = tiles.get(cx + p.x * j, cy + p.y * j);
-                                if(t != null && t.floor().hasSurface() && rand.chance(j == 1 ? 0.4 : 0.2)){
+                                if(t != null && t.floor().hasSurface() && staticRand.chance(j == 1 ? 0.4 : 0.2)){
                                     t.setOverlay(Blocks.oreScrap);
                                 }
                             }
@@ -348,10 +273,10 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
 
                         Tile other = tiles.getn(cx, cy);
                         if(other.build != null && other.isCenter()){
-                            if(other.team() == Team.derelict && rand.chance(removeChance)){
+                            if(other.team() == Team.derelict && staticRand.chance(removeChance)){
                                 other.remove();
-                            }else if(rand.chance(0.5)){
-                                other.build.health = other.build.health - rand.random(other.build.health * 0.9f);
+                            }else if(staticRand.chance(0.5)){
+                                other.build.health = other.build.health - staticRand.random(other.build.health * 0.9f);
                             }
                         }
                     });
@@ -368,7 +293,7 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
 
         Schematics.placeLaunchLoadout(spawn.x, spawn.y);
 
-        for(Room espawn : enemies){
+        for(SpawnRoom espawn : enemies){
             tiles.getn(espawn.x, espawn.y).setOverlay(Blocks.spawn);
         }
 
@@ -392,162 +317,45 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         state.rules.attackMode && spawner.countGroundSpawns() == 0, naval);
     }
 
-    public boolean checkNaval(Room spawn, Iterable<? extends Room> enemies){
-        if(!canHaveNaval) return false;
-        int tlen = tiles.width * tiles.height;
-        int total = 0, riverLiquids = 0;
-
-        for(int i = 0; i < tlen; i++){
-            Tile tile = tiles.geti(i);
-            if(tile.block() == Blocks.air){
-                total++;
-                if(tile.floor().liquidDrop == hotRiverLiquid){
-                    riverLiquids++;
-                }
-            }
-        }
-
-        boolean naval = (float)riverLiquids / total >= 0.19f;
-
-        //create riverLiquid pathway if the map is flooded
-        if(naval){
-            for(Room room : enemies){
-                room.connectLiquid(spawn);
-            }
-        }
-
-        if(naval){
-            int deepRadius = 2;
-
-            //TODO code is very similar, but annoying to extract into a separate function
-            pass((x, y) -> {
-                if(floor.asFloor().isLiquid && !floor.asFloor().isDeep() && !floor.asFloor().shallow){
-
-                    for(int cx = -deepRadius; cx <= deepRadius; cx++){
-                        for(int cy = -deepRadius; cy <= deepRadius; cy++){
-                            if((cx) * (cx) + (cy) * (cy) <= deepRadius * deepRadius){
-                                int wx = cx + x, wy = cy + y;
-
-                                Tile tile = tiles.get(wx, wy);
-                                if(tile != null && (tile.floor().shallow || !tile.floor().isLiquid)){
-                                    //found something shallow, skip replacing anything
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                    var l = floor.asFloor().liquidDrop;
-                    if(l == hotRiverLiquid){
-                        floor = floor == hotRiverTile ? hotRiverTile : Blocks.hotrock;
-                    }else if(l == coldRiverLiquid){
-                        floor = floor == coldRiverTile ? coldRiverTile : Blocks.taintedWater;
-                    }
-                }
-            });
-        }
-        return naval;
-    }
-
-    public float rawHeight1(Vec3 position){
-        position = Tmp.v33.set(position).scl(scl);
-        return (Mathf.pow(Simplex.noise3d(seed, 7, 0.5f, 1f / 3f, position.x, position.y, position.z),
-        2.3f) + riverLiquidOffset) / (1f + riverLiquidOffset);
-    }
-
-    public void genOres(){
-        Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead);
-        float poles = Math.abs(sector.tile.v.y);
-        float nmag = 0.5f;
-        float scl1 = 1f;
-        float addscl = 1.3f;
-
-        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.25f * addscl){
-            ores.add(Blocks.oreCoal);
-        }
-
-        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x + 1, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.5f * addscl){
-            ores.add(Blocks.oreTitanium);
-        }
-
-        if(Simplex.noise3d(seed, 2, 0.5, scl1, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.7f * addscl){
-            ores.add(Blocks.oreThorium);
-        }
-
-        if(rand.chance(0.25)){
-            ores.add(Blocks.oreScrap);
-        }
-
-        FloatSeq frequencies = new FloatSeq();
-        for(int i = 0; i < ores.size; i++){
-            frequencies.add(rand.random(-0.1f, 0.01f) - i * 0.01f + poles * 0.04f);
-        }
-
-        pass((x, y) -> {
-            if(!floor.asFloor().hasSurface()) return;
-
-            int offsetX = x - 4, offsetY = y + 23;
-            for(int i = ores.size - 1; i >= 0; i--){
-                Block entry = ores.get(i);
-                float freq = frequencies.get(i);
-                if(Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + (i << 1)))) > 0.22f + i * 0.01 &&
-                Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + (i << 2)))) > 0.37f + freq){
-                    ore = entry;
-                    break;
-                }
-            }
-
-            if(ore == Blocks.oreScrap && rand.chance(0.33)){
-                floor = Blocks.metalFloorDamaged;
-            }
-        });
-    }
-
-    @Override
-    public Color getColor(Vec3 position){
-        Block block1 = getBlock1(position);
-        //replace salt with sand color
-        if(block1 == Blocks.salt) return Blocks.sand.mapColor;
-        return Tmp.c1.set(block1.mapColor).a(1f - block1.albedo);
-    }
-
-    public Block getBlock1(Vec3 position){
-        float height1 = rawHeight1(position);
-        Tmp.v31.set(position);
-        position = Tmp.v33.set(position).scl(scl);
-        float rad = scl;
-        float temp = Mathf.clamp(Math.abs(position.y * 2f) / (rad));
-        float tnoise = Simplex.noise3d(seed, 7, 0.56, 1f / 3f, position.x, position.y + 999f, position.z);
-        temp = Mathf.lerp(temp, tnoise, 0.5f);
-        height1 *= 1.2f;
-        height1 = Mathf.clamp(height1);
-
-        float tar = Simplex.noise3d(seed, 4, 0.55f, 1f / 2f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
-        int index = Mathf.clamp((int)(temp * blocks.length), 0, blocks.length - 1);
-        Block res = blocks[index]
-        [Mathf.clamp((int)(height1 * blocks[index].length), 0, blocks[index].length - 1)];
-        if(tar > 0.5f){
-            return tars.get(res, res);
+    private Block getBlock1(Vec3 position){
+        var rheight = noise3dvm(position, positionMultiplier, 7);
+        if(rheight > 0.7f){
+            return Blocks.ice;
+        }else if(rheight > 0.4f){
+            return Blocks.dirt;
+        }else if(rheight > 0f){
+            return CDBlocks.enrichedSandFloor;
+        }else if(rheight > -0.2f){
+            return CDBlocks.graniteFloor;
         }else{
-            return res;
+            return Blocks.water;
         }
+
     }
 
-    @Override
-    public void genTile(Vec3 position, TileGen tile){
-        tile.floor = getBlock1(position);
-        tile.block = tile.floor.asFloor().wall;
+    private float getPositionMultiplier(){
+        return positionMultiplier;
+    }
 
-        if(Ridged.noise3d(seed + 1, position.x, position.y, position.z, 2, 22) > 0.31){
-            tile.block = Blocks.air;
+    private Block getRiver(Vec3 position){
+        var rheight = noise3dvm(position, positionMultiplier, 7);
+        if(rheight < -0.2f){
+            return Blocks.water;
+        }else{
+            return null;
         }
     }
 
     //see it just a black box
-    public class Room{
-        int x, y, radius;
-        ObjectSet<Room> connected = new ObjectSet<>();
+    public class SpawnRoom{
+        public int x, y, radius;
+        public ObjectSet<SpawnRoom> connected = new ObjectSet<>();
+        private int strokeMin = 4;
+        private int strokeMax = 10;
+        private float nscaleMin = 700;
+        private float nscaleMax = 900;
 
-        Room(int x, int y, int radius){
+        SpawnRoom(int x, int y, int radius){
             this.x = x;
             this.y = y;
             this.radius = radius;
@@ -555,20 +363,15 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             connected.add(this);
         }
 
-        void connect(Room to){
+        void connect(SpawnRoom to){
             // if it has already been added or it is just itself then return
             if(!connected.add(to) || to == this) return;
 
             Vec2 midpoint = Tmp.v1.set(to.x, to.y).add(x, y).scl(0.5f);
-            rand.nextFloat();
+            staticRand.nextFloat();
 
-            if(alt){
-                midpoint.add(Tmp.v2.set(1, 0f).setAngle(Angles.angle(to.x, to.y, x, y) +
-                90f * (rand.chance(0.5) ? 1f : -1f)).scl(Tmp.v1.dst(x, y) * 2f));
-            }else{
-                //add randomized offset to avoid straight lines
-                midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
-            }
+            //add randomized offset to avoid straight lines
+            midpoint.add(Tmp.v2.setToRandomDirection(staticRand).scl(Tmp.v1.dst(x, y)));
 
             midpoint.sub(width / 2f, height / 2f).limit(width / 2f / Mathf.sqrt3).add(width / 2f, height / 2f);
 
@@ -579,20 +382,20 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         }
 
         void join(int x1, int y1, int x2, int y2){
-            float nscl = rand.random(100f, 140f) * 6f; //(600.0,840.0)
-            int stroke = rand.random(3, 9);//(3,9)
+            float nscl = staticRand.random(nscaleMin, nscaleMax); //(600.0,840.0)
+            int stroke = staticRand.random(strokeMin, strokeMax);
             brush(
             pathfind(x1, y1, x2, y2, tile -> (tile.solid() ? 50f : 0f) + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan), stroke);
         }
 
-        void connectLiquid(Room to){
+        void connectLiquid(SpawnRoom to){
             if(to == this) return;
 
             Vec2 midpoint = Tmp.v1.set(to.x, to.y).add(x, y).scl(0.5f);
-            rand.nextFloat();
+            staticRand.nextFloat();
 
             //add randomized offset to avoid straight lines
-            midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
+            midpoint.add(Tmp.v2.setToRandomDirection(staticRand).scl(Tmp.v1.dst(x, y)));
             midpoint.sub(width / 2f, height / 2f).limit(width / 2f / Mathf.sqrt3).add(width / 2f, height / 2f);
 
             int mx = (int)midpoint.x, my = (int)midpoint.y;
@@ -602,8 +405,8 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
         }
 
         void joinLiquid(int x1, int y1, int x2, int y2){
-            float nscl = rand.random(100f, 140f) * 6f;
-            int rad = rand.random(7, 11);
+            float nscl = staticRand.random(nscaleMin, nscaleMax);
+            int rad = staticRand.random(strokeMin << 1, strokeMax << 1);
             int avoid = 2 + rad;
             var path = pathfind(x1, y1, x2, y2, tile -> (tile.solid() || !tile.floor().isLiquid ? 70f : 0f)
             + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan);
@@ -631,5 +434,4 @@ public class GenericPlanetGenerator extends SerpuloPlanetGenerator{
             });
         }
     }
-
 }

@@ -10,7 +10,8 @@ public class CDItems{
     public static void load(){
         lanthanum = new Item("lanthanum", Color.valueOf("fc1c37")){{
             flammability = 0.4f;
-        }};
+        }
+        };
         //Color from Ce4+ 
         cerium = new Item("cerium", Color.valueOf("fad228")){{
             flammability = 0.6f;
