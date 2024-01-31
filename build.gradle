@@ -115,17 +115,26 @@ jar{
 
 task myProguardTask(type: proguard.gradle.ProGuardTask){
     dependsOn "jar"
+
     injars file("$buildDir/libs/${project.archivesBaseName}Desktop.jar")
     outjars file("$buildDir/libs/${project.archivesBaseName}Mini.jar")
-    ignorewarnings()
+
+    libraryjars "lib/core-v146.jar"
+    libraryjars "lib/core-v146-sources.jar"
+    libraryjars "lib/arc-core-v146.jar"
+    libraryjars "lib/arc-core-v146-sources.jar"
     // Automatically handle the Java version of this build.
     if(System.getProperty('java.version').startsWith('1.')){
         // Before Java 9, the runtime classes were packaged in a single jar file.
         libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+        libraryjars "${System.getProperty('java.home')}/lib/libraryjars \"${System.getProperty('java.home')}/lib/rt.jar\".jar"
     }else{
         // As of Java 9, the runtime classes are packaged in modular jmod files.
         libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        //libraryjars "${System.getProperty('java.home')}/jmods/....."
+        // Add for Scala
+        libraryjars "${System.getProperty('java.home')}/jmods/java.management.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+        libraryjars "${System.getProperty('java.home')}/jmods/java.desktop.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+        libraryjars "${System.getProperty('java.home')}/jmods/jdk.unsupported.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
     }
     verbose()
     //This can only deal with package that doesn't start with `scala`
