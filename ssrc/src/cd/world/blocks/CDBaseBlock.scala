@@ -1,7 +1,9 @@
 package cd.world.blocks
 
 import mindustry.world.Block
+import mindustry.world.draw.{DrawBlock, DrawDefault}
 
 
-class CDBaseBlock(name: String) extends Block(name) with CDDrawerBlock{
+class CDBaseBlock(name: String) extends Block(name){
+  val drawer: DrawBlock = new DrawDefault()
 }

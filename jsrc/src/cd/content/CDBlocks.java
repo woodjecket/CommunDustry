@@ -2,6 +2,7 @@ package cd.content;
 
 import arc.graphics.*;
 import arc.math.geom.*;
+import cd.world.*;
 import cd.world.blocks.*;
 import cd.world.blocks.multi.structure.*;
 import cd.world.component.*;
@@ -30,7 +31,15 @@ public class CDBlocks{
     graniteFloor, graniteWall, graniteBoulder,
     permafrostFloor, permafrostWall, vine;
 
+    public static Block[] coloredFloors= new Block[16] , coloredBlocks = new Block[16];
+
     public static void load(){
+        for(int i = 0; i < 16; i++){
+
+            coloredBlocks[i] = new ColoredStaticWall("colored-block-" + i, new Color().hue(i / 16f));
+            coloredFloors[i] = new ColoredFloor("colored-floor-" + i, new Color().hue(i / 16f));
+            coloredFloors[i].asFloor().wall = coloredBlocks[i];
+        }
         ashWall = new StaticWall("ash-wall");
         enrichedSandWall = new StaticWall("enriched-sand-wall");
         graniteWall = new StaticWall("granite-wall");

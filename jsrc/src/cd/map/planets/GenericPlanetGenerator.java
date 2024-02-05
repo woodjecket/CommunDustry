@@ -27,7 +27,7 @@ public class GenericPlanetGenerator extends PlanetGenerator{
 
     @Override
     public float getHeight(Vec3 position){
-        return noise3dvm(position, positionMultiplier, 3);
+        return noise3dvm(position, positionMultiplier, 3) / 5f;
     }
 
     @Override
@@ -204,6 +204,10 @@ public class GenericPlanetGenerator extends PlanetGenerator{
         return Ridged.noise3d(seed, vec3.x * multiplier, vec3.y * multiplier, vec3.z * multiplier, octaves, 1f);
     }
 
+    private float noise3sdvm(int seed, Vec3 vec3, float multiplier, int octaves){
+        return Ridged.noise3d(seed, vec3.x * multiplier, vec3.y * multiplier, vec3.z * multiplier, octaves, 1f);
+    }
+
     private void genEnemy(Seq<SpawnRoom> enemies, boolean naval){
         float difficulty = sector.threat;
         ints.clear();
@@ -318,19 +322,17 @@ public class GenericPlanetGenerator extends PlanetGenerator{
     }
 
     private Block getBlock1(Vec3 position){
+        if(getRiver(position) != null){
+            return getRiver(position);
+        }
         var rheight = noise3dvm(position, positionMultiplier, 7);
-        if(rheight > 0.7f){
+        if(rheight > 0.4f){
             return Blocks.ice;
-        }else if(rheight > 0.4f){
-            return Blocks.dirt;
         }else if(rheight > 0f){
             return CDBlocks.enrichedSandFloor;
-        }else if(rheight > -0.2f){
-            return CDBlocks.graniteFloor;
         }else{
-            return Blocks.water;
+            return CDBlocks.graniteFloor;
         }
-
     }
 
     private float getPositionMultiplier(){
@@ -338,8 +340,10 @@ public class GenericPlanetGenerator extends PlanetGenerator{
     }
 
     private Block getRiver(Vec3 position){
-        var rheight = noise3dvm(position, positionMultiplier, 7);
-        if(rheight < -0.2f){
+        var rheight1 = noise3dvm(position, positionMultiplier, 3);
+        var rheight2 = noise3dvm(position, positionMultiplier, 5);
+        var rheight = rheight1 * rheight2;
+        if(rheight < 0f){
             return Blocks.water;
         }else{
             return null;

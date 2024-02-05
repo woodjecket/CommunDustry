@@ -13,6 +13,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class TrashBlock(name: String, val treasure: Map[Item, Int]) extends Prop(name) {
   private val monitorList: ArrayBuffer[TrashBuilding] = ArrayBuffer.empty[TrashBuilding]
+  
   Events.on(classOf[BlockBuildEndEvent], (e: BlockBuildEndEvent) => {
     if(e.breaking && monitorList.contains(e.tile.build)) {
       treasure.foreach { s =>
