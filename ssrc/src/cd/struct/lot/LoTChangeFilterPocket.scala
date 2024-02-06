@@ -8,6 +8,6 @@ class LoTChangeFilterPocket(val filters: mutable.Map[UnlockableContent, Boolean]
   /** Set the responders of this pocket. There is no need to abstract all the I/O ports into the whole ones,
    * since those blocks may not be together.  */
   override def respondedBy(devices: Seq[LoTNetworkDevice]): Unit = {
-    devices.foreach(d=>d.filters += filters)
+    devices.foreach(d=>d.filters ++= filters)
   }
 }

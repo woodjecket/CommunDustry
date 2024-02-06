@@ -7,6 +7,7 @@ import cd.struct.meta.Meta
 import cd.struct.recipe.{CDConditionExistItems, CDConsumeItems, CDProduceItems}
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Prov}
 import cd.world.blocks.TrashBlock
+import cd.world.blocks.lot.{LoTCore, LoTInputPort, LoTOutputPort}
 import cd.world.component.{CDBaseCrafter, CatalyzerComp, PneuComp}
 import mindustry.`type`.{Category, ItemStack, LiquidStack}
 import mindustry.content.{Fx, Items, Liquids}
@@ -158,6 +159,25 @@ object TestContent extends Applyable {
       val tile = e.unit.tileOn()
       if(tile.build == null) {tile.setBlock(this, Team.derelict)}
     })
+  }
+  
+  val core: Block = new LoTCore("aiko-lot-core"){{
+    category = Category.effect
+    buildVisibility = BuildVisibility.shown
+  }}
+  
+  val output: Block = new LoTOutputPort("aiko-lot-output") {
+    {
+      category = Category.effect
+      buildVisibility = BuildVisibility.shown
+    }
+  }
+  
+  val input: Block = new LoTInputPort("aiko-lot-input") {
+    {
+      category = Category.effect
+      buildVisibility = BuildVisibility.shown
+    }
   }
   
 }

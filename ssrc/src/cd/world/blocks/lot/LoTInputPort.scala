@@ -47,9 +47,9 @@ class LoTInputPort(name: String) extends CDBaseBlock(name) {
     }
     
     override def acceptItem(source: Building, item: Item): Boolean =
-      this.items.get(item) < this.getMaximumAccepted(item) && filters(item)
+      this.items.get(item) < this.getMaximumAccepted(item) && filters.getOrElse(item,false)
     
-    override def acceptLiquid(source: Building, liquid: Liquid): Boolean = filters(liquid)
+    override def acceptLiquid(source: Building, liquid: Liquid): Boolean = filters.getOrElse(liquid,false)
     
     override def acceptStack(item: Item, amount: Int, source: Teamc): Int =
       if(!this.acceptItem(this, item) || !this.block.hasItems || source != null && (source.team ne this.team)) 0
