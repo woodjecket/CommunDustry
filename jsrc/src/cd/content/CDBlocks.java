@@ -17,7 +17,8 @@ import mindustry.world.draw.*;
 
 import static mindustry.type.ItemStack.with;
 
-public class CDBlocks{
+public class
+CDBlocks{
 
     public static Block
     basicFreezer, basicDirectlyH2O2Crafter, basicElectrolyzer,

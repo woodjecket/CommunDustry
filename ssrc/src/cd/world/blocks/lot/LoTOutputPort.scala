@@ -2,6 +2,7 @@ package cd.world.blocks.lot
 
 import arc.scene.ui.layout.Table
 import arc.util.ArcRuntimeException
+import cd.entities.CDBaseBuilding
 import cd.struct.lot.{ContentStack, LoTChangeFilterPocket, LoTPocket, LoTRequireContentPocket}
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Cons2}
 import cd.util.Utils
@@ -9,18 +10,18 @@ import cd.world.ContentSelection
 import cd.world.blocks.CDBaseBlock
 import mindustry.`type`.{Item, ItemStack, Liquid, LiquidStack}
 import mindustry.ctype.UnlockableContent
-import mindustry.gen.Building
+import mindustry.world.Block
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-class LoTOutputPort(name: String) extends CDBaseBlock(name) {
+class LoTOutputPort(name: String) extends Block(name) with CDBaseBlock  {
   configurable = true
   config(classOf[Item], (b: LoTOutputPortBuild, i:Item)=>b.requirements += i)
   config(classOf[Liquid], (b: LoTOutputPortBuild, i:Liquid)=>b.requirements += i)
   configClear((tile: LoTOutputPortBuild) => tile.requirements.clear())
   
-  class LoTOutputPortBuild extends Building with LoTNetworkDevice {
+  class LoTOutputPortBuild extends CDBaseBuilding with LoTNetworkDevice {
     var requirements: ArrayBuffer[UnlockableContent] = ArrayBuffer[UnlockableContent]()
    
     var warmup1: Float = 0f;

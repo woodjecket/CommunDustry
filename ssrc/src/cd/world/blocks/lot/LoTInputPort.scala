@@ -1,12 +1,14 @@
 package cd.world.blocks.lot
 
 import arc.util.ArcRuntimeException
+import cd.entities.CDBaseBuilding
 import cd.struct.lot.{ContentStack, LoTChangeFilterPocket, LoTPocket, LoTRequireContentPocket}
 import cd.world.blocks.CDBaseBlock
 import mindustry.`type`.{Item, ItemStack, Liquid, LiquidStack}
 import mindustry.gen.{Building, Teamc}
+import mindustry.world.Block
 
-class LoTInputPort(name: String) extends CDBaseBlock(name) {
+class LoTInputPort(name: String) extends Block(name) with CDBaseBlock  {
   
   
   override def init(): Unit = {
@@ -15,7 +17,7 @@ class LoTInputPort(name: String) extends CDBaseBlock(name) {
     super.init()
   }
   
-  class LotInputPortBuild extends Building with LoTNetworkDevice {
+  class LotInputPortBuild extends CDBaseBuilding with LoTNetworkDevice {
     override def updateTile(): Unit = {
       super.updateTile()
     }

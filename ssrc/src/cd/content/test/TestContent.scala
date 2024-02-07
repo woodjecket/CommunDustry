@@ -3,10 +3,11 @@ package cd.content.test
 import arc.Events
 import arc.graphics.Color
 import cd.content.{Applyable, CDItems, CDLiquids}
+import cd.entities.CDBaseBuilding
 import cd.struct.meta.Meta
 import cd.struct.recipe.{CDConditionExistItems, CDConsumeItems, CDProduceItems}
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Prov}
-import cd.world.blocks.TrashBlock
+import cd.world.blocks.{CDBaseBlock, TrashBlock}
 import cd.world.blocks.lot.{LoTCore, LoTInputPort, LoTOutputPort}
 import cd.world.component.{CDBaseCrafter, CatalyzerComp, PneuComp}
 import mindustry.`type`.{Category, ItemStack, LiquidStack}
@@ -53,7 +54,7 @@ object TestContent extends Applyable {
       size = 1
       requirements(Category.distribution, ItemStack.`with`(Items.lead, 5.asInstanceOf[AnyRef], Items.graphite, 10.asInstanceOf[AnyRef]))
       buildType = () => {
-        new Building() with PneuBuildingComp {}.asInstanceOf[Building]
+        new CDBaseBuilding() with PneuBuildingComp {}.asInstanceOf[Building]
       }
     }
   }
@@ -122,7 +123,7 @@ object TestContent extends Applyable {
         craftTime = 30f)
       
       buildType = () => {
-        new Building() with CDBaseCrafterBuild {}.asInstanceOf[Building]
+        new CDBaseBuilding() with CDBaseCrafterBuild {}.asInstanceOf[Building]
       }
     }
   }
@@ -132,7 +133,7 @@ object TestContent extends Applyable {
         requirements(Category.crafting, ItemStack.`with`(Items.copper, 150.asInstanceOf[AnyRef]))
         
         buildType = () => {
-          new Building() with CDBaseCrafterBuild with MultiBlockBuildingComp {}.asInstanceOf[Building]
+          new CDBaseBuilding() with CDBaseCrafterBuild with MultiBlockBuildingComp {}.asInstanceOf[Building]
         }
         
         readStructure("bXNjaAF4nCWMOw7CMBBEJ7FDk4oLcIMtOA+iWOwFWdix5Y+inB4W8aaYmebBYjGwGyeB7dI6Vi/N1VB6yBuAU+SHxIb5drc4u1yKVNo5RopcX4KVQ6Unu57rgYvLKY3kR+v1IA7vTGnEHuhnpisWH7IXtVr8mTDDTB9Fx6wXRqP1Be8wKF8=")
@@ -177,6 +178,21 @@ object TestContent extends Applyable {
     {
       category = Category.effect
       buildVisibility = BuildVisibility.shown
+    }
+  }
+  
+  val proxyFactory: Block = new GenericCrafter("aiko-proxy") with CDBaseBlock{
+    {
+      requirements(Category.crafting, ItemStack.`with`(Items.copper, 40.asInstanceOf[AnyRef], Items.graphite, 35.asInstanceOf[AnyRef], Items.lead, 50.asInstanceOf[AnyRef], Items.silicon, 35.asInstanceOf[AnyRef]))
+      craftTime = 90f
+      size = 2
+      hasItems = true
+      consumeItem(Items.coal, 2)
+      useProxyModule = true
+      outputItem = new ItemStack(Items.copper,1)
+      buildType = () => {
+        (new GenericCrafterBuild with CDBaseBuilding) .asInstanceOf[Building]
+      }
     }
   }
   

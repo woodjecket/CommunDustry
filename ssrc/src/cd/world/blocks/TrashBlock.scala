@@ -2,11 +2,11 @@ package cd.world.blocks
 
 import arc.Events
 import arc.math.Rand
+import cd.entities.CDBaseBuilding
 import cd.util.SAMConversation.lamdba2Cons
 import cd.world.blocks.TrashBlock.rand
 import mindustry.`type`.Item
 import mindustry.game.EventType.BlockBuildEndEvent
-import mindustry.gen.Building
 import mindustry.world.blocks.environment.Prop
 
 import scala.collection.mutable.ArrayBuffer
@@ -27,7 +27,7 @@ class TrashBlock(name: String, val treasure: Map[Item, Int]) extends Prop(name) 
   destructible = true
   breakable = true
   
-  class TrashBuilding() extends Building() {
+  class TrashBuilding extends CDBaseBuilding {
     monitorList += this
     
     override def damage(damage: Float): Unit = {}

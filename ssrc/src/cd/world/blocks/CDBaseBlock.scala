@@ -1,12 +1,12 @@
 package cd.world.blocks
 
 import mindustry.world.Block
-import mindustry.world.draw.{DrawBlock, DrawDefault}
 
 
-class CDBaseBlock(name: String) extends Block(name){
+trait CDBaseBlock extends Block{
+  var useProxyModule: Boolean = false
+  
   update = true
   hasItems = true
   hasLiquids = true
-  val drawer: DrawBlock = new DrawDefault()
 }
