@@ -1,130 +1,121 @@
 package cd.world.component
 
 import arc.Events
-import arc.math.geom.Point2
-import cd.util.SAMConversation.{lamdba2Cons, lamdba2Runnable}
-import cd.util.SLog
+import cd.util.SAMConversation.{lamdba2Prov, lamdba2Runnable}
 import cd.world.component.CDComp.{CDBlockComp, CDBuildingComp}
-import cd.world.component.ChainGroup.build2oldItems
+import cd.world.component.ChainBuildComp.U
 import mindustry.Vars
-import mindustry.game.EventType.{BlockBuildEndEvent, Trigger}
+import mindustry.game.EventType.Trigger
 import mindustry.game.Team
 import mindustry.gen.Building
 import mindustry.world.Tile
 import mindustry.world.modules.ItemModule
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 trait ChainComp extends CDBlockComp {
 
 }
 
-trait ChainBuildComp extends CDBuildingComp with ChainImpl {
-  var group: ChainGroup = null
+trait ChainBuildComp extends CDBuildingComp with DSLImpl {
+  U += this
+  val chainedItems = new ItemModule
+  var orientItems: ItemModule = null
+  
+  Events.run(Trigger.update, ()=>{
+    download()
+    parent = null
+    recursiveMerge(this)
+  })
   
   override def init(tile: Tile, team: Team, shouldAdd: Boolean, rotation: Int): Building = {
     super.init(tile, team, shouldAdd, rotation)
-    build2oldItems += (this.pos() -> this.items())
+    orientItems = items
     this
   }
   
-  private def chainUpdate(source: ChainBuildComp): Unit = {
-    //Avoid stackoverflow
-    if(hasUpdated) return
-    hasUpdated = true
-    
-    source.chain.foreach(p => {
-      val c = Vars.world.build(p).asInstanceOf[ChainBuildComp]
-      c.chain += this.pos()
-      this.chain += c.pos()
-    }
-    )
+  private def recursiveMerge(start: ChainBuildComp): Unit = {
+    this <-- start
     
     proximity.toArray().foreach {
-      case chainNext: ChainBuildComp => chainNext.chainUpdate(source)
-      case _ => {}
+      case chainBuild: ChainBuildComp if (chainBuild.root == null || start.root != chainBuild.root)
+      => chainBuild.recursiveMerge(start)
+      case _ =>
     }
+    
   }
   
-  private def chainCancel(): Unit = {
-    hasUpdated = false
-    proximity.toArray().foreach {
-      case chainNext: ChainBuildComp if chainNext.hasUpdated => chainNext.hasUpdated = false; chainCancel()
-      case _ => {}
-    }
+  override def onRemoved(): Unit = {
+    super.onRemoved()
+    isRemoved = true
+    U -= this
   }
   
+  /** Downloads resource from the shared*/
+  private def download(): Unit = {
+    val items1 = root.asInstanceOf[ChainBuildComp].chainedItems
+    group.foreach(b => b.items = b.orientItems)
+    val a = group.size
+    Vars.content.items().toArray.foreach { item =>
+      val sum = items1.get(item)
+      val arrange = sum / a
+      var mode = sum % a
+      group.foreach(build => {
+        build.items.set(item, arrange + (if(mode > 0) 1 else 0));
+        mode -= 1
+      })
+      
+    }
+    items1.clear()
+  }
+  
+  private def upload(): Unit = {
+    val filtered = U.filter(node => node.root == root || node == this)
+    val items1 = root.asInstanceOf[ChainBuildComp].chainedItems;
+    filtered.foreach(build => {
+      items1.add(build.items)
+      build.items = items1
+    })
+  }
+  
+  private def distribute(): Unit = Vars.content.items().toArray.foreach { item =>
+    val filtered = U.filter(node => node.root == root || node == this)
+    val sum = filtered.map(_.items.get(item)).sum
+    val a = amount
+    val arrange = sum / a
+    var mode = sum % a
+    filtered.foreach(build => {
+      build.items.set(item, arrange + (if(mode > 0) 1 else 0));
+      mode -= 1
+    })
+  }
   
   override def updateTile(): Unit = {
     super.updateTile()
     tileChange {
-      chainUpdate(this)
-      chainCancel()
-      group = ChainGroup(chain)
-      //SLog.info(f"$this : $chain")
+      upload()
     }
   }
   
-  
+  def group: mutable.Set[ChainBuildComp] = U.filter(node => node.root == root || node == this)
 }
 
-trait ChainImpl {
-  this: ChainBuildComp =>
-  protected var hasUpdated = false
-  
-  def chain: mutable.Set[Int] = mutable.HashSet(this.pos())
-  
-  
+object ChainBuildComp {
+  val U: mutable.Set[ChainBuildComp] = mutable.HashSet()
 }
 
-class ChainGroup private(val chainPos: mutable.Set[Int]){
-  private val chainItems = new ItemModule
-  SLog.info(f"ChainGroup created:$chain")
-  Events.run(Trigger.update, update _)
-  Events.on(classOf[BlockBuildEndEvent], (e: BlockBuildEndEvent) => {
-    if(e.breaking) {
-      e.tile.build match {
-        case chain: ChainBuildComp => chain.group.redistribute()
-        case _ =>
-      }
+trait DSLImpl {
+  var parent: DSLImpl = null
+  
+  @tailrec
+  final def root: DSLImpl = if(parent != null) parent.root else this
+  
+  def amount: Int = U.count(node => node.parent == this || node == this)
+  
+  def <--(another: DSLImpl): Unit = {
+    if(root != another.root) {
+      another.root.parent = this.root
     }
-  })
-  
-  def chain:mutable.Set[ChainBuildComp] = chainPos.map(Vars.world.build(_).asInstanceOf[ChainBuildComp])
-  
-  
-  def update(): Unit = {
-    chain.foreach(build => {
-      if(build.items != chainItems) {
-        chainItems.add(build.items)
-        build.items().clear()
-        build.items(chainItems)
-      }
-    })
   }
-  
-  private def redistribute(): Unit = {
-    val length = chain.size
-    chain.foreach { b => b.chain.clear(); b.chain += b.pos() }
-    Vars.content.items().toArray().foreach(item => {
-      val amount = chainItems.get(item)
-      val arrange = amount / length
-      var mode = amount % length
-      chain.foreach { b => build2oldItems(b.pos()).add(item, if(mode > 1) arrange + 1 else arrange); mode -= 1 }
-    })
-    chain.foreach { b => b.items = build2oldItems(b.pos()) }
-  }
-  
-}
-
-object ChainGroup {
-  val pool: mutable.HashMap[Int, ChainGroup] = mutable.HashMap()
-  val build2oldItems: mutable.HashMap[Int, ItemModule] = mutable.HashMap()
-  
-  def apply(chain: mutable.Set[Int]): ChainGroup = {
-    SLog.info(f"Fetched Group :${chain.map(Point2.unpack)}")
-    pool.getOrElseUpdate(contentHash(chain), new ChainGroup(chain))
-  }
-  
-  def contentHash(seq: Traversable[_]): Int = seq.foldRight(0)(_.hashCode() + _)
 }
