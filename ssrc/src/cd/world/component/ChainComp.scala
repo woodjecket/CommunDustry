@@ -1,11 +1,13 @@
 package cd.world.component
 
 import arc.Events
-import cd.util.SAMConversation.{lamdba2Prov, lamdba2Runnable}
+import cd.struct.TileChange
+import cd.util.SAMConversation.{lamdba2Cons, lamdba2Prov}
+import cd.util.SLog
 import cd.world.component.CDComp.{CDBlockComp, CDBuildingComp}
 import cd.world.component.ChainBuildComp.U
 import mindustry.Vars
-import mindustry.game.EventType.Trigger
+import mindustry.game.EventType.TilePreChangeEvent
 import mindustry.game.Team
 import mindustry.gen.Building
 import mindustry.world.Tile
@@ -20,14 +22,7 @@ trait ChainComp extends CDBlockComp {
 
 trait ChainBuildComp extends CDBuildingComp with DSLImpl {
   U += this
-  val chainedItems = new ItemModule
   var orientItems: ItemModule = null
-  
-  Events.run(Trigger.update, ()=>{
-    download()
-    parent = null
-    recursiveMerge(this)
-  })
   
   override def init(tile: Tile, team: Team, shouldAdd: Boolean, rotation: Int): Building = {
     super.init(tile, team, shouldAdd, rotation)
@@ -36,8 +31,8 @@ trait ChainBuildComp extends CDBuildingComp with DSLImpl {
   }
   
   private def recursiveMerge(start: ChainBuildComp): Unit = {
+    SLog.info(f"$this from ${start.toString}")
     this <-- start
-    
     proximity.toArray().foreach {
       case chainBuild: ChainBuildComp if (chainBuild.root == null || start.root != chainBuild.root)
       => chainBuild.recursiveMerge(start)
@@ -52,53 +47,14 @@ trait ChainBuildComp extends CDBuildingComp with DSLImpl {
     U -= this
   }
   
-  /** Downloads resource from the shared*/
-  private def download(): Unit = {
-    val items1 = root.asInstanceOf[ChainBuildComp].chainedItems
-    group.foreach(b => b.items = b.orientItems)
-    val a = group.size
-    Vars.content.items().toArray.foreach { item =>
-      val sum = items1.get(item)
-      val arrange = sum / a
-      var mode = sum % a
-      group.foreach(build => {
-        build.items.set(item, arrange + (if(mode > 0) 1 else 0));
-        mode -= 1
-      })
-      
-    }
-    items1.clear()
-  }
-  
-  private def upload(): Unit = {
-    val filtered = U.filter(node => node.root == root || node == this)
-    val items1 = root.asInstanceOf[ChainBuildComp].chainedItems;
-    filtered.foreach(build => {
-      items1.add(build.items)
-      build.items = items1
-    })
-  }
-  
-  private def distribute(): Unit = Vars.content.items().toArray.foreach { item =>
-    val filtered = U.filter(node => node.root == root || node == this)
-    val sum = filtered.map(_.items.get(item)).sum
-    val a = amount
-    val arrange = sum / a
-    var mode = sum % a
-    filtered.foreach(build => {
-      build.items.set(item, arrange + (if(mode > 0) 1 else 0));
-      mode -= 1
-    })
-  }
-  
   override def updateTile(): Unit = {
     super.updateTile()
     tileChange {
-      upload()
+      recursiveMerge(this)
+      Chain(U.filter(node => node.root == root || node.root == this)).update()
+      SLog.info(U.filter(node => node.root == root || node.root == this).toString())
     }
   }
-  
-  def group: mutable.Set[ChainBuildComp] = U.filter(node => node.root == root || node == this)
 }
 
 object ChainBuildComp {
@@ -111,11 +67,49 @@ trait DSLImpl {
   @tailrec
   final def root: DSLImpl = if(parent != null) parent.root else this
   
-  def amount: Int = U.count(node => node.parent == this || node == this)
   
   def <--(another: DSLImpl): Unit = {
     if(root != another.root) {
       another.root.parent = this.root
     }
+  }
+}
+
+class Chain private(val group: mutable.Set[ChainBuildComp]) extends TileChange {
+  private val chainItems = new ItemModule
+  Events.on(classOf[TilePreChangeEvent], (_:TilePreChangeEvent)=>download())
+  
+  private def download(): Unit = {
+    SLog.info("$group downloaded")
+    val length = group.size
+    Vars.content.items().toArray().foreach(item => {
+      val amount = chainItems.get(item)
+      val arrange = amount / length
+      var mode = amount % length
+      group.foreach { b => b.orientItems.add(item, if(mode > 1) arrange + 1 else arrange); mode -= 1 }
+    })
+    chainItems.clear()
+    group.foreach { b => b.items = b.orientItems }
+    U.foreach(_.parent = null)
+  }
+  
+  def update(): Unit = {
+    for(elem <- group) {
+      if(elem.items != chainItems) {
+        chainItems.add(elem.items)
+        elem.items.clear()
+        elem.items = chainItems
+      }
+    }
+  }
+  
+}
+
+object Chain {
+  private val pool = mutable.HashMap[mutable.Set[ChainBuildComp], Chain]()
+  
+  def apply(group: mutable.Set[ChainBuildComp]): Chain = {
+    val returnValue = pool.getOrElseUpdate(group, { new Chain(group) })
+    returnValue
   }
 }
