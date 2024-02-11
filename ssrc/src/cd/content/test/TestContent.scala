@@ -7,9 +7,9 @@ import cd.entities.CDBaseBuilding
 import cd.struct.meta.Meta
 import cd.struct.recipe.{CDConditionExistItems, CDConsumeItems, CDProduceItems}
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Prov}
-import cd.world.blocks.{CDBaseBlock, TrashBlock}
+import cd.world.blocks.TrashBlock
 import cd.world.blocks.lot.{LoTCore, LoTInputPort, LoTOutputPort}
-import cd.world.component.{CDBaseCrafter, CatalyzerComp, PneuComp}
+import cd.world.component.{CDBaseCrafter, CatalyzerComp, ChainBuildComp, ChainComp, PneuComp}
 import mindustry.`type`.{Category, ItemStack, LiquidStack}
 import mindustry.content.{Fx, Items, Liquids}
 import mindustry.game.EventType.UnitDestroyEvent
@@ -181,17 +181,16 @@ object TestContent extends Applyable {
     }
   }
   
-  val proxyFactory: Block = new GenericCrafter("aiko-proxy") with CDBaseBlock{
+  val proxyFactory: Block = new GenericCrafter("aiko-proxy") with ChainComp{
     {
       requirements(Category.crafting, ItemStack.`with`(Items.copper, 40.asInstanceOf[AnyRef], Items.graphite, 35.asInstanceOf[AnyRef], Items.lead, 50.asInstanceOf[AnyRef], Items.silicon, 35.asInstanceOf[AnyRef]))
       craftTime = 90f
       size = 2
       hasItems = true
       consumeItem(Items.coal, 2)
-      useProxyModule = true
       outputItem = new ItemStack(Items.copper,1)
       buildType = () => {
-        (new GenericCrafterBuild with CDBaseBuilding) .asInstanceOf[Building]
+        (new GenericCrafterBuild with ChainBuildComp) .asInstanceOf[Building]
       }
     }
   }
