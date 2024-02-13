@@ -20,6 +20,5 @@ object Utils {
     seq.add(Vars.content.items).add(Vars.content.liquids);
     seq.toArray(classOf[UnlockableContent])
   }
-  
 
 }
