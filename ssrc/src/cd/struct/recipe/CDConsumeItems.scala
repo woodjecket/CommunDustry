@@ -19,7 +19,7 @@ class CDConsumeItems(val items: Array[ItemStack]) extends CDConsume {
   override def triggerPerTick(build: Building, efficiency: Float): Unit = {}
 
   /** Return efficiency according to how this consume is supplied */
-  override def efficiency(build: Building): Float = if (build.items.has(items)) 1f else 0f
+  override def efficiency(build: Building,efficiency:Float): Float = if (build.items.has(items)) 1f else 0f
 
   /** Return a scale for efficiency according to how this consume is supplied */
   override def efficiencyScale(build: Building): Float = 1f

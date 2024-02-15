@@ -114,7 +114,7 @@ object TestContent extends Applyable {
     }
   }
   
-  val f: Block = new Block("aiko-recipe-test-1") with CDBaseCrafter {
+  val f: Block = new CDBaseCrafter("aiko-recipe-test-1") {
     {
       requirements(Category.crafting, ItemStack.`with`(Items.copper, 150.asInstanceOf[AnyRef], Items.graphite, 135.asInstanceOf[AnyRef], Items.titanium, 60.asInstanceOf[AnyRef]))
       addRecipe(consume = new CDConsumeItems(Array(new ItemStack(Items.copper, 1))),
@@ -123,7 +123,7 @@ object TestContent extends Applyable {
         craftTime = 30f)
       
       buildType = () => {
-        new CDBaseBuilding() with CDBaseCrafterBuild {}.asInstanceOf[Building]
+        new CDBaseCrafterBuild() {}.asInstanceOf[Building]
       }
     }
   }

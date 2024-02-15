@@ -70,6 +70,19 @@
       ]
     },
     {
+      "name": "steel",
+      "classification": "hard-metal",
+      "meltingPoint": 1808,
+      "boilingPoint": 3023,
+      "density": 4.5,
+      "hardness": 7.874,
+      "colors": [
+        "B6BEC4",
+        "8E9AA9",
+        "637284"
+      ]
+    },
+    {
       "name": "nickel",
       "classification": "hard-metal",
       "meltingPoint": 1728,

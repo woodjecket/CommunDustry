@@ -1,6 +1,8 @@
 package cd.content;
 
 import cd.entities.bullets.*;
+import cd.entities.unit.*;
+import cd.type.unit.*;
 import mindustry.content.*;
 import mindustry.entities.abilities.*;
 import mindustry.gen.*;
@@ -9,7 +11,11 @@ import mindustry.type.ammo.*;
 import mindustry.world.meta.*;
 
 public class CDUnitTypes{
-    public static UnitType soundWaveTest;
+    public static UnitType soundWaveTest, blockOnTest;
+
+    static {
+        EntityMapping.register("block-on-aiko", BlockOnUnit::create);
+    }
 
     public static void load(){
         soundWaveTest = new UnitType("sound-wave-test-2.2.1-PRE-ALPHA"){{
@@ -45,6 +51,16 @@ public class CDUnitTypes{
                     waveSpeed = 5;
                 }};
             }});
+        }};
+
+        blockOnTest = new BlockOnUnitType("block-on-aiko"){{
+            hitSize = 1920f;
+            treadPullOffset = 3;
+            speed = 0.75f;
+            rotateSpeed = 3.5f;
+            health = 850;
+            armor = 6f;
+            itemCapacity = 0;
         }};
     }
 }

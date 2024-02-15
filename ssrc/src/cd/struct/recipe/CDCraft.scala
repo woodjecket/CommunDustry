@@ -33,24 +33,25 @@ object CDCraft {
     def sufficient(building: Building): Boolean
 
   }
-
+  
   trait CDConsume extends CDRecipePart {
-
-    def genReaction():Table
-    def sufficient(building: Building): Boolean = efficiency(building) != 0f && efficiencyScale(building) != 0f
-
+    
+    def genReaction(): Table
+    
+    def sufficient(building: Building, efficiency: Float): Boolean = this.efficiency(building , efficiency) != 0f && efficiencyScale(building) != 0f
+    
     /** Only trigger once in a craft process */
     def triggerOnce(build: Building): Unit
-
+    
     /** Trigger each tick during a craft process. Generally, 1/tick == 60/s */
-    def triggerPerTick(build: Building, efficiency:Float): Unit
-
-    /** Return efficiency according to how this consume is supplied */
-    def efficiency(build: Building): Float
-
+    def triggerPerTick(build: Building, efficiency: Float): Unit
+    
+    
     /** Return a scale for efficiency according to how this consume is supplied */
     def efficiencyScale(build: Building): Float
-
+    
+    /** Return efficiency according to how this consume is supplied */
+    def efficiency(build: Building, efficiency: Float): Float
   }
 
   object CDConsume {

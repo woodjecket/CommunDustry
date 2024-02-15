@@ -6,18 +6,19 @@ import arc.scene.ui.Button
 import arc.scene.ui.layout.Table
 import arc.struct.EnumSet
 import cd.struct.recipe.CDCraft.{CDCondition, CDConsume, CDProduce}
-import cd.struct.recipe.Recipe.RecipeEntity
 import cd.struct.recipe.Recipe
+import cd.struct.recipe.Recipe.RecipeEntity
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Runnable}
 import cd.world.component.CDComp.{CDBlockComp, CDBuildingComp}
 import mindustry.content.Items
 import mindustry.gen.{Sounds, Tex}
 import mindustry.ui.Styles
+import mindustry.world.Block
 import mindustry.world.meta.BlockFlag
 
 import scala.collection.mutable.ArrayBuffer
 
-trait CDBaseCrafter extends CDBlockComp {
+class CDBaseCrafter(name:String) extends Block(name) with CDBlockComp {
   update = true
   solid = true
   hasItems = true
@@ -40,12 +41,11 @@ trait CDBaseCrafter extends CDBlockComp {
     recipes.map(_.map(_.init(this)))
   }
   
-  trait CDBaseCrafterBuild extends CDBuildingComp {
+  class CDBaseCrafterBuild extends CDBuildingComp {
     //Wonderful grammar that the case class is also a producer function
     private[this] val recipeEntity: ArrayBuffer[RecipeEntity] = recipes.map(RecipeEntity)
     
     override def buildConfiguration(table: Table): Unit = {
-      
       table.table(Tex.buttonTrans, (t: Table) => {
         t.defaults.grow.marginTop(0).marginBottom(0).marginRight(5).marginRight(5)
         t.add(Core.bundle.get("select-recipe")).padLeft(5).padTop(5).padBottom(5)

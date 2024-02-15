@@ -71,8 +71,8 @@ trait ChainComp extends CDBlockComp {
     val deltaX = ((tile.x - link.x) / 8f).abs
     val deltaY = ((tile.y - link.y) / 8f).abs
     SLog.info(f"deltaX:$deltaX deltaY:$deltaY")
-    deltaX < selectSize && deltaY < selectSize && tile.tmp.size - 1 < maxNode && link.tmp.size - 1 < maxNode
-    && (tile.tmp.exists(_.proximity.contains(link)) || tile.proximity.contains(link))
+    deltaX < selectSize && deltaY < selectSize && tile.tmp.size - 1 < maxNode && link.tmp.size - 1 < maxNode&&
+      (tile.tmp.exists(_.proximity.contains(link)) || tile.proximity.contains(link))
   }
 }
 
@@ -166,7 +166,7 @@ object ChainBuildComp {
     
   }
   
-  private[component] object Chain {
+  object Chain {
     val rand = new Rand
     private val pool = mutable.HashMap[mutable.Set[ChainBuildComp], Chain]()
     

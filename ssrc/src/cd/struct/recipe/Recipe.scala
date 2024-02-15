@@ -1,7 +1,7 @@
 package cd.struct.recipe
 
 import arc.scene.ui.layout.Table
-import CDCraft.{CDCondition, CDConsume, CDProduce, CDRecipePart}
+import cd.struct.recipe.CDCraft.{CDCondition, CDConsume, CDProduce, CDRecipePart}
 import cd.ui.ElementArrow
 import cd.util.SAMConversation.{lamdba2Cons, lamdba2Floatp, lamdba2Prov}
 import mindustry.ctype.UnlockableContent
@@ -63,7 +63,7 @@ object Recipe {
       progress += 1 / recipe.craftTime
     }
 
-    def sufficient(building: Building): Boolean = recipe.condition.sufficient(building) && recipe.consume.sufficient(building) && recipe.produce.canProduce(building)
+    def sufficient(building: Building): Boolean = recipe.condition.sufficient(building) && recipe.consume.sufficient(building,efficiency) && recipe.produce.canProduce(building)
 
     @volatile var efficiency, progress: Float = 0f;
     @volatile var enabled: Boolean = true
