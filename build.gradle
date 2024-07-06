@@ -5,7 +5,6 @@ version '1.0'
 targetCompatibility = 8
 sourceCompatibility = 17
 
-
 buildscript {
     repositories {
         maven {
@@ -17,12 +16,10 @@ buildscript {
 
     ext {
         //the build number that this mod is made for
-        scalaVersion = '2.11.12'
         sdkRoot = System.getenv('ANDROID_HOME') ?: System.getenv('ANDROID_SDK_ROOT')
     }
 
     dependencies {
-        classpath "org.scala-lang:scala-library:$scalaVersion"
         classpath 'com.guardsquare:proguard-gradle:7.3.2'
     }
 }
@@ -35,50 +32,39 @@ ext {
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.github.Anuken.Arc') {
+            details.useVersion "$mindustryVersion"
+        }
+    }
+}
 //java 8 backwards compatibility flag
 allprojects {
     tasks.withType(JavaCompile) {
         options.compilerArgs.addAll(['--release', '8'])
     }
-    tasks.withType(ScalaCompile) {
-        sourceCompatibility = 8
-    }
 }
 
-
-apply plugin: "scala"
-
 repositories {
+    maven { url 'https://www.jitpack.io' }
+    google()
     maven {
         allowInsecureProtocol true
         url 'https://maven.aliyun.com/repository/public/'
     }
-    //mavenCentral()
-    maven { url 'https://www.jitpack.io' }
-    google()
-
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
-    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
-    implementation project(':jsrc')
-    implementation "org.scala-lang:scala-library:$scalaVersion"
+    compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
+    compileOnly ("com.github.Anuken.Mindustry:core:$mindustryVersion"){ exclude group: 'com.github.Anuken.Arc', module: 'flabel' }
 }
 
-sourceSets.main.scala.srcDirs = ["ssrc/src"]
-
-
-//force arc version
-configurations.all {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == 'com.github.Anuken.Arc') {
-        }
-    }
-}
+sourceSets.main.java.srcDirs = ["src/"]
 
 task jarAndroid {
-    dependsOn "myProguardTask"
+    dependsOn "jar"
 
     doLast {
         if (!sdkRoot || !new File(sdkRoot).exists()) throw new GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.");
@@ -113,32 +99,6 @@ jar {
         include "**"
     }
 }
-
-task myProguardTask(type: proguard.gradle.ProGuardTask) {
-    dependsOn "jar"
-    injars file("$buildDir/libs/${project.archivesBaseName}Desktop.jar")
-    outjars file("$buildDir/libs/${project.archivesBaseName}Mini.jar")
-    ignorewarnings()
-    // Automatically handle the Java version of this build.
-    if (System.getProperty('java.version').startsWith('1.')) {
-        // Before Java 9, the runtime classes were packaged in a single jar file.
-        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-    } else {
-        // As of Java 9, the runtime classes are packaged in modular jmod files.
-        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        //libraryjars "${System.getProperty('java.home')}/jmods/....."
-    }
-    verbose()
-    //This can only deal with package that doesn't start with `scala`
-    def srcDir = file("jsrc/src")
-    srcDir.eachFileRecurse { file ->
-        if (file.isDirectory()) {
-            println file.name
-            keep("class ${file.name}.**{*;}")
-        }
-    }
-}
-
 task deploy(type: Jar) {
     dependsOn jarAndroid
     dependsOn jar
@@ -158,8 +118,10 @@ task deploy(type: Jar) {
 tasks.register('gameWin') {
     dependsOn jar
     doLast {
-        "cmd /move /Y $buildDir\\libs\\${project.archivesBaseName}Desktop.jar C:\\Users\\dell\\AppData\\Roaming\\Mindustry\\mods".execute().waitForProcessOutput(System.out, System.err)
-        "\"E:\\mindustry-windows-64-bit\\Mindustry.exe".execute().waitForProcessOutput(System.out, System.err)
+        //"cmd ;exit".execute().waitForProcessOutput(System.out, System.err)
+        "cmd /C del /Q  C:\\Users\\dell\\AppData\\Roaming\\Mindustry\\mods\\${project.archivesBaseName}Desktop.jar".execute().waitForProcessOutput(System.out, System.err)
+        "cmd /C move /Y $buildDir\\libs\\${project.archivesBaseName}Desktop.jar C:\\Users\\dell\\AppData\\Roaming\\Mindustry\\mods".execute().waitForProcessOutput(System.out, System.err)
+        "cmd /C \"E:\\mindustry-windows-64-bit\\Mindustry.exe\"".execute().waitForProcessOutput(System.out, System.err)
     }
 }
 
