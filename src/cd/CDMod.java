@@ -3,12 +3,15 @@ package cd;
 import arc.Core;
 import arc.util.Log;
 import cd.entities.FiniteOreUpdater;
+import cd.map.SingleMapDeepVeinGenerator;
 import cd.world.block.environment.FiniteOre;
+import cd.world.block.production.VeinMiner;
 import mindustry.Vars;
 import mindustry.content.Items;
 import mindustry.mod.Mod;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.world.blocks.environment.OverlayFloor;
+import mindustry.world.meta.BuildVisibility;
 
 public class CDMod extends Mod{
     public static FiniteOreUpdater oreUpdater = new FiniteOreUpdater();
@@ -31,5 +34,9 @@ public class CDMod extends Mod{
         FiniteOre ore1 = new FiniteOre(Items.blastCompound){{
             exhausted = ore1e;
         }};
+        VeinMiner miner = new VeinMiner("1"){{
+            buildVisibility = BuildVisibility.shown;
+        }};
+        SingleMapDeepVeinGenerator s = new SingleMapDeepVeinGenerator();
     }
 }

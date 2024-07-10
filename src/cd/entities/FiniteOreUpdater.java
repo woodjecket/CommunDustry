@@ -2,7 +2,6 @@ package cd.entities;
 
 import arc.Events;
 import arc.math.Mathf;
-import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
 import arc.util.Log;
 import cd.io.FiniteOreCustomChunk;
@@ -21,8 +20,6 @@ public class FiniteOreUpdater {
     public static final int DEFAULT_ORE_AMOUNT = 100;
     @SuppressWarnings("unused")
     private final FiniteOreCustomChunk focc = new FiniteOreCustomChunk();
-
-    public final ObjectIntMap<Tile> amountMap = new ObjectIntMap<>();
 
     private final Seq<Building> drills = new Seq<>();
     private final Seq<Tile> tmpTileSeq = new Seq<>(36);
@@ -54,11 +51,11 @@ public class FiniteOreUpdater {
         drill.tile.getLinkedTilesAs(drill.block, tmpTileSeq);
         tmpTileSeq.retainAll(t -> t.drop() == drill.dominantItem);
         if (tmpTileSeq.contains(this::isInfiniteFloor)) return;
-        tmpTileSeq.sort((t1, t2) -> amountMap.get(t2, DEFAULT_ORE_AMOUNT) - amountMap.get(t1,DEFAULT_ORE_AMOUNT));
-        Log.infoList(tmpTileSeq,amountMap);
+        tmpTileSeq.sort((t1, t2) -> FiniteOreCustomChunk.amountMap.get(t2, DEFAULT_ORE_AMOUNT) - FiniteOreCustomChunk.amountMap.get(t1,DEFAULT_ORE_AMOUNT));
+        Log.infoList(tmpTileSeq, FiniteOreCustomChunk.amountMap);
         var first = tmpTileSeq.first();
-        amountMap.increment(first, DEFAULT_ORE_AMOUNT, -1);
-        if (amountMap.get(first) < 1) {
+        FiniteOreCustomChunk.amountMap.increment(first, DEFAULT_ORE_AMOUNT, -1);
+        if (FiniteOreCustomChunk.amountMap.get(first) < 1) {
             exhaust(first);
         }
     }

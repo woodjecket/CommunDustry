@@ -1,6 +1,6 @@
 package cd.world.block.environment;
 
-import cd.CDMod;
+import cd.io.FiniteOreCustomChunk;
 import mindustry.Vars;
 import mindustry.type.Item;
 import mindustry.world.Tile;
@@ -30,7 +30,7 @@ public class FiniteOre extends OreBlock implements Finite{
     public void renderUpdate(UpdateRenderState r) {
         super.renderUpdate(r);
         var tile = r.tile;
-        int amount = CDMod.oreUpdater.amountMap.get(tile,100);
+        int amount = FiniteOreCustomChunk.amountMap.get(tile,100);
         Vars.ui.showLabel(String.valueOf(amount),1,tile.worldx(),tile.worldy());
     }
 
