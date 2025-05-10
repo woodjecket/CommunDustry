@@ -56,13 +56,14 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
+dependencies{
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
     compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
-    compileOnly ("com.github.Anuken.Mindustry:core:$mindustryVersion"){ exclude group: 'com.github.Anuken.Arc', module: 'flabel' }
+    compileOnly("com.github.TinyLake:MindustryX:v2025.05.X6"){
+        exclude group: 'com.github.Anuken.Arc', module: 'flabel'
+    }
 }
-
-sourceSets.main.java.srcDirs = ["src/"]
+    sourceSets.main.java.srcDirs = ["src/"]
 
 task jarAndroid {
     dependsOn "jar"
