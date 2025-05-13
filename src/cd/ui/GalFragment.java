@@ -5,6 +5,7 @@ import arc.graphics.*;
 import arc.input.*;
 import arc.scene.*;
 import arc.util.*;
+import mindustry.content.*;
 import mindustry.gen.*;
 
 public class GalFragment{
@@ -18,9 +19,29 @@ public class GalFragment{
     public static String currentText = testFlight[count + 1];
 
     public static void build(Group parent){
+        illustLayer(parent);
+        optionLayer(parent);
         tachieLayer(parent);
-
         speechLayer(parent);
+    }
+
+    private static void illustLayer(Group parent){
+        parent.fill(full -> {
+            full.center().visible(() -> true);
+            full.table(Tex.buttonEdge2, outline->{
+               outline.image(Blocks.router.region).size(60f).get().setScaling(Scaling.fill);
+            });
+        });
+    }
+
+    private static void optionLayer(Group parent){
+        parent.fill(full -> {
+            full.center().visible(() -> true);
+            full.table(Tex.buttonEdge2, outline->{
+                outline.button("yes",()->{currentText +="yes";}).minSize(300f,50f).row();
+                outline.button("我非子，固不知子矣；子固非鱼也，子之不知鱼之乐，全矣！",()->{currentText +="no";}).minSize(300f,50f);
+            });
+        });
     }
 
     private static void tachieLayer(Group parent){
@@ -37,7 +58,7 @@ public class GalFragment{
                     left.image(Core.atlas.find("commundustry-v4-animdustry-alpha")).self(c -> {
                         c.get().setScaling(Scaling.bounded);
                         c.get().update(() -> {
-                            if(!scaling[0]){
+                            if((!scaling[0]) && c.get().scaleX != (count % 2 == 0?1f:0.8f)){
                                 if(count % 2 == 0){
                                     scaling[0] = true;
                                     c.get().addAction(new ColorAndScaleToAction(){
@@ -46,6 +67,7 @@ public class GalFragment{
                                             setScale(1f);
                                             endColor = Color.white;
                                         }
+
                                         public void end(){
                                             scaling[0] = false;
                                             c.get().color.set(Color.white);
@@ -77,7 +99,7 @@ public class GalFragment{
                     right.image(Core.atlas.find("commundustry-v4-animdustry-zenith")).self(c -> {
                         c.get().setScaling(Scaling.bounded);
                         c.get().update(() -> {
-                            if(!scaling[0]){
+                            if((!scaling[0]) && c.get().scaleX != (count % 2 != 0?1f:0.8f)){
                                 if(count % 2 != 0){
                                     scaling[0] = true;
                                     c.get().addAction(new ColorAndScaleToAction(){
@@ -86,6 +108,7 @@ public class GalFragment{
                                             setScale(1f);
                                             endColor = Color.white;
                                         }
+
                                         public void end(){
                                             scaling[0] = false;
                                             c.get().color.set(Color.white);
