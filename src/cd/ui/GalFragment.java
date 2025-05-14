@@ -1,26 +1,19 @@
 package cd.ui;
 
-import arc.*;
 import arc.graphics.*;
 import arc.input.*;
 import arc.scene.*;
 import arc.util.*;
+import cd.manager.*;
 import mindustry.content.*;
 import mindustry.gen.*;
 
 public class GalFragment{
     public static final Color ALPHA_WHITE = new Color(0xffffffbb);
-    public static int count;
-    public static boolean autoPlay;
-    public static int autoPlayMultiplier = 1;
-
-    private static String[] testFlight = {"庄子", "鲦鱼出游从容，是鱼之乐也。", "惠子", "子非鱼，安知鱼之乐？", "庄子", "子非我，安知我不知鱼之乐？", "惠子", "我非子，固不知子矣；子固非鱼也，子之不知鱼之乐，全矣！", "庄子", "请循其本。子曰“汝安知鱼乐”云者，既已知吾知之而问我，我知之濠上也。"};
-    public static String currentAvtar = testFlight[count];
-    public static String currentText = testFlight[count + 1];
 
     public static void build(Group parent){
-        illustLayer(parent);
-        optionLayer(parent);
+        //illustLayer(parent);
+        //optionLayer(parent);
         tachieLayer(parent);
         speechLayer(parent);
     }
@@ -28,8 +21,8 @@ public class GalFragment{
     private static void illustLayer(Group parent){
         parent.fill(full -> {
             full.center().visible(() -> true);
-            full.table(Tex.buttonEdge2, outline->{
-               outline.image(Blocks.router.region).size(60f).get().setScaling(Scaling.fill);
+            full.table(Tex.buttonEdge2, outline -> {
+                outline.image(Blocks.router.region).size(60f).get().setScaling(Scaling.fill);
             });
         });
     }
@@ -37,9 +30,13 @@ public class GalFragment{
     private static void optionLayer(Group parent){
         parent.fill(full -> {
             full.center().visible(() -> true);
-            full.table(Tex.buttonEdge2, outline->{
-                outline.button("yes",()->{currentText +="yes";}).minSize(300f,50f).row();
-                outline.button("我非子，固不知子矣；子固非鱼也，子之不知鱼之乐，全矣！",()->{currentText +="no";}).minSize(300f,50f);
+            full.table(Tex.buttonEdge2, outline -> {
+                outline.button("yes", () -> {
+                    GalManager.currentText += "yes";
+                }).minSize(300f, 50f).row();
+                outline.button("我非子，固不知子矣；子固非鱼也，子之不知鱼之乐，全矣！", () -> {
+                    GalManager.currentText += "no";
+                }).minSize(300f, 50f);
             });
         });
     }
@@ -47,7 +44,7 @@ public class GalFragment{
     private static void tachieLayer(Group parent){
         parent.fill(full -> {
 
-            full.center().bottom().visible(() -> true);
+            full.center().bottom();
 
             full.table(frame -> {
 
@@ -55,11 +52,20 @@ public class GalFragment{
 
                 frame.table(left -> {
                     final boolean[] scaling = {false};
-                    left.image(Core.atlas.find("commundustry-v4-animdustry-alpha")).self(c -> {
+                    left.image(Tex.whiteui).self(c -> {
                         c.get().setScaling(Scaling.bounded);
+
                         c.get().update(() -> {
-                            if((!scaling[0]) && c.get().scaleX != (count % 2 == 0?1f:0.8f)){
-                                if(count % 2 == 0){
+
+                            if(GalManager.leftAvtar != null){
+                                c.get().setDrawable(GalManager.leftAvtar.tachie);
+                            }else{
+                                c.get().setDrawable(Tex.whiteui);
+                            }
+
+                            if((!scaling[0])){
+                                if(GalManager.speakingAvtar == GalManager.leftAvtar && GalManager.frontAvtar != GalManager.leftAvtar){
+
                                     scaling[0] = true;
                                     c.get().addAction(new ColorAndScaleToAction(){
                                         {
@@ -71,9 +77,11 @@ public class GalFragment{
                                         public void end(){
                                             scaling[0] = false;
                                             c.get().color.set(Color.white);
+                                            GalManager.frontAvtar = GalManager.leftAvtar;
                                         }
                                     });
-                                }else{
+                                }else if(GalManager.speakingAvtar != GalManager.leftAvtar && GalManager.frontAvtar == GalManager.leftAvtar){
+
                                     scaling[0] = true;
                                     c.get().addAction(new ColorAndScaleToAction(){
                                         {
@@ -84,6 +92,7 @@ public class GalFragment{
 
                                         public void end(){
                                             scaling[0] = false;
+                                            GalManager.frontAvtar = null;
                                         }
                                     });
                                 }
@@ -96,11 +105,20 @@ public class GalFragment{
 
                 frame.table(right -> {
                     final boolean[] scaling = {false};
-                    right.image(Core.atlas.find("commundustry-v4-animdustry-zenith")).self(c -> {
+                    right.image(Tex.whiteui).self(c -> {
                         c.get().setScaling(Scaling.bounded);
+
                         c.get().update(() -> {
-                            if((!scaling[0]) && c.get().scaleX != (count % 2 != 0?1f:0.8f)){
-                                if(count % 2 != 0){
+
+                            if(GalManager.rightAvtar != null){
+                                c.get().setDrawable(GalManager.rightAvtar.tachie);
+                            }else{
+                                c.get().setDrawable(Tex.whiteui);
+                            }
+
+                            if((!scaling[0])){
+                                if(GalManager.speakingAvtar == GalManager.rightAvtar && GalManager.frontAvtar != GalManager.rightAvtar){
+
                                     scaling[0] = true;
                                     c.get().addAction(new ColorAndScaleToAction(){
                                         {
@@ -112,9 +130,11 @@ public class GalFragment{
                                         public void end(){
                                             scaling[0] = false;
                                             c.get().color.set(Color.white);
+                                            GalManager.frontAvtar = GalManager.rightAvtar;
                                         }
                                     });
-                                }else{
+                                }else if(GalManager.speakingAvtar != GalManager.rightAvtar && GalManager.frontAvtar == GalManager.rightAvtar){
+
                                     scaling[0] = true;
                                     c.get().addAction(new ColorAndScaleToAction(){
                                         {
@@ -125,6 +145,7 @@ public class GalFragment{
 
                                         public void end(){
                                             scaling[0] = false;
+                                            GalManager.frontAvtar = null;
                                         }
                                     });
                                 }
@@ -138,7 +159,7 @@ public class GalFragment{
 
     private static void speechLayer(Group parent){
         parent.fill(full -> {
-            full.center().bottom().visible(() -> true);
+            full.center().bottom();
 
             full.table(Tex.buttonEdge2, outline -> {
 
@@ -146,15 +167,15 @@ public class GalFragment{
 
                     special.table(left -> {
 
-                        left.table(Tex.buttonEdge2, avtar -> avtar.label(() -> currentAvtar).grow().marginRight(5f)).growY();
+                        left.table(Tex.buttonEdge2, avtar -> avtar.label(() -> GalManager.speakingAvtar == null ? "" : GalManager.speakingAvtar.name).grow().marginRight(5f)).growY();
                         left.left();
 
                     }).grow();
 
                     special.table(right -> {
 
-                        right.button(Icon.playSmall, 15f, () -> autoPlay = true);
-                        right.button(Icon.pencilSmall, 15f, () -> autoPlayMultiplier = autoPlayMultiplier == 1 ? 2 : 1);
+                        right.button(Icon.playSmall, 15f, () -> GalManager.autoPlay = true);
+                        right.button(Icon.pencilSmall, 15f, () -> GalManager.autoPlayMultiplier = GalManager.autoPlayMultiplier == 1 ? 2 : 1);
                         right.right();
 
                     }).grow();
@@ -163,7 +184,7 @@ public class GalFragment{
 
                 outline.table(Tex.buttonEdge2, speech -> {
 
-                    speech.labelWrap(() -> currentText).grow().get().setAlignment(Align.topLeft);
+                    speech.labelWrap(() -> GalManager.currentText).grow().get().setAlignment(Align.topLeft);
                     speech.clicked(KeyCode.mouseLeft, GalFragment::toggleText);
 
                 }).size(750f, 195f);
@@ -173,9 +194,6 @@ public class GalFragment{
     }
 
     private static void toggleText(){
-        count++;
-        count %= testFlight.length / 2;
-        currentAvtar = testFlight[count * 2];
-        currentText = testFlight[count * 2 + 1];
+        GalManager.ensue();
     }
 }

@@ -154,3 +154,4 @@ android/libs/
 /jsrc/build/tmp/jar/MANIFEST.MF
 /jsrc/build/libs/jsrc-1.0.jar
 /ssrc/build/tmp/scala/compilerAnalysis/compileScala.mapping
+.profileconfig.json
