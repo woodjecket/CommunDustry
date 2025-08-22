@@ -4,6 +4,7 @@ import arc.*;
 import arc.scene.event.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
+import cd.content.*;
 import cd.manager.*;
 import cd.ui.*;
 import mindustry.*;
@@ -31,6 +32,7 @@ public class CDMod extends Mod{
     @Override
     public void loadContent(){
         Log.info("All is Alon Master's order");
+        CDBlocks.load();
     }
 
     private void initUI(){
