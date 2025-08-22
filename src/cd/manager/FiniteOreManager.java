@@ -10,10 +10,13 @@ import mindustry.content.*;
 import mindustry.game.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
+import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.world.*;
+import mindustry.world.blocks.environment.Floor.*;
 import mindustry.world.blocks.production.*;
 
+import java.lang.reflect.*;
 import java.util.*;
 
 public class FiniteOreManager{
@@ -22,6 +25,7 @@ public class FiniteOreManager{
     private static Seq<Unit> worldMiners = new Seq<>();
 
     static{
+        Seq<UpdateRenderState> floor = null;
         Events.run(Trigger.update, FiniteOreManager::update);
         Events.on(EventType.TileChangeEvent.class, e -> {
             worldDrills.clear();
@@ -39,6 +43,13 @@ public class FiniteOreManager{
                 Groups.unit.each(Minerc.class::isInstance, b -> worldMiners.add(b));
             });
         });
+        Events.on(EventType.SaveLoadEvent.class, e->{
+            Vars.world.tiles.eachTile(t->{
+                if(t.overlay() instanceof FiniteOre){
+                    t.extraData = getTileCapacity(t);
+                }
+            });
+        });
     }
 
     public static boolean isDrill(Building building){
@@ -46,7 +57,7 @@ public class FiniteOreManager{
     }
 
     public static int getTileCapacity(Tile tile){
-        return 10 + 1;
+        return 100;
     }
 
     /**Mock whether there will be a mine next frame*/
@@ -119,14 +130,11 @@ public class FiniteOreManager{
         tmpTiles.sort((Comparator.comparingInt(a -> a.extraData)));
         Tile firstOpt = tmpTiles.firstOpt();
         if(firstOpt != null){
-            if(firstOpt.extraData == 0){
-                firstOpt.extraData = getTileCapacity(firstOpt);
-            }
             firstOpt.extraData -= 1;
-            if(firstOpt.extraData <= 0){
+            if(firstOpt.extraData <= -1){
                 firstOpt.setOverlay(((FiniteOre)firstOpt.overlay()).exhauseted);
             }
-            Vars.ui.showLabel(String.valueOf(firstOpt.extraData), 1, firstOpt.drawx(), firstOpt.drawy());
+            //Vars.ui.showLabel(String.valueOf(firstOpt.extraData), 1, firstOpt.drawx(), firstOpt.drawy());
         }
     }
 }

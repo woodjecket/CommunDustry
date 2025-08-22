@@ -15,11 +15,12 @@ public class FiniteOre extends OreBlock{
 
     public Floor exhauseted;
 
-    /** How many stages according to the capacity*/
+    /** How many stages according to the capacity */
     public int stage = 3;
+
     public FiniteOre(Item ore){
         super("finite-ore-" + ore.name, ore);
-        exhauseted = new OverlayFloor("exhausted-finite-ore-"+ ore.name){{
+        exhauseted = new OverlayFloor("exhausted-finite-ore-" + ore.name){{
             variants = 3;
         }};
     }
@@ -36,6 +37,11 @@ public class FiniteOre extends OreBlock{
     }
 
     @Override
+    public boolean updateRender(Tile tile){
+        return true;
+    }
+
+    @Override
     public void drawBase(Tile tile){
         //Float division
         float slack = tile.extraData;
@@ -43,6 +49,8 @@ public class FiniteOre extends OreBlock{
 
         int currentStage = Mathf.floor(slack / capacity * (stage - 1));
 
+        if(currentStage < 0) return;
+        if(slack == 0) currentStage = stage - 1;
         Draw.rect(stages[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))][currentStage],
         tile.worldx(), tile.worldy());
     }
