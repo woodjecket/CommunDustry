@@ -19,7 +19,9 @@ public class FiniteOre extends OreBlock{
     public int stage = 3;
     public FiniteOre(Item ore){
         super("finite-ore-" + ore.name, ore);
-        exhauseted = new Floor("exhausted-finite-ore-"+ ore.name);
+        exhauseted = new OverlayFloor("exhausted-finite-ore-"+ ore.name){{
+            variants = 3;
+        }};
     }
 
     @Override
@@ -39,7 +41,7 @@ public class FiniteOre extends OreBlock{
         float slack = tile.extraData;
         float capacity = FiniteOreManager.getTileCapacity(tile);
 
-        int currentStage = Mathf.ceil(slack / capacity * (stage - 1));
+        int currentStage = Mathf.floor(slack / capacity * (stage - 1));
 
         Draw.rect(stages[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))][currentStage],
         tile.worldx(), tile.worldy());
