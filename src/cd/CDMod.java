@@ -16,7 +16,8 @@ import static mindustry.Vars.state;
 public class CDMod extends Mod{
 
     public WidgetGroup galGroup = new WidgetGroup();
-
+    //注册事件
+    public FiniteOreManager fom = new FiniteOreManager();
 
     public CDMod(){
         super();
@@ -33,6 +34,7 @@ public class CDMod extends Mod{
     public void loadContent(){
         Log.info("All is Alon Master's order");
         CDBlocks.load();
+        CDUnitTYpe.load();
     }
 
     private void initUI(){
