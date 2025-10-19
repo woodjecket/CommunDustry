@@ -1,14 +1,23 @@
 package cd;
 
 import arc.*;
+import arc.graphics.*;
 import arc.scene.event.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
 import cd.content.*;
 import cd.manager.*;
+import cd.map.planets.*;
 import cd.ui.*;
 import mindustry.*;
+import mindustry.content.*;
+import mindustry.game.*;
+import mindustry.graphics.g3d.*;
+import mindustry.maps.generators.*;
 import mindustry.mod.*;
+import mindustry.type.*;
+import mindustry.ui.dialogs.*;
+import mindustry.world.meta.*;
 
 import static mindustry.Vars.state;
 
@@ -35,6 +44,8 @@ public class CDMod extends Mod{
         Log.info("All is Alon Master's order");
         CDBlocks.load();
         CDUnitTYpe.load();
+        Planets.tantros.generator = new GenPlanetGenerator();
+        PlanetDialog.debugSelect = true;
     }
 
     private void initUI(){

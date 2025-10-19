@@ -47,9 +47,7 @@ repositories {
 dependencies{
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
     compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
-    compileOnly("com.github.Anuken.Mindustry:core:$mindustryVersion"){
-        exclude group: 'com.github.Anuken.Arc', module: 'flabel'
-    }
+    compileOnly("com.github.Anuken.Mindustry:core:$mindustryVersion")
 }
     sourceSets.main.java.srcDirs = ["src/"]
 

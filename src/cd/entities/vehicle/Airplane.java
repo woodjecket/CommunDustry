@@ -9,6 +9,7 @@ import mindustry.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.type.*;
+import mindustry.world.modules.*;
 
 public class Airplane implements GlobalEntity{
     public Sector from, to;
@@ -17,6 +18,7 @@ public class Airplane implements GlobalEntity{
     public float timer = 0f;
     public Team team = Team.sharded;
     public UnitType type = CDUnitTYpe.unitType;
+    public ItemModule items;
 
     @Override
     public void update(){
@@ -49,6 +51,7 @@ public class Airplane implements GlobalEntity{
         air.airPlaneState = AirPlaneState.landing;
         air.destB = getDestination();
         air.controller().unit(air);
+        air.itemModule = items;
         air.add();
     }
 
@@ -66,13 +69,17 @@ public class Airplane implements GlobalEntity{
         @Nullable
         public Building destB;
         public Sector destS;
+        public ItemModule itemModule;
 
         {
             controller = new AirPlaneAI();
         }
 
-        private static Airplane convertToGlobal(){
-            return new Airplane();
+        private Airplane convertToGlobal(){
+            var plane = new Airplane();
+            itemModule.add(stack.item,stack.amount);
+            plane.items = itemModule;
+            return plane;
         }
 
         public static AirPlaneUnit create(){
