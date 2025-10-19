@@ -9,6 +9,7 @@ import cd.content.*;
 import cd.manager.*;
 import cd.map.planets.*;
 import cd.ui.*;
+import cd.world.block.*;
 import mindustry.*;
 import mindustry.content.*;
 import mindustry.game.*;
@@ -17,6 +18,7 @@ import mindustry.maps.generators.*;
 import mindustry.mod.*;
 import mindustry.type.*;
 import mindustry.ui.dialogs.*;
+import mindustry.world.*;
 import mindustry.world.meta.*;
 
 import static mindustry.Vars.state;
@@ -46,6 +48,9 @@ public class CDMod extends Mod{
         CDUnitTYpe.load();
         Planets.tantros.generator = new GenPlanetGenerator();
         PlanetDialog.debugSelect = true;
+        Block test = new TestGalBlock("test"){{
+            requirements(Category.crafting,new ItemStack[]{});
+        }};
     }
 
     private void initUI(){
