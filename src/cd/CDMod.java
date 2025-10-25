@@ -1,6 +1,7 @@
 package cd;
 
 import arc.*;
+import arc.scene.Element;
 import arc.scene.event.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
@@ -8,9 +9,18 @@ import cd.manager.*;
 import cd.ui.*;
 import cd.world.block.*;
 import mindustry.*;
+import mindustry.content.Blocks;
+import mindustry.game.EventType;
+import mindustry.game.Team;
+import mindustry.gen.Building;
 import mindustry.mod.*;
 import mindustry.type.*;
+import mindustry.ui.dialogs.BaseDialog;
 import mindustry.world.*;
+import mindustry.world.blocks.power.HeaterGenerator;
+import mindustry.world.blocks.power.PowerBlock;
+import mindustry.world.draw.DrawBlock;
+import mindustry.world.draw.DrawMulti;
 
 import static mindustry.Vars.state;
 
@@ -39,6 +49,9 @@ public class CDMod extends Mod{
     public void loadContent(){
         Log.info("Cosmos insight benefits well-being");
         Block test = new TestGalBlock("test"){{
+            requirements(Category.crafting,new ItemStack[]{});
+        }};
+        Block test2 = new MultiCrafter("nm"){{
             requirements(Category.crafting,new ItemStack[]{});
         }};
     }
