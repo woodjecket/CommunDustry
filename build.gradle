@@ -7,20 +7,12 @@ sourceCompatibility = 17
 
 buildscript {
     repositories {
-        maven {
-            allowInsecureProtocol true
-            url 'https://maven.aliyun.com/repository/public/'
-        }
-        //mavenCentral()
+        mavenCentral()
     }
 
     ext {
         //the build number that this mod is made for
         sdkRoot = System.getenv('ANDROID_HOME') ?: System.getenv('ANDROID_SDK_ROOT')
-    }
-
-    dependencies {
-        classpath 'com.guardsquare:proguard-gradle:7.3.2'
     }
 }
 
@@ -49,19 +41,13 @@ allprojects {
 repositories {
     maven { url 'https://www.jitpack.io' }
     google()
-    maven {
-        allowInsecureProtocol true
-        url 'https://maven.aliyun.com/repository/public/'
-    }
     mavenCentral()
 }
 
 dependencies{
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
     compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
-    compileOnly("com.github.TinyLake:MindustryX:v2025.05.X6"){
-        exclude group: 'com.github.Anuken.Arc', module: 'flabel'
-    }
+    compileOnly("com.github.Anuken.Mindustry:core:$mindustryVersion")
 }
     sourceSets.main.java.srcDirs = ["src/"]
 
