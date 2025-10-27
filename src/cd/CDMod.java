@@ -44,6 +44,7 @@ public class CDMod extends Mod{
     @Override
     public void loadContent(){
         Log.info("All is Alon Master's order");
+        CDItems.load();
         CDBlocks.load();
         CDUnitTYpe.load();
         Planets.tantros.generator = new GenPlanetGenerator();
