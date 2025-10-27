@@ -5,6 +5,9 @@ import mindustry.ctype.Content;
 import mindustry.gen.Building;
 
 public class Reactant {
+    public void init(Recipe recipe){
+
+    }
     public void reactOnce(Building building){
 
     }

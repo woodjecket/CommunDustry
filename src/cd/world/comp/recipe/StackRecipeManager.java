@@ -22,6 +22,11 @@ public class StackRecipeManager extends RecipeManager {
 
     @Override
     public int getParallel() {
-        return 5;
+        return 3;
+    }
+
+    @Override
+    protected void updateEnhancer() {
+
     }
 }

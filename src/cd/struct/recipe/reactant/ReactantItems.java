@@ -2,6 +2,7 @@ package cd.struct.recipe.reactant;
 
 import arc.struct.Seq;
 import cd.struct.recipe.Reactant;
+import cd.struct.recipe.Recipe;
 import mindustry.ctype.Content;
 import mindustry.gen.Building;
 import mindustry.type.ItemStack;
@@ -15,6 +16,12 @@ public class ReactantItems extends Reactant {
         consume = items.map(s->s.item);
     }
 
+    @Override
+    public void init(Recipe recipe) {
+        super.init(recipe);
+        recipe.potentialInputItems.add(items);
+        recipe.potentialInputItem.add(items.map(s->s.item));
+    }
 
     @Override
     public void reactOnce(Building building) {

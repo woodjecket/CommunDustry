@@ -5,7 +5,7 @@ displayName: "CommunDustry"
 name: "commundustry-v5"
 
 #your name
-author: "Pyratite No Lead"
+author: "CommunDustry"
 
 #the fully qualified main class of the mod
 main: "cd.CDMod"

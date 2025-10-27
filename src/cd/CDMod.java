@@ -51,6 +51,9 @@ public class CDMod extends Mod{
         Block test = new TestGalBlock("test"){{
             requirements(Category.crafting,new ItemStack[]{});
         }};
+        Block nm = new MultiCrafter("nm"){{
+            requirements(Category.crafting,new ItemStack[]{});
+        }};
     }
 
     private void initUI(){

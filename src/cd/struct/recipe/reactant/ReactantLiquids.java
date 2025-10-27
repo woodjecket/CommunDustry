@@ -2,6 +2,7 @@ package cd.struct.recipe.reactant;
 
 import arc.struct.Seq;
 import cd.struct.recipe.Reactant;
+import cd.struct.recipe.Recipe;
 import mindustry.ctype.Content;
 import mindustry.gen.Building;
 import mindustry.type.LiquidStack;
@@ -13,6 +14,13 @@ public class ReactantLiquids extends Reactant {
     public ReactantLiquids(Seq<LiquidStack> liquids) {
         this.liquids = liquids;
         consume = liquids.map(s->s.liquid);
+    }
+
+    @Override
+    public void init(Recipe recipe) {
+        super.init(recipe);
+        recipe.potentialInputLiquids.add(liquids);
+        recipe.potentialInputLiquid.add(liquids.map(s->s.liquid));
     }
 
     @Override
