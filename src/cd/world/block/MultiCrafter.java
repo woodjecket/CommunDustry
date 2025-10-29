@@ -63,7 +63,7 @@ public class MultiCrafter extends Block {
         recipes.recipes.each(Recipe::init);
     }
 
-    public class MultiCrafterBuild extends Building implements HeatBlock, HeatConsumer {
+    public class MultiCrafterBuild extends Building implements IHeat, HeatConsumer {
         public RecipeManager recipeManager = recipes.newManager(this);
         public float heat;
         public float[] sideHeat = new float[4];
@@ -71,11 +71,12 @@ public class MultiCrafter extends Block {
         @Override
         public void updateTile() {
             super.updateTile();
+            heat = calculateHeat(sideHeat);
+
             recipeManager.update();
             if (recipeManager.enhancer.heatOut() > 0) {
                 heat = Mathf.approachDelta(heat, recipeManager.enhancer.heatOut() * efficiency, 10 * delta());
             }
-            heat = calculateHeat(sideHeat);
 
             efficiency = recipeManager.enhancer.displayEfficiency();
             dump(Items.lead);
@@ -101,10 +102,6 @@ public class MultiCrafter extends Block {
             return heat;
         }
 
-        @Override
-        public float heatFrac() {
-            return heat / heatCapacity;
-        }
 
         @Override
         public float[] sideHeat() {

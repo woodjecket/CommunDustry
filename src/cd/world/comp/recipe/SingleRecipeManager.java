@@ -2,6 +2,7 @@ package cd.world.comp.recipe;
 
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
+import arc.util.Log;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.RecipeManager;
 import cd.world.comp.Recipes;
@@ -24,17 +25,20 @@ public class SingleRecipeManager extends RecipeManager {
     @Override
     protected void updateEnhancer() {
         var enhance = (SingleVanillaEnhancer) enhancer;
-        var h = ((HeatConsumer) building).heatRequirement();
-        enhance.power = enhance.heat = 0;
-
+        float nextPower = 0, nextHeat = 0, nextEfficiency = 1;
         enhance.efficiency = 1;
         for (var slot : slots) {
             if(slot == null) continue;
-            float e = slot.recipeEntity.totalEfficiency() * slot.recipeEntity.totalEfficiencyMultiplier();
-            enhance.power += slot.recipeEntity.recipe.power * (building.power.status == 0 ? 1 : e);
-            enhance.heat += slot.recipeEntity.recipe.heat * (h == 0 ? 1 : e);
-            enhance.efficiency *= e;
+
+            nextPower += slot.recipeEntity.recipe.power * slot.recipeEntity.totalEfficiencyMultiplier();
+            nextHeat += slot.recipeEntity.recipe.heat  * slot.recipeEntity.totalEfficiencyMultiplier();
+            nextEfficiency *= slot.recipeEntity.totalEfficiency() * slot.recipeEntity.totalEfficiencyMultiplier();
+
         }
+
+        enhance.power = nextPower;
+        enhance.heat = nextHeat;
+        enhance.efficiency = nextEfficiency;
     }
 
 
