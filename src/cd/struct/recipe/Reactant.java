@@ -1,5 +1,6 @@
 package cd.struct.recipe;
 
+import arc.scene.Element;
 import arc.struct.Seq;
 import mindustry.ctype.Content;
 import mindustry.gen.Building;
@@ -20,7 +21,7 @@ public class Reactant {
     public float efficiencyMultiplier(Building building){
         return 1f;
     }
-    public Seq<Content> potentialReactant(){
+    public Element[] icon(){
         return null;
     }
 }

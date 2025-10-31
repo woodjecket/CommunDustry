@@ -1,10 +1,13 @@
 package cd.struct.recipe.reactant;
 
+import arc.scene.Element;
 import arc.util.Log;
 import cd.struct.recipe.Reactant;
 import cd.struct.recipe.Recipe;
+import cd.ui.UIUtils;
 import cd.world.block.IHeat;
 import mindustry.gen.Building;
+import mindustry.gen.Icon;
 import mindustry.world.blocks.heat.HeatBlock;
 import mindustry.world.blocks.heat.HeatConsumer;
 
@@ -28,5 +31,12 @@ public class ReactantHeat extends Reactant {
         }else {
             return 1f;
         }
+    }
+
+    @Override
+    public Element[] icon() {
+        var icons = new Element[1];
+        icons[0] = UIUtils.stack(Icon.waves.getRegion(), heat);
+        return icons;
     }
 }

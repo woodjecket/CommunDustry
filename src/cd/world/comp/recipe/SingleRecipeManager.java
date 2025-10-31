@@ -1,5 +1,7 @@
 package cd.world.comp.recipe;
 
+import arc.scene.ui.Button;
+import arc.scene.ui.ScrollPane;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import arc.util.Log;
@@ -7,8 +9,10 @@ import cd.struct.recipe.Recipe;
 import cd.world.comp.RecipeManager;
 import cd.world.comp.Recipes;
 import mindustry.gen.Building;
+import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
+import mindustry.ui.Styles;
 import mindustry.world.blocks.heat.HeatBlock;
 import mindustry.world.blocks.heat.HeatConsumer;
 
@@ -28,10 +32,10 @@ public class SingleRecipeManager extends RecipeManager {
         float nextPower = 0, nextHeat = 0, nextEfficiency = 1;
         enhance.efficiency = 1;
         for (var slot : slots) {
-            if(slot == null) continue;
+            if (slot == null) continue;
 
             nextPower += slot.recipeEntity.recipe.power * slot.recipeEntity.totalEfficiencyMultiplier();
-            nextHeat += slot.recipeEntity.recipe.heat  * slot.recipeEntity.totalEfficiencyMultiplier();
+            nextHeat += slot.recipeEntity.recipe.heat * slot.recipeEntity.totalEfficiencyMultiplier();
             nextEfficiency *= slot.recipeEntity.totalEfficiency() * slot.recipeEntity.totalEfficiencyMultiplier();
 
         }
@@ -53,7 +57,15 @@ public class SingleRecipeManager extends RecipeManager {
 
     @Override
     public void config(Table table) {
-
+        table.pane(new Table(Tex.buttonEdge2 , p -> {
+            for (var recipe : recipes.recipes) {
+                p.button(r -> {
+                    r.add(recipe.equation());
+                }, Styles.defaultb, ()->{
+                    Log.info(recipe);
+                }).row();
+            }
+        }));
     }
 
     private void chosen(Recipe recipe) {

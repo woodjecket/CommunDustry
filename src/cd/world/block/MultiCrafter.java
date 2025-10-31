@@ -32,9 +32,25 @@ public class MultiCrafter extends Block {
             reactants.add(new ReactantItems(new Seq<>(ItemStack.with(Items.copper, 1))),
                     new ReactantLiquids(new Seq<>(LiquidStack.with(Liquids.slag, 0.1f))),
                     new ReactantPower(6f),
-                    new ReactantHeat(1f)
+                    new ReactantHeat(2f)
             );
             products.add(new ProductItems(new Seq<>(ItemStack.with(Items.lead, 1))));
+        }},
+                new Recipe() {{
+                    reactants.add(new ReactantItems(new Seq<>(ItemStack.with(Items.sand, 1))),
+                            new ReactantLiquids(new Seq<>(LiquidStack.with(Liquids.water, 0.1f))),
+                            new ReactantPower(12f),
+                            new ReactantHeat(4f)
+                    );
+                    products.add(new ProductItems(new Seq<>(ItemStack.with(Items.coal, 2))));
+                }},
+        new Recipe() {{
+            reactants.add(new ReactantItems(new Seq<>(ItemStack.with(Items.blastCompound, 1))),
+                    new ReactantLiquids(new Seq<>(LiquidStack.with(Liquids.oil, 0.1f))),
+                    new ReactantPower(18f),
+                    new ReactantHeat(3f)
+            );
+            products.add(new ProductItems(new Seq<>(ItemStack.with(Items.sporePod, 1))));
         }});
     }};
 
