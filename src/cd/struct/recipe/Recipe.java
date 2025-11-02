@@ -4,6 +4,12 @@ import arc.scene.Element;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import cd.entities.RecipeEntity;
+import cd.struct.recipe.product.ProductItems;
+import cd.struct.recipe.product.ProductLiquids;
+import cd.struct.recipe.reactant.ReactantHeat;
+import cd.struct.recipe.reactant.ReactantItems;
+import cd.struct.recipe.reactant.ReactantLiquids;
+import cd.struct.recipe.reactant.ReactantPower;
 import cd.world.comp.RecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
@@ -56,5 +62,77 @@ public class Recipe {
             sufficient &= building.liquids.get(ls.liquid) >= ls.amount;
         }
         return sufficient;
+    }
+
+    public static class RecipeBuilder{
+        private Seq<Product> products = new Seq<>();
+        private Seq<Reactant> reactants = new Seq<>();
+        private int craftTime = 60;
+        private int maxParallel = 1;
+
+        public RecipeBuilder time(int craftTime){
+            this.craftTime = craftTime;
+            return this;
+        }
+
+        public RecipeBuilder parallel(int maxParallel){
+            this.maxParallel = maxParallel;
+            return this;
+        }
+
+        public Recipe build(){
+            var value = new Recipe();
+            value.products = products;
+            value.reactants = reactants;
+            value.craftTime = craftTime;
+            value.maxParallel = maxParallel;
+            return value;
+        }
+
+        public RecipeBuilder itemsIn(Object... items){
+            var stacks = new Seq<ItemStack>(items.length / 2);
+            for(int i = 0; i < items.length; i += 2){
+                stacks.add(new ItemStack((Item)items[i], ((Number)items[i + 1]).intValue()));
+            }
+            reactants.add(new ReactantItems(stacks));
+            return this;
+        }
+
+        public RecipeBuilder liquidsIn(Object... items){
+            var stacks = new Seq<LiquidStack>(items.length / 2);
+            for(int i = 0; i < items.length; i += 2){
+                stacks.add(new LiquidStack((Liquid)items[i], ((Number)items[i + 1]).intValue()));
+            }
+            reactants.add(new ReactantLiquids(stacks));
+            return this;
+        }
+
+        public RecipeBuilder itemsOut(Object... items){
+            var stacks = new Seq<ItemStack>(items.length / 2);
+            for(int i = 0; i < items.length; i += 2){
+                stacks.add(new ItemStack((Item)items[i], ((Number)items[i + 1]).intValue()));
+            }
+            products.add(new ProductItems(stacks));
+            return this;
+        }
+
+        public RecipeBuilder liquidsOut(Object... items){
+            var stacks = new Seq<LiquidStack>(items.length / 2);
+            for(int i = 0; i < items.length; i += 2){
+                stacks.add(new LiquidStack((Liquid)items[i], ((Number)items[i + 1]).intValue()));
+            }
+            products.add(new ProductLiquids(stacks));
+            return this;
+        }
+
+        public RecipeBuilder powerIn(float power){
+            reactants.add(new ReactantPower(power));
+            return this;
+        }
+
+        public RecipeBuilder heatIn(float heat){
+            reactants.add(new ReactantHeat(heat));
+            return this;
+        }
     }
 }

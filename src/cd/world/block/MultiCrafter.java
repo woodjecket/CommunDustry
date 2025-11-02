@@ -22,37 +22,11 @@ import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 import mindustry.world.Block;
-import mindustry.world.blocks.heat.HeatBlock;
 import mindustry.world.blocks.heat.HeatConsumer;
 import mindustry.world.meta.BlockFlag;
 
 public class MultiCrafter extends Block {
-    public Recipes recipes = new Recipes() {{
-        recipes.add(new Recipe() {{
-            reactants.add(new ReactantItems(new Seq<>(ItemStack.with(Items.copper, 1))),
-                    new ReactantLiquids(new Seq<>(LiquidStack.with(Liquids.slag, 0.1f))),
-                    new ReactantPower(6f),
-                    new ReactantHeat(2f)
-            );
-            products.add(new ProductItems(new Seq<>(ItemStack.with(Items.lead, 1))));
-        }},
-                new Recipe() {{
-                    reactants.add(new ReactantItems(new Seq<>(ItemStack.with(Items.sand, 1))),
-                            new ReactantLiquids(new Seq<>(LiquidStack.with(Liquids.water, 0.1f))),
-                            new ReactantPower(12f),
-                            new ReactantHeat(4f)
-                    );
-                    products.add(new ProductItems(new Seq<>(ItemStack.with(Items.coal, 2))));
-                }},
-        new Recipe() {{
-            reactants.add(new ReactantItems(new Seq<>(ItemStack.with(Items.blastCompound, 1))),
-                    new ReactantLiquids(new Seq<>(LiquidStack.with(Liquids.oil, 0.1f))),
-                    new ReactantPower(18f),
-                    new ReactantHeat(3f)
-            );
-            products.add(new ProductItems(new Seq<>(ItemStack.with(Items.sporePod, 1))));
-        }});
-    }};
+    public Recipes recipes = new Recipes();
 
     public float heatCapacity = 10;
 
