@@ -95,7 +95,7 @@ public class MultiCrafter extends Block {
             }
 
             efficiency = recipeManager.enhancer.displayEfficiency();
-            dump(Items.lead);
+            recipeManager.enhancer.assistDump(this);
         }
 
         @Override

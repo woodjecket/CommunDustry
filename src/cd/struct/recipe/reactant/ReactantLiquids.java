@@ -45,7 +45,7 @@ public class ReactantLiquids extends Reactant {
     public Element[] icon() {
         var icons = new Element[liquids.size];
         for (int i = 0; i < liquids.size; i++) {
-            icons[i] = UIUtils.stack(liquids.get(i).liquid.uiIcon, liquids.get(i).amount);
+            icons[i] = UIUtils.stack(liquids.get(i).liquid.uiIcon, ((int) (liquids.get(i).amount * 60f)));
         }
         return icons;
     }

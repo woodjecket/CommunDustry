@@ -29,7 +29,7 @@ public class ReactantPower extends Reactant {
     @Override
     public Element[] icon() {
         var icons = new Element[1];
-        icons[0] = UIUtils.stack(Icon.power.getRegion(), power);
+        icons[0] = UIUtils.stack(Icon.power.getRegion(), (int)(power * 60f),32f);
         return icons;
     }
 }

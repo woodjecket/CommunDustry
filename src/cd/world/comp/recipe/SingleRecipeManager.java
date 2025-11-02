@@ -49,7 +49,7 @@ public class SingleRecipeManager extends RecipeManager {
     @Override
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
-            if (slots[i] == null && selected != null) {
+            if (slots[i] == null && selected != null && selected.suffcient(building)) {
                 slots[i] = new RecipeSlot(selected);
             }
         }
@@ -57,18 +57,21 @@ public class SingleRecipeManager extends RecipeManager {
 
     @Override
     public void config(Table table) {
-        table.pane(new Table(Tex.buttonEdge2 , p -> {
-            for (var recipe : recipes.recipes) {
-                p.button(r -> {
-                    r.add(recipe.equation());
-                }, Styles.defaultb, ()->{
-                    Log.info(recipe);
-                }).row();
-            }
-        }));
+        table.table(Tex.buttonEdge1 , outer->{
+            outer.pane(new Table( p -> {
+                for (var recipe : recipes.recipes) {
+                    p.button(rb -> {
+                        rb.add(recipe.equation()).grow();
+                    }, Styles.togglet, ()->{
+                        chosen(recipe);
+                    }).checked(rb -> selected == recipe).margin(10f).grow().row();
+                }
+            }));
+        });
     }
 
     private void chosen(Recipe recipe) {
+        selected = recipe;
         var enhance = (SingleVanillaEnhancer) enhancer;
         enhance.filterItems = recipe.potentialInputItem;
         enhance.dumpItems = recipe.potentialOutputItem;
@@ -105,7 +108,7 @@ public class SingleRecipeManager extends RecipeManager {
 
         @Override
         public Seq<Liquid> dumpLiquids() {
-            return filterLiquids;
+            return dumpLiquids;
         }
 
         @Override
@@ -132,6 +135,12 @@ public class SingleRecipeManager extends RecipeManager {
         @Override
         public float displayEfficiency() {
             return efficiency;
+        }
+
+        @Override
+        public void assistDump(Building building) {
+            dumpItems.each(building::dump);
+            dumpLiquids.each(building::dumpLiquid);
         }
     }
 }

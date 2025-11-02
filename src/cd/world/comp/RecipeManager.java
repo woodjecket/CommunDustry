@@ -35,7 +35,7 @@ public abstract class RecipeManager {
 
     public void updateSlot() {
         for(var slot : slots){
-            slot.update();
+            if (slot != null ) slot.update();
         }
     }
 
@@ -97,6 +97,7 @@ public abstract class RecipeManager {
 
         public abstract float displayEfficiency();
 
+        public abstract void assistDump(Building building);
 
     }
 

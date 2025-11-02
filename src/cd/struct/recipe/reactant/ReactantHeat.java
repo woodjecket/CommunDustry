@@ -36,7 +36,7 @@ public class ReactantHeat extends Reactant {
     @Override
     public Element[] icon() {
         var icons = new Element[1];
-        icons[0] = UIUtils.stack(Icon.waves.getRegion(), heat);
+        icons[0] = UIUtils.stack(Icon.waves.getRegion(), ((int) (heat)),32f);
         return icons;
     }
 }

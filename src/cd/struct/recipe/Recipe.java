@@ -5,6 +5,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import cd.entities.RecipeEntity;
 import cd.world.comp.RecipeManager;
+import mindustry.gen.Building;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.type.Item;
@@ -45,8 +46,15 @@ public class Recipe {
         reactants.each(r -> equation.add(r.icon()));
         equation.image(Icon.right).size(28f);
         products.each(p -> equation.add(p.icon()));
-        equation.getCells().each(c->c.margin(5f));
+        equation.getCells().each(c->c.margin(15f));
         return equation;
     }
 
+    public boolean suffcient(Building building) {
+        var sufficient = building.items.has(potentialInputItems);
+        for( var ls: potentialInputLiquids){
+            sufficient &= building.liquids.get(ls.liquid) >= ls.amount;
+        }
+        return sufficient;
+    }
 }
