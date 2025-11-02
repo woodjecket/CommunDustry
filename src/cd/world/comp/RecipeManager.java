@@ -1,6 +1,7 @@
 package cd.world.comp;
 
 import arc.scene.ui.layout.Table;
+import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.Recipe;
@@ -14,11 +15,13 @@ public abstract class RecipeManager {
     public Recipes recipes;
     public RecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
+    protected final ObjectIntMap<Recipe> count;
 
     public RecipeManager(Building building, Recipes recipes){
         this.recipes = recipes;
         this.building = building;
         slots = new RecipeSlot[getParallel()];
+        count = new ObjectIntMap<>(recipes.recipes.size);
     }
 
     public int getParallel() {
@@ -49,6 +52,7 @@ public abstract class RecipeManager {
 
         public RecipeSlot(Recipe recipe) {
             recipeEntity = recipe.newEntity(RecipeManager.this);
+            count.increment(recipe);
         }
 
         public void update() {
@@ -65,8 +69,10 @@ public abstract class RecipeManager {
 
         public void pop(){
             for (int i = 0; i < slots.length; i++) {
-                if(slots[i] == this) slots[i]
-                        = null;
+                if(slots[i] == this) {
+                    slots[i] = null;
+                    count.increment(recipeEntity.recipe, -1);
+                }
             }
         }
     }

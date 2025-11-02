@@ -1,10 +1,7 @@
 package cd.world.comp.recipe;
 
-import arc.scene.ui.Button;
-import arc.scene.ui.ScrollPane;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
-import arc.util.Log;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.RecipeManager;
 import cd.world.comp.Recipes;
@@ -13,10 +10,10 @@ import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
-import mindustry.world.blocks.heat.HeatBlock;
-import mindustry.world.blocks.heat.HeatConsumer;
 
 public class SingleRecipeManager extends RecipeManager {
+    private static final Seq<Item> emptyItem = new Seq<>();
+    private static final Seq<Liquid> emptyLiquid = new Seq<>();
     private Recipe selected;
 
     public SingleRecipeManager(Building building, Recipes recipes) {
@@ -49,7 +46,7 @@ public class SingleRecipeManager extends RecipeManager {
     @Override
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
-            if (slots[i] == null && selected != null && selected.suffcient(building)) {
+            if (slots[i] == null && selected != null && selected.sufficient(building)) {
                 slots[i] = new RecipeSlot(selected);
             }
         }
@@ -63,7 +60,11 @@ public class SingleRecipeManager extends RecipeManager {
                     p.button(rb -> {
                         rb.add(recipe.equation()).grow();
                     }, Styles.togglet, ()->{
-                        chosen(recipe);
+                        if(selected == recipe){
+                            unchosen(recipe);
+                        }else{
+                            chosen(recipe);
+                        }
                     }).checked(rb -> selected == recipe).margin(10f).grow().row();
                 }
             }));
@@ -77,6 +78,15 @@ public class SingleRecipeManager extends RecipeManager {
         enhance.dumpItems = recipe.potentialOutputItem;
         enhance.filterLiquids = recipe.potentialInputLiquid;
         enhance.dumpLiquids = recipe.potentialOutputLiquid;
+    }
+
+    private void unchosen(Recipe recipe){
+        selected = null;
+        var enhance = (SingleVanillaEnhancer) enhancer;
+        enhance.filterItems = emptyItem;
+        enhance.dumpItems = emptyItem;
+        enhance.filterLiquids = emptyLiquid;
+        enhance.dumpLiquids = emptyLiquid;
     }
 
     public class SingleVanillaEnhancer extends RecipeVanillaEnhancer {

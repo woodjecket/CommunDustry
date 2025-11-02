@@ -18,7 +18,7 @@ buildscript {
 
 ext {
     //the build number that this mod is made for
-    mindustryVersion = 'v150.1'
+    mindustryVersion = 'v153'
     sdkVersion = "29.0.3"
     jabelVersion = "93fde537c7"
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")

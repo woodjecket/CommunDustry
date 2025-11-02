@@ -12,12 +12,12 @@ import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
-import mindustry.ui.Styles;
 
 public class Recipe {
     public Seq<Product> products = new Seq<>();
     public Seq<Reactant> reactants = new Seq<>();
     public int craftTime = 60;
+    public int maxParallel = 1;
 
     public final Seq<ItemStack> potentialInputItems = new Seq<>(), potentialOutputItems = new Seq<>();
     public final Seq<LiquidStack> potentialInputLiquids = new Seq<>(), potentialOutputLiquids = new Seq<>();
@@ -50,7 +50,7 @@ public class Recipe {
         return equation;
     }
 
-    public boolean suffcient(Building building) {
+    public boolean sufficient(Building building) {
         var sufficient = building.items.has(potentialInputItems);
         for( var ls: potentialInputLiquids){
             sufficient &= building.liquids.get(ls.liquid) >= ls.amount;

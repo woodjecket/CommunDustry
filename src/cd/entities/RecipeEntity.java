@@ -48,5 +48,9 @@ public class RecipeEntity {
             product.produceOnce(manager.building);
         }
     }
+
+    public String toString(){
+        return recipe + ",progress=" + progress;
+    }
 }
 
