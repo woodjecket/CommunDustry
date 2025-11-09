@@ -53,7 +53,7 @@ public class MultiRecipeManager extends RecipeManager {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] == null) {
                 for(var selected: selects){
-                    if((!selected.sufficient(building) || count.get(selected,0) >= selected.maxParallel)) continue;
+                    if((!selected.sufficient(building, items) || count.get(selected,0) >= selected.maxParallel)) continue;
                     slots[i] = new RecipeSlot(selected);
                     break;
                 }

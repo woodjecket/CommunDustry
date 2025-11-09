@@ -56,8 +56,11 @@ public class Recipe {
         return equation;
     }
 
-    public boolean sufficient(Building building) {
+    public boolean sufficient(Building building, int[] items) {
         var sufficient = building.items.has(potentialInputItems);
+        for( var is: potentialInputItems){
+            sufficient &= building.items.get(is.item) >= is.amount + items[is.item.id];
+        }
         for( var ls: potentialInputLiquids){
             sufficient &= building.liquids.get(ls.liquid) >= ls.amount;
         }

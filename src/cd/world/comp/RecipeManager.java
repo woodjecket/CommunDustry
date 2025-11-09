@@ -5,6 +5,7 @@ import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.Recipe;
+import mindustry.Vars;
 import mindustry.gen.Building;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
@@ -16,6 +17,7 @@ public abstract class RecipeManager {
     public RecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
     protected final ObjectIntMap<Recipe> count;
+    protected final int[] items = new int[Vars.content.items().size];
 
     public RecipeManager(Building building, Recipes recipes){
         this.recipes = recipes;
@@ -53,6 +55,7 @@ public abstract class RecipeManager {
         public RecipeSlot(Recipe recipe) {
             recipeEntity = recipe.newEntity(RecipeManager.this);
             count.increment(recipe);
+            recipe.potentialInputItems.each(s->items[s.item.id] += s.amount);
         }
 
         public void update() {
@@ -72,6 +75,7 @@ public abstract class RecipeManager {
                 if(slots[i] == this) {
                     slots[i] = null;
                     count.increment(recipeEntity.recipe, -1);
+                    recipeEntity.recipe.potentialInputItems.each(s->items[s.item.id] -= s.amount);
                 }
             }
         }

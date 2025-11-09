@@ -46,7 +46,7 @@ public class SingleRecipeManager extends RecipeManager {
     @Override
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
-            if (slots[i] == null && selected != null && selected.sufficient(building)) {
+            if (slots[i] == null && selected != null && selected.sufficient(building,items)) {
                 slots[i] = new RecipeSlot(selected);
             }
         }
