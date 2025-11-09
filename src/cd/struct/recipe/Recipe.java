@@ -2,6 +2,7 @@ package cd.struct.recipe;
 
 import arc.scene.Element;
 import arc.scene.ui.layout.Table;
+import arc.struct.OrderedSet;
 import arc.struct.Seq;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.product.ProductItems;
@@ -11,6 +12,8 @@ import cd.struct.recipe.reactant.ReactantItems;
 import cd.struct.recipe.reactant.ReactantLiquids;
 import cd.struct.recipe.reactant.ReactantPower;
 import cd.world.comp.RecipeManager;
+import mindustry.ctype.Content;
+import mindustry.ctype.ContentType;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
@@ -19,8 +22,15 @@ import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 
-public class Recipe {
+public class Recipe extends Content {
+    public static final Seq<Recipe> all = new Seq<>(true);
     public Seq<Product> products = new Seq<>();
+
+    @Override
+    public String toString() {
+        return "id:" + id;
+    }
+
     public Seq<Reactant> reactants = new Seq<>();
     public int craftTime = 60;
     public int maxParallel = 1;
@@ -31,6 +41,11 @@ public class Recipe {
     public final Seq<Liquid> potentialInputLiquid = new Seq<>(), potentialOutputLiquid = new Seq<>();
 
     public float power, heat;
+
+    @Override
+    public ContentType getContentType() {
+        return ContentType.typeid_UNUSED;
+    }
 
     public void init() {
         products.each(product -> {
@@ -89,6 +104,7 @@ public class Recipe {
             value.reactants = reactants;
             value.craftTime = craftTime;
             value.maxParallel = maxParallel;
+            all.add(value);
             return value;
         }
 

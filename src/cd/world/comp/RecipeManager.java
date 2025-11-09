@@ -3,21 +3,25 @@ package cd.world.comp;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
+import arc.util.Log;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.Recipe;
 import mindustry.Vars;
 import mindustry.gen.Building;
+import mindustry.io.TypeIO;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.world.blocks.heat.HeatBlock;
 
 public abstract class RecipeManager {
-    public Building building;
-    public Recipes recipes;
-    public RecipeVanillaEnhancer enhancer;
+    public final Building building;
+    public final Recipes recipes;
+    public transient RecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
-    protected final ObjectIntMap<Recipe> count;
-    protected final int[] items = new int[Vars.content.items().size];
+    protected transient final ObjectIntMap<Recipe> count;
+    protected transient final int[] items = new int[Vars.content.items().size];
 
     public RecipeManager(Building building, Recipes recipes){
         this.recipes = recipes;
@@ -47,6 +51,37 @@ public abstract class RecipeManager {
     protected abstract void refreshSlot();
 
     public abstract void config(Table table);
+
+    public void write(Writes write){
+        int length = 0;
+        for (RecipeSlot slot : slots) {
+            if (slot != null) length++;
+        }
+        write.i(length);
+        for (int i = 0; i < slots.length; i++) {
+            if(slots[i] != null){
+                write.b(i);
+                write.i(slots[i].recipeEntity.recipe.id);
+                write.f(slots[i].recipeEntity.progress);
+            }
+        }
+    }
+
+    public void read(Reads read){
+        var length = read.i();
+        for (int i = 0; i < length; i++) {
+            var index = read.b();
+            var recipeID = read.i();
+            var progress = read.f();
+            if (slots[index] != null){
+                slots[index].pop();
+            }
+            slots[index] = new RecipeSlot(Recipe.all.get(recipeID));
+            slots[index].recipeEntity.progress = progress;
+        }
+    }
+
+    public abstract Object config();
 
     public class RecipeSlot {
 

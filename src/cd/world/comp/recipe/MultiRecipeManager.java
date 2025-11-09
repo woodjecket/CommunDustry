@@ -4,6 +4,10 @@ import arc.scene.ui.TextField;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
+import arc.util.Log;
+import arc.util.Strings;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.RecipeManager;
 import cd.world.comp.Recipes;
@@ -13,15 +17,16 @@ import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 
+import java.util.Arrays;
+
 public class MultiRecipeManager extends RecipeManager {
-    private final Seq<Recipe> selects;
+    private final Seq<Recipe> selects = new Seq<>();
 
 
     public MultiRecipeManager(Building building, Recipes recipes) {
         super(building, recipes);
         enhancer = new MultiVanillaEnhancer(this);
-        selects = recipes.recipes.copy();
-        unchosen(null);
+        updateFilter();
     }
 
     @Override
@@ -99,20 +104,57 @@ public class MultiRecipeManager extends RecipeManager {
         });
     }
 
+    @Override
+    public void write(Writes write) {
+        super.write(write);
+        write.i(selects.size);
+        for(var selected: selects){
+            write.i(selected.id);
+        }
+    }
+
+    @Override
+    public void read(Reads read) {
+        super.read(read);
+        selects.clear();
+        var length = read.i();
+        for (int i = 0; i < length; i++) {
+            var id = read.i();
+            selects.add(Recipe.all.get(id));
+        }
+        selects.removeAll(r->!recipes.recipes.contains(r));
+        updateFilter();
+    }
+
+    @Override
+    public Object config() {
+        return selects;
+    }
+
     private void unchosen(Recipe recipe) {
         selects.remove(recipe);
+        building.configure(selects.toArray(Recipe.class));
 
+        updateFilter();
+    }
+
+    private void updateFilter() {
         var enhance = (MultiVanillaEnhancer) enhancer;
         enhance.filterItems.clear();
         enhance.filterLiquids.clear();
+        enhance.dumpLiquids.clear();
+        enhance.dumpItems.clear();
 
         for(var selected : selects){
             chosen(selected,true);
         }
     }
 
-    private void chosen(Recipe recipe, boolean silent) {
-        if(!silent) selects.add(recipe);
+    public void chosen(Recipe recipe, boolean silent) {
+        if(!silent) {
+            selects.add(recipe);
+            building.configure(selects.toArray(Recipe.class));
+        }
         var enhance = (MultiVanillaEnhancer) enhancer;
 
         enhance.filterItems.add(recipe.potentialInputItem);
@@ -124,6 +166,10 @@ public class MultiRecipeManager extends RecipeManager {
         enhance.dumpLiquids.removeAll(enhance.filterLiquids);
     }
 
+    public void config(Recipe[] r) {
+        selects.set(r);
+        updateFilter();
+    }
 
     public class MultiVanillaEnhancer extends RecipeVanillaEnhancer {
 

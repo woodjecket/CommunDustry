@@ -2,6 +2,8 @@ package cd.world.comp.recipe;
 
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.RecipeManager;
 import cd.world.comp.Recipes;
@@ -69,6 +71,30 @@ public class SingleRecipeManager extends RecipeManager {
                 }
             }));
         });
+    }
+
+    @Override
+    public void write(Writes write) {
+        super.write(write);
+        if(selected!= null){
+            write.i(selected.id);
+        }else {
+            write.i(-1);
+        }
+
+    }
+
+    @Override
+    public void read(Reads read) {
+        super.read(read);
+        var id = read.i();
+        selected = id == -1 ? null : Recipe.all.get(id);
+        if(!recipes.recipes.contains(selected)) selected = null;
+    }
+
+    @Override
+    public Object config() {
+        return selected;
     }
 
     private void chosen(Recipe recipe) {

@@ -21,6 +21,11 @@ public class StackRecipeManager extends RecipeManager {
     }
 
     @Override
+    public Object config() {
+        return null;
+    }
+
+    @Override
     public int getParallel() {
         return 3;
     }

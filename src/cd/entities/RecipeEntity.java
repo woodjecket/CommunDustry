@@ -1,5 +1,6 @@
 package cd.entities;
 
+import arc.util.Strings;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.RecipeManager;
 
@@ -50,7 +51,7 @@ public class RecipeEntity {
     }
 
     public String toString(){
-        return recipe + ",progress=" + progress;
+        return recipe + ",progress=" + Strings.autoFixed(progress,3);
     }
 }
 
