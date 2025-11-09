@@ -3,35 +3,19 @@ package cd.world.block;
 import arc.math.Mathf;
 import arc.scene.ui.layout.Table;
 import arc.struct.EnumSet;
-import arc.struct.Seq;
-import arc.util.Log;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import cd.struct.recipe.Reactant;
 import cd.struct.recipe.Recipe;
-import cd.struct.recipe.product.ProductItems;
-import cd.struct.recipe.reactant.ReactantHeat;
-import cd.struct.recipe.reactant.ReactantItems;
-import cd.struct.recipe.reactant.ReactantLiquids;
-import cd.struct.recipe.reactant.ReactantPower;
+import cd.world.comp.IRecipeManager;
 import cd.world.comp.RecipeManager;
 import cd.world.comp.Recipes;
-import cd.world.comp.recipe.MultiRecipeManager;
-import mindustry.content.Items;
-import mindustry.content.Liquids;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
-import mindustry.gen.Unit;
 import mindustry.type.Item;
-import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
-import mindustry.type.LiquidStack;
 import mindustry.world.Block;
 import mindustry.world.blocks.heat.HeatConsumer;
 import mindustry.world.meta.BlockFlag;
-
-import static mindustry.Vars.headless;
-import static mindustry.Vars.renderer;
 
 public class MultiCrafter extends Block {
     public Recipes recipes = new Recipes();
@@ -53,13 +37,7 @@ public class MultiCrafter extends Block {
         hasPower = true;
         liquidCapacity = 100f;
         consumePowerDynamic((MultiCrafterBuild b) -> b.recipeManager.enhancer.powerIn());
-        config(Recipe.class, (MultiCrafterBuild b, Recipe r) -> {
-            ((MultiRecipeManager) b.recipeManager).chosen(r, true);
-        });
-        config(Recipe[].class, (MultiCrafterBuild b, Recipe[] r) -> {
-            ((MultiRecipeManager) b.recipeManager).config(r);
-        });
-        configClear((MultiCrafterBuild b)-> ((MultiRecipeManager) b.recipeManager).config(new Recipe[]{}));
+        recipes.registerConfig(this);
     }
 
     @Override
@@ -68,28 +46,10 @@ public class MultiCrafter extends Block {
         recipes.recipes.each(Recipe::init);
     }
 
-    public class MultiCrafterBuild extends Building implements IHeat, HeatConsumer {
+    public class MultiCrafterBuild extends Building implements IHeat, HeatConsumer, IRecipeManager {
         public RecipeManager recipeManager = recipes.newManager(this);
         public float heat;
         public float[] sideHeat = new float[4];
-
-        @Override
-        public void configured(Unit player, Object value) {
-            //Baka Object[]
-            if (value instanceof Object[] objs) {
-                if ((objs.length > 0 && objs[0] != null && objs[0] instanceof Recipe)) {
-                    Recipe[] recipes1 = new Recipe[objs.length];
-                    System.arraycopy(objs, 0, recipes1, 0, objs.length);
-                    super.configured(player, recipes1);
-                } else if(objs.length == 0){
-                    super.configured(player, null);
-                } else {
-                    super.configured(player, value);
-                }
-            }
-
-
-        }
 
         @Override
         public void updateTile() {
@@ -97,6 +57,7 @@ public class MultiCrafter extends Block {
             heat = calculateHeat(sideHeat);
 
             recipeManager.update();
+
             if (recipeManager.enhancer.heatOut() > 0) {
                 heat = Mathf.approachDelta(heat, recipeManager.enhancer.heatOut() * efficiency, 10 * delta());
             }
@@ -107,12 +68,12 @@ public class MultiCrafter extends Block {
 
         @Override
         public void buildConfiguration(Table table) {
-            recipeManager.config(table);
+            recipeManager.buildConfigure(table);
         }
 
         @Override
         public Object config() {
-            return recipeManager.config();
+            return recipeManager.getConfig();
         }
 
         @Override
@@ -162,6 +123,11 @@ public class MultiCrafter extends Block {
         public void read(Reads read, byte revision) {
             super.read(read, revision);
             if (revision >= 2) recipeManager.read(read);
+        }
+
+        @Override
+        public RecipeManager manager() {
+            return recipeManager;
         }
     }
 }

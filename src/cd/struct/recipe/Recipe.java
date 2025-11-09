@@ -22,9 +22,16 @@ import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 
-public class Recipe extends Content {
+public class Recipe{
+    public int id;
+    private static int idCount;
     public static final Seq<Recipe> all = new Seq<>(true);
     public Seq<Product> products = new Seq<>();
+
+    public Recipe() {
+        id = idCount;
+        idCount++;
+    }
 
     @Override
     public String toString() {
@@ -41,11 +48,6 @@ public class Recipe extends Content {
     public final Seq<Liquid> potentialInputLiquid = new Seq<>(), potentialOutputLiquid = new Seq<>();
 
     public float power, heat;
-
-    @Override
-    public ContentType getContentType() {
-        return ContentType.typeid_UNUSED;
-    }
 
     public void init() {
         products.each(product -> {

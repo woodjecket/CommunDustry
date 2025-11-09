@@ -1,11 +1,9 @@
 package cd.world.comp.recipe;
 
-import arc.scene.ui.TextField;
 import arc.scene.ui.layout.Table;
+import arc.struct.IntSeq;
 import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
-import arc.util.Log;
-import arc.util.Strings;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
@@ -17,16 +15,13 @@ import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 
-import java.util.Arrays;
-
 public class MultiRecipeManager extends RecipeManager {
     private final Seq<Recipe> selects = new Seq<>();
-
 
     public MultiRecipeManager(Building building, Recipes recipes) {
         super(building, recipes);
         enhancer = new MultiVanillaEnhancer(this);
-        updateFilter();
+        rebuildFilter();
     }
 
     @Override
@@ -52,13 +47,13 @@ public class MultiRecipeManager extends RecipeManager {
         enhance.efficiency = nextEfficiency;
     }
 
-
     @Override
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] == null) {
-                for(var selected: selects){
-                    if((!selected.sufficient(building, items) || count.get(selected,0) >= selected.maxParallel)) continue;
+                for (var selected : selects) {
+                    if ((!selected.sufficient(building, items) || count.get(selected, 0) >= selected.maxParallel))
+                        continue;
                     slots[i] = new RecipeSlot(selected);
                     break;
                 }
@@ -67,33 +62,35 @@ public class MultiRecipeManager extends RecipeManager {
     }
 
     @Override
-    public void config(Table table) {
-        table.table(Tex.buttonEdge1 , outer->{
-            outer.pane(new Table( p -> {
+    public void buildConfigure(Table table) {
+        table.table(Tex.buttonEdge1, outer -> {
+            outer.pane(new Table(p -> {
                 for (var recipe : recipes.recipes) {
-                    p.button(rb -> {
-                        rb.add(recipe.equation()).grow();
-                    }, Styles.togglet, ()->{
-                        if(selects.contains(recipe)){
-                            unchosen(recipe);
-                        }else {
-                            chosen(recipe,false);
+                    p.button(rb -> rb.add(recipe.equation()).grow(), Styles.togglet, () -> {
+                        if (selects.contains(recipe)) {
+                            selects.remove(recipe);
+                            activeConfigure();
+                            rebuildFilter();
+                        } else {
+                            selects.add(recipe);
+                            activeConfigure();
+                            updateFilter(recipe);
                         }
                     }).checked(rb -> selects.contains(recipe)).margin(10f).grow().row();
                 }
             }));
 
-            outer.pane(new Table( p -> {
+            outer.pane(new Table(p -> {
                 for (int i = 0; i < slots.length; i++) {
                     int finalI = i;
-                    p.table(Tex.buttonEdge3, s->{
-                        s.add("").width(100f).update(l->{
-                            if(slots[finalI] == null) {
+                    p.table(Tex.buttonEdge3, s -> {
+                        s.add("").width(100f).update(l -> {
+                            if (slots[finalI] == null) {
                                 l.setText("empty");
-                            }else {
+                            } else {
                                 l.setText(slots[finalI].recipeEntity.toString());
                             }
-                        }).self(l->{
+                        }).self(l -> {
                             l.get().setWrap(true);
                             l.get().setFontScale(0.7f);
                         });
@@ -108,7 +105,7 @@ public class MultiRecipeManager extends RecipeManager {
     public void write(Writes write) {
         super.write(write);
         write.i(selects.size);
-        for(var selected: selects){
+        for (var selected : selects) {
             write.i(selected.id);
         }
     }
@@ -122,39 +119,47 @@ public class MultiRecipeManager extends RecipeManager {
             var id = read.i();
             selects.add(Recipe.all.get(id));
         }
-        selects.removeAll(r->!recipes.recipes.contains(r));
-        updateFilter();
+        selects.removeAll(r -> !recipes.recipes.contains(r));
+        rebuildFilter();
     }
 
     @Override
-    public Object config() {
+    public Object getConfig() {
         return selects;
     }
 
-    private void unchosen(Recipe recipe) {
-        selects.remove(recipe);
-        building.configure(selects.toArray(Recipe.class));
-
-        updateFilter();
+    @Override
+    public void passiveConfigured(Object object) {
+        selects.clear();
+        if(object instanceof IntSeq seq){
+            for (int i: seq.items){
+                selects.add(Recipe.all.get(i));
+            }
+        }
+        rebuildFilter();
     }
 
-    private void updateFilter() {
+    private void activeConfigure() {
+        var ints = new int[selects.size];
+        for (int i = 0; i < selects.size; i++) {
+            ints[i] = selects.get(i).id;
+        }
+        building.configure(new IntSeq(ints));
+    }
+
+    private void rebuildFilter() {
         var enhance = (MultiVanillaEnhancer) enhancer;
         enhance.filterItems.clear();
         enhance.filterLiquids.clear();
         enhance.dumpLiquids.clear();
         enhance.dumpItems.clear();
 
-        for(var selected : selects){
-            chosen(selected,true);
+        for (var selected : selects) {
+            updateFilter(selected);
         }
     }
 
-    public void chosen(Recipe recipe, boolean silent) {
-        if(!silent) {
-            selects.add(recipe);
-            building.configure(selects.toArray(Recipe.class));
-        }
+    private void updateFilter(Recipe recipe) {
         var enhance = (MultiVanillaEnhancer) enhancer;
 
         enhance.filterItems.add(recipe.potentialInputItem);
@@ -164,11 +169,6 @@ public class MultiRecipeManager extends RecipeManager {
 
         enhance.dumpItems.removeAll(enhance.filterItems);
         enhance.dumpLiquids.removeAll(enhance.filterLiquids);
-    }
-
-    public void config(Recipe[] r) {
-        selects.set(r);
-        updateFilter();
     }
 
     public class MultiVanillaEnhancer extends RecipeVanillaEnhancer {

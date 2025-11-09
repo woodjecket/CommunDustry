@@ -16,13 +16,18 @@ public class StackRecipeManager extends RecipeManager {
     }
 
     @Override
-    public void config(Table table) {
+    public void buildConfigure(Table table) {
 
     }
 
     @Override
-    public Object config() {
+    public Object getConfig() {
         return null;
+    }
+
+    @Override
+    public void passiveConfigured(Object object) {
+
     }
 
     @Override

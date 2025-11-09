@@ -3,17 +3,14 @@ package cd.world.comp;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
-import arc.util.Log;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.Recipe;
 import mindustry.Vars;
 import mindustry.gen.Building;
-import mindustry.io.TypeIO;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
-import mindustry.world.blocks.heat.HeatBlock;
 
 public abstract class RecipeManager {
     public final Building building;
@@ -23,7 +20,7 @@ public abstract class RecipeManager {
     protected transient final ObjectIntMap<Recipe> count;
     protected transient final int[] items = new int[Vars.content.items().size];
 
-    public RecipeManager(Building building, Recipes recipes){
+    public RecipeManager(Building building, Recipes recipes) {
         this.recipes = recipes;
         this.building = building;
         slots = new RecipeSlot[getParallel()];
@@ -43,23 +40,23 @@ public abstract class RecipeManager {
     protected abstract void updateEnhancer();
 
     public void updateSlot() {
-        for(var slot : slots){
-            if (slot != null ) slot.update();
+        for (var slot : slots) {
+            if (slot != null) slot.update();
         }
     }
 
     protected abstract void refreshSlot();
 
-    public abstract void config(Table table);
+    public abstract void buildConfigure(Table table);
 
-    public void write(Writes write){
+    public void write(Writes write) {
         int length = 0;
         for (RecipeSlot slot : slots) {
             if (slot != null) length++;
         }
         write.i(length);
         for (int i = 0; i < slots.length; i++) {
-            if(slots[i] != null){
+            if (slots[i] != null) {
                 write.b(i);
                 write.i(slots[i].recipeEntity.recipe.id);
                 write.f(slots[i].recipeEntity.progress);
@@ -67,13 +64,13 @@ public abstract class RecipeManager {
         }
     }
 
-    public void read(Reads read){
+    public void read(Reads read) {
         var length = read.i();
         for (int i = 0; i < length; i++) {
             var index = read.b();
             var recipeID = read.i();
             var progress = read.f();
-            if (slots[index] != null){
+            if (slots[index] != null) {
                 slots[index].pop();
             }
             slots[index] = new RecipeSlot(Recipe.all.get(recipeID));
@@ -81,7 +78,9 @@ public abstract class RecipeManager {
         }
     }
 
-    public abstract Object config();
+    public abstract Object getConfig();
+
+    public abstract void passiveConfigured(Object object);
 
     public class RecipeSlot {
 
@@ -90,33 +89,33 @@ public abstract class RecipeManager {
         public RecipeSlot(Recipe recipe) {
             recipeEntity = recipe.newEntity(RecipeManager.this);
             count.increment(recipe);
-            recipe.potentialInputItems.each(s->items[s.item.id] += s.amount);
+            recipe.potentialInputItems.each(s -> items[s.item.id] += s.amount);
         }
 
         public void update() {
-            if(recipeEntity.noOutput()) return;
-            var efficiency = recipeEntity.totalEfficiency() * recipeEntity.totalEfficiencyMultiplier() ;
+            if (recipeEntity.noOutput()) return;
+            var efficiency = recipeEntity.totalEfficiency() * recipeEntity.totalEfficiencyMultiplier();
             recipeEntity.runWhile(efficiency);
             recipeEntity.progress += building.delta() * efficiency / recipeEntity.recipe.craftTime;
 
-            if(recipeEntity.progress >= 1f){
+            if (recipeEntity.progress >= 1f) {
                 recipeEntity.runOnce();
                 pop();
             }
         }
 
-        public void pop(){
+        public void pop() {
             for (int i = 0; i < slots.length; i++) {
-                if(slots[i] == this) {
+                if (slots[i] == this) {
                     slots[i] = null;
                     count.increment(recipeEntity.recipe, -1);
-                    recipeEntity.recipe.potentialInputItems.each(s->items[s.item.id] -= s.amount);
+                    recipeEntity.recipe.potentialInputItems.each(s -> items[s.item.id] -= s.amount);
                 }
             }
         }
     }
 
-    public abstract class RecipeVanillaEnhancer{
+    public abstract class RecipeVanillaEnhancer {
         public RecipeManager recipeManager;
 
 

@@ -55,7 +55,7 @@ public class SingleRecipeManager extends RecipeManager {
     }
 
     @Override
-    public void config(Table table) {
+    public void buildConfigure(Table table) {
         table.table(Tex.buttonEdge1 , outer->{
             outer.pane(new Table( p -> {
                 for (var recipe : recipes.recipes) {
@@ -93,8 +93,15 @@ public class SingleRecipeManager extends RecipeManager {
     }
 
     @Override
-    public Object config() {
+    public Object getConfig() {
         return selected;
+    }
+
+    @Override
+    public void passiveConfigured(Object object) {
+        if(object instanceof Integer i){
+            chosen(Recipe.all.get(i));
+        }
     }
 
     private void chosen(Recipe recipe) {
