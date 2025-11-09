@@ -9,7 +9,8 @@ import cd.struct.recipe.Recipe;
 import cd.world.comp.IHeat;
 import cd.world.comp.IRecipeManager;
 import cd.world.comp.recipe.AbstractRecipeManager;
-import cd.world.comp.recipe.RecipeManagerFactory;
+import cd.world.comp.recipe.RecipeManagerAbstractFactory;
+import cd.world.comp.recipe.StackRecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
 import mindustry.type.Item;
@@ -19,7 +20,7 @@ import mindustry.world.blocks.heat.HeatConsumer;
 import mindustry.world.meta.BlockFlag;
 
 public class MultiCrafter extends Block {
-    public RecipeManagerFactory recipes = new RecipeManagerFactory();
+    public RecipeManagerAbstractFactory factory = new StackRecipeManager.StackRecipeManagerFactory();
 
     public float heatCapacity = 10;
 
@@ -38,17 +39,29 @@ public class MultiCrafter extends Block {
         hasPower = true;
         liquidCapacity = 100f;
         consumePowerDynamic((MultiCrafterBuild b) -> b.recipeManager.enhancer.powerIn());
-        recipes.registerConfig(this);
+        factory.registerConfig(this);
     }
 
     @Override
     public void init() {
         super.init();
-        recipes.recipes.each(Recipe::init);
+        factory.recipes.each(Recipe::init);
+    }
+
+    @Override
+    public void setBars() {
+        super.setBars();
+        // TODO how to make it?
+    }
+
+    @Override
+    public void setStats() {
+        super.setStats();
+        factory.recipes.each(r->r.setStats(stats));
     }
 
     public class MultiCrafterBuild extends Building implements IHeat, HeatConsumer, IRecipeManager {
-        public AbstractRecipeManager recipeManager = recipes.newManager(this);
+        public AbstractRecipeManager recipeManager = factory.newManager(this);
         public float heat;
         public float[] sideHeat = new float[4];
 

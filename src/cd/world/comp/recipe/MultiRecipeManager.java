@@ -15,7 +15,7 @@ import mindustry.ui.Styles;
 public class MultiRecipeManager extends AbstractRecipeManager {
     private final Seq<Recipe> selects = new Seq<>();
 
-    public MultiRecipeManager(Building building, RecipeManagerFactory recipes) {
+    public MultiRecipeManager(Building building, RecipeManagerAbstractFactory recipes) {
         super(building, recipes);
         enhancer = new MultiVanillaEnhancer(this);
         rebuildFilter();
@@ -28,7 +28,6 @@ public class MultiRecipeManager extends AbstractRecipeManager {
 
     @Override
     protected void updateEnhancer() {
-
         var enhance = (MultiVanillaEnhancer) enhancer;
         float nextPower = 0, nextHeat = 0, nextEfficiency = 1;
 

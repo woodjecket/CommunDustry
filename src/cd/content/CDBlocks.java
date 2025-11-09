@@ -18,16 +18,10 @@ import mindustry.world.blocks.power.Battery;
 import mindustry.world.blocks.power.SolarGenerator;
 import mindustry.world.blocks.production.*;
 import mindustry.world.blocks.storage.CoreBlock;
-import mindustry.world.consumers.*;
-import mindustry.world.draw.*;
-import mindustry.world.meta.*;
-
-import static mindustry.type.ItemStack.with;
 
 public class CDBlocks {
     public static FiniteOre finiteCopper;
 
-    public static Airport airport;
 
     public static Block ashWall, ashFloor, ashBoulder, deadSapling, enrichedSandFloor, enrichedSandWall, enrichedSandBoulder,
             graniteFloor, graniteWall, graniteBoulder,
@@ -51,9 +45,6 @@ public class CDBlocks {
 
     public static void load() {
         finiteCopper = new FiniteOre(Items.copper);
-        airport = new Airport("airport") {{
-            requirements(Category.crafting, ItemStack.with());
-        }};
         ashWall = new StaticWall("ash-wall");
         enrichedSandWall = new StaticWall("enriched-sand-wall");
         graniteWall = new StaticWall("granite-wall");
@@ -115,7 +106,7 @@ public class CDBlocks {
 
         smallFurnace = new MultiCrafter("small-furnace") {{
             size = 3;
-            recipes.recipes.add(new Recipe.RecipeBuilder()
+            factory.recipes.add(new Recipe.RecipeBuilder()
                     .itemsIn(Items.sand, 2, Items.coal, 2)
                     .powerIn(1f)
                     .itemsOut(Items.silicon, 1)
@@ -126,7 +117,7 @@ public class CDBlocks {
 
         smallArcFurnace = new MultiCrafter("small-arc-furnace") {{
             size = 3;
-            recipes.recipes.add(
+            factory.recipes.add(
                     new Recipe.RecipeBuilder()
                             .itemsIn(Items.sand, 2, Items.graphite, 2)
                             .powerIn(1f)
@@ -143,7 +134,7 @@ public class CDBlocks {
 
         smallPresser = new MultiCrafter("small-presser") {{
             size = 2;
-            recipes.recipes.add(
+            factory.recipes.add(
                     new Recipe.RecipeBuilder()
                             .itemsIn(Items.coal,2)
                             .powerIn(1f)

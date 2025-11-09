@@ -18,6 +18,7 @@ import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
+import mindustry.world.meta.Stats;
 
 public class Recipe{
     public int id;
@@ -47,9 +48,7 @@ public class Recipe{
     public float power, heat;
 
     public void init() {
-        products.each(product -> {
-            product.init(this);
-        });
+        products.each(product -> {product.init(this);});
         reactants.each(reactant -> reactant.init(this));
     }
 
@@ -79,6 +78,10 @@ public class Recipe{
             sufficient &= building.liquids.get(ls.liquid) >= ls.amount;
         }
         return sufficient;
+    }
+
+    public void setStats(Stats stats) {
+
     }
 
     public static class RecipeBuilder{

@@ -14,13 +14,13 @@ import mindustry.type.Liquid;
 
 public abstract class AbstractRecipeManager {
     public final Building building;
-    public final RecipeManagerFactory recipes;
+    public final RecipeManagerAbstractFactory recipes;
     public transient RecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
     protected transient final ObjectIntMap<Recipe> count;
     protected transient final int[] items = new int[Vars.content.items().size];
 
-    public AbstractRecipeManager(Building building, RecipeManagerFactory recipes) {
+    public AbstractRecipeManager(Building building, RecipeManagerAbstractFactory recipes) {
         this.recipes = recipes;
         this.building = building;
         slots = new RecipeSlot[getParallel()];

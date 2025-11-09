@@ -16,7 +16,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
     private static final Seq<Liquid> emptyLiquid = new Seq<>();
     private Recipe selected;
 
-    public SingleRecipeManager(Building building, RecipeManagerFactory recipes) {
+    public SingleRecipeManager(Building building, RecipeManagerAbstractFactory recipes) {
         super(building, recipes);
         selected = recipes.recipes.get(0);
         enhancer = new SingleVanillaEnhancer(this);

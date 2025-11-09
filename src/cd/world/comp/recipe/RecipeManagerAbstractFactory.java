@@ -7,7 +7,7 @@ import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 
-public class RecipeManagerFactory {
+public abstract class RecipeManagerAbstractFactory {
 
     public Seq<Recipe> recipes = new Seq<>();
 
