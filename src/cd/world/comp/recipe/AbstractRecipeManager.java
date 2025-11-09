@@ -1,4 +1,4 @@
-package cd.world.comp;
+package cd.world.comp.recipe;
 
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectIntMap;
@@ -12,15 +12,15 @@ import mindustry.gen.Building;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 
-public abstract class RecipeManager {
+public abstract class AbstractRecipeManager {
     public final Building building;
-    public final Recipes recipes;
+    public final RecipeManagerFactory recipes;
     public transient RecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
     protected transient final ObjectIntMap<Recipe> count;
     protected transient final int[] items = new int[Vars.content.items().size];
 
-    public RecipeManager(Building building, Recipes recipes) {
+    public AbstractRecipeManager(Building building, RecipeManagerFactory recipes) {
         this.recipes = recipes;
         this.building = building;
         slots = new RecipeSlot[getParallel()];
@@ -87,7 +87,7 @@ public abstract class RecipeManager {
         public RecipeEntity recipeEntity;
 
         public RecipeSlot(Recipe recipe) {
-            recipeEntity = recipe.newEntity(RecipeManager.this);
+            recipeEntity = recipe.newEntity(AbstractRecipeManager.this);
             count.increment(recipe);
             recipe.potentialInputItems.each(s -> items[s.item.id] += s.amount);
         }
@@ -116,10 +116,10 @@ public abstract class RecipeManager {
     }
 
     public abstract class RecipeVanillaEnhancer {
-        public RecipeManager recipeManager;
+        public AbstractRecipeManager recipeManager;
 
 
-        public RecipeVanillaEnhancer(RecipeManager recipeManager) {
+        public RecipeVanillaEnhancer(AbstractRecipeManager recipeManager) {
             this.recipeManager = recipeManager;
         }
 

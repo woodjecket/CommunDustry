@@ -1,12 +1,10 @@
 package cd.world.comp.recipe;
 
 import arc.scene.ui.layout.Table;
-import cd.world.comp.RecipeManager;
-import cd.world.comp.Recipes;
 import mindustry.gen.Building;
 
-public class StackRecipeManager extends RecipeManager {
-    public StackRecipeManager(Building building, Recipes recipes) {
+public class StackRecipeManager extends AbstractRecipeManager {
+    public StackRecipeManager(Building building, RecipeManagerFactory recipes) {
         super(building, recipes);
     }
 

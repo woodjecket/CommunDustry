@@ -12,9 +12,6 @@ import mindustry.ui.Styles;
 
 public class UIUtils {
 
-    public static Stack stack(TextureRegion region, float amount){
-        return stack(region,amount,32f);
-    }
     public static Stack stack(TextureRegion region, int amount){
         return stack(region,amount,32f);
     }

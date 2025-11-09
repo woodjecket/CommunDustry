@@ -1,14 +1,12 @@
 package cd.struct.recipe.reactant;
 
 import arc.scene.Element;
-import arc.util.Log;
 import cd.struct.recipe.Reactant;
 import cd.struct.recipe.Recipe;
 import cd.ui.UIUtils;
-import cd.world.block.IHeat;
+import cd.world.comp.IHeat;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
-import mindustry.world.blocks.heat.HeatBlock;
 import mindustry.world.blocks.heat.HeatConsumer;
 
 public class ReactantHeat extends Reactant {

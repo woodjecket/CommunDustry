@@ -6,9 +6,10 @@ import arc.struct.EnumSet;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
+import cd.world.comp.IHeat;
 import cd.world.comp.IRecipeManager;
-import cd.world.comp.RecipeManager;
-import cd.world.comp.Recipes;
+import cd.world.comp.recipe.AbstractRecipeManager;
+import cd.world.comp.recipe.RecipeManagerFactory;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
 import mindustry.type.Item;
@@ -18,7 +19,7 @@ import mindustry.world.blocks.heat.HeatConsumer;
 import mindustry.world.meta.BlockFlag;
 
 public class MultiCrafter extends Block {
-    public Recipes recipes = new Recipes();
+    public RecipeManagerFactory recipes = new RecipeManagerFactory();
 
     public float heatCapacity = 10;
 
@@ -47,7 +48,7 @@ public class MultiCrafter extends Block {
     }
 
     public class MultiCrafterBuild extends Building implements IHeat, HeatConsumer, IRecipeManager {
-        public RecipeManager recipeManager = recipes.newManager(this);
+        public AbstractRecipeManager recipeManager = recipes.newManager(this);
         public float heat;
         public float[] sideHeat = new float[4];
 
@@ -126,7 +127,7 @@ public class MultiCrafter extends Block {
         }
 
         @Override
-        public RecipeManager manager() {
+        public AbstractRecipeManager manager() {
             return recipeManager;
         }
     }

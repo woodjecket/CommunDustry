@@ -1,19 +1,17 @@
-package cd.world.comp;
+package cd.world.comp.recipe;
 
 import arc.struct.IntSeq;
 import arc.struct.Seq;
 import cd.struct.recipe.Recipe;
-import cd.world.block.MultiCrafter;
-import cd.world.comp.recipe.MultiRecipeManager;
-import cd.world.comp.recipe.SingleRecipeManager;
+import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 
-public class Recipes {
+public class RecipeManagerFactory {
 
     public Seq<Recipe> recipes = new Seq<>();
 
-    public RecipeManager newManager(Building build) {
+    public AbstractRecipeManager newManager(Building build) {
         return new MultiRecipeManager(build, this);
     }
 

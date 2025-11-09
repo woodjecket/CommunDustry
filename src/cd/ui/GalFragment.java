@@ -12,8 +12,8 @@ public class GalFragment{
     public static final Color ALPHA_WHITE = new Color(0xffffffbb);
 
     public static void build(Group parent){
-        //illustLayer(parent);
-        //optionLayer(parent);
+        illustLayer(parent);
+        optionLayer(parent);
         tachieLayer(parent);
         speechLayer(parent);
     }

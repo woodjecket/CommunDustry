@@ -2,23 +2,20 @@ package cd.world.comp.recipe;
 
 import arc.scene.ui.layout.Table;
 import arc.struct.IntSeq;
-import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
-import cd.world.comp.RecipeManager;
-import cd.world.comp.Recipes;
 import mindustry.gen.Building;
 import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 
-public class MultiRecipeManager extends RecipeManager {
+public class MultiRecipeManager extends AbstractRecipeManager {
     private final Seq<Recipe> selects = new Seq<>();
 
-    public MultiRecipeManager(Building building, Recipes recipes) {
+    public MultiRecipeManager(Building building, RecipeManagerFactory recipes) {
         super(building, recipes);
         enhancer = new MultiVanillaEnhancer(this);
         rebuildFilter();
@@ -179,7 +176,7 @@ public class MultiRecipeManager extends RecipeManager {
 
         private float power, heat, efficiency;
 
-        public MultiVanillaEnhancer(RecipeManager recipeManager) {
+        public MultiVanillaEnhancer(AbstractRecipeManager recipeManager) {
             super(recipeManager);
         }
 

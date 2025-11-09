@@ -2,10 +2,10 @@ package cd.entities;
 
 import arc.util.Strings;
 import cd.struct.recipe.Recipe;
-import cd.world.comp.RecipeManager;
+import cd.world.comp.recipe.AbstractRecipeManager;
 
 public class RecipeEntity {
-    public RecipeManager manager;
+    public AbstractRecipeManager manager;
     public Recipe recipe;
     public float progress;
 

@@ -2,7 +2,6 @@ package cd.struct.recipe;
 
 import arc.scene.Element;
 import arc.scene.ui.layout.Table;
-import arc.struct.OrderedSet;
 import arc.struct.Seq;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.product.ProductItems;
@@ -11,9 +10,7 @@ import cd.struct.recipe.reactant.ReactantHeat;
 import cd.struct.recipe.reactant.ReactantItems;
 import cd.struct.recipe.reactant.ReactantLiquids;
 import cd.struct.recipe.reactant.ReactantPower;
-import cd.world.comp.RecipeManager;
-import mindustry.ctype.Content;
-import mindustry.ctype.ContentType;
+import cd.world.comp.recipe.AbstractRecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
@@ -56,7 +53,7 @@ public class Recipe{
         reactants.each(reactant -> reactant.init(this));
     }
 
-    public RecipeEntity newEntity(RecipeManager manager) {
+    public RecipeEntity newEntity(AbstractRecipeManager manager) {
         var entity = new RecipeEntity();
         entity.recipe = this;
         entity.manager = manager;

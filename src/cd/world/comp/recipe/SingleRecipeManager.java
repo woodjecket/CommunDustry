@@ -5,20 +5,18 @@ import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
-import cd.world.comp.RecipeManager;
-import cd.world.comp.Recipes;
 import mindustry.gen.Building;
 import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 
-public class SingleRecipeManager extends RecipeManager {
+public class SingleRecipeManager extends AbstractRecipeManager {
     private static final Seq<Item> emptyItem = new Seq<>();
     private static final Seq<Liquid> emptyLiquid = new Seq<>();
     private Recipe selected;
 
-    public SingleRecipeManager(Building building, Recipes recipes) {
+    public SingleRecipeManager(Building building, RecipeManagerFactory recipes) {
         super(building, recipes);
         selected = recipes.recipes.get(0);
         enhancer = new SingleVanillaEnhancer(this);
@@ -130,7 +128,7 @@ public class SingleRecipeManager extends RecipeManager {
 
         private float power, heat, efficiency;
 
-        public SingleVanillaEnhancer(RecipeManager recipeManager) {
+        public SingleVanillaEnhancer(AbstractRecipeManager recipeManager) {
             super(recipeManager);
         }
 

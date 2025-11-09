@@ -27,7 +27,6 @@ import static mindustry.Vars.state;
 public class CDMod extends Mod{
 
     public WidgetGroup galGroup = new WidgetGroup();
-    //注册事件
     public FiniteOreManager fom = new FiniteOreManager();
 
     public CDMod(){
@@ -43,18 +42,11 @@ public class CDMod extends Mod{
 
     @Override
     public void loadContent(){
-        Log.info("All is Alon Master's order");
+        Log.info("Cosmos insight benefits well-being");
         CDItems.load();
         CDBlocks.load();
-        CDUnitTYpe.load();
         Planets.tantros.generator = new GenPlanetGenerator();
         PlanetDialog.debugSelect = true;
-        Block test = new TestGalBlock("test"){{
-            requirements(Category.crafting,new ItemStack[]{});
-        }};
-        Block nm = new MultiCrafter("nm"){{
-            requirements(Category.crafting,new ItemStack[]{});
-        }};
     }
 
     private void initUI(){
