@@ -111,7 +111,7 @@ tasks.register('gameWin') {
         //"cmd ;exit".execute().waitForProcessOutput(System.out, System.err)
         "cmd /C del /Q  C:\\Users\\dell\\AppData\\Roaming\\Mindustry\\mods\\${project.archivesBaseName}Desktop.jar".execute().waitForProcessOutput(System.out, System.err)
         "cmd /C move /Y $buildDir\\libs\\${project.archivesBaseName}Desktop.jar C:\\Users\\dell\\AppData\\Roaming\\Mindustry\\mods".execute().waitForProcessOutput(System.out, System.err)
-        "cmd /C \"E:\\mindustry-windows-64-bit\\Mindustry.exe\"".execute().waitForProcessOutput(System.out, System.err)
+        "cmd /C \"java -jar \"E:\\mindustry-windows-64-bit\\jre\\desktop.jar\"\"".execute().waitForProcessOutput(System.out, System.err)
     }
 }
 
