@@ -43,6 +43,8 @@ public class CDBlocks {
 
     public static PowerTurret alert, shore;
 
+    public static VeinDetector veinDetector;
+
     public static void load() {
         finiteCopper = new FiniteOre(Items.copper);
         ashWall = new StaticWall("ash-wall");
@@ -233,6 +235,11 @@ public class CDBlocks {
                 ammoMultiplier = 1f;
                 pierceCap = 4;
             }};
+        }};
+
+        veinDetector = new VeinDetector("vein-detector"){{
+            size = 2;
+            requirements(Category.liquid, new ItemStack[]{});
         }};
     }
 

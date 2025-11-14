@@ -26,8 +26,9 @@ import static mindustry.Vars.state;
 
 public class CDMod extends Mod{
 
-    public WidgetGroup galGroup = new WidgetGroup();
-    public FiniteOreManager fom = new FiniteOreManager();
+    public static WidgetGroup galGroup = new WidgetGroup();
+    public static FiniteOreManager fom = new FiniteOreManager();
+    public static VeinManager vm = new VeinManager();
 
     public CDMod(){
         super();
@@ -45,6 +46,7 @@ public class CDMod extends Mod{
         Log.info("Cosmos insight benefits well-being");
         CDItems.load();
         CDBlocks.load();
+        VeinTypes.load();
         Planets.tantros.generator = new GenPlanetGenerator();
         PlanetDialog.debugSelect = true;
     }
