@@ -25,6 +25,9 @@ public class VeinManager {
     {
         veinChunk = new VeinChunk();
         Events.run(EventType.Trigger.draw, this::draw);
+        Events.on(EventType.StateChangeEvent.class, e->{
+            lazy.clear();
+        });
     }
 
     public VeinTile get(Tile tile, boolean silent) {

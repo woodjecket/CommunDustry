@@ -1,5 +1,6 @@
 package cd.world.block;
 
+import arc.math.Mathf;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.util.Log;
@@ -17,8 +18,8 @@ import mindustry.world.Block;
 import java.util.Arrays;
 
 public class VeinDrill extends Block {
-    public int radius = 50;
-    public int baseDrillTime = 3;
+    public int radius = 10;
+    public int baseDrillTime = 20;
     public boolean autoSwitch = true;
 
     public VeinDrill(String name) {
@@ -39,7 +40,7 @@ public class VeinDrill extends Block {
         @Override
         public void updateTile() {
             super.updateTile();
-            if (selected == null || indices.get(selected).allMatch(vt -> vt.exhausted(currentZ)) && autoSwitch)
+            if (selected == null || indices.get(selected).allMatch(vt -> vt.exhausted(currentZ, selected)) && autoSwitch)
                 refreshItem();
             if (drilling == null || drilling.exhausted()) refreshDrilling();
             updateDrilling();
@@ -60,13 +61,13 @@ public class VeinDrill extends Block {
                 drilling = null;
                 return;
             }
-            var veins = indices.get(selected).find(vt -> !vt.exhausted(currentZ)).veins;
+            var veins = indices.get(selected).find(vt -> !vt.exhausted(currentZ, selected)).veins;
             drilling = Structs.find(veins, v -> v.type == selected);
         }
 
         private void refreshItem() {
             for (var entry : indices) {
-                if (indices.get(entry.key).contains(vt -> !vt.exhausted(currentZ))) {
+                if (indices.get(entry.key).contains(vt -> !vt.exhausted(currentZ, entry.key))) {
                     selected = entry.key;
                     return;
                 }
@@ -90,7 +91,9 @@ public class VeinDrill extends Block {
             int tx = tileX(), ty = tileY();
             for (int i = tx - radius / 2; i < tx + radius / 2; i++) {
                 for (int j = ty - radius / 2; j < ty + radius / 2; j++) {
-                    tiles.addUnique(CDMod.vm.get(Vars.world.tile(i, j), false));
+                    if(Mathf.within(i,j,tx,ty,radius)) {
+                        tiles.addUnique(CDMod.vm.get(Vars.world.tile(i, j), true));
+                    }
                 }
             }
             tiles.remove((VeinTile) null);

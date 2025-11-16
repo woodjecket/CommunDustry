@@ -21,18 +21,15 @@ public class VeinTile {
             for (var ve : veins) {
                 Tmp.c1.set(ve.type.color).a(1 - ve.centerZ / -128f);
                 Draw.color(Tmp.c1);
-                Fill.rect(tile.drawx(), tile.drawy(), Vars.tilesize - 1, Vars.tilesize - 1);
+                Fill.rect(tile.worldx(), tile.worldy(), Vars.tilesize - 1, Vars.tilesize - 1);
             }
         }
 
     }
 
-    public boolean exhausted(int z) {
-        return Structs.contains(veins, v -> !exhausted(z, v));
-    }
-
-    private boolean exhausted(int z, VeinEntity vein) {
-        return Math.abs(z - vein.centerZ) < vein.type.rangeScale && !vein.exhausted();
+    public boolean exhausted(int z, VeinType vt) {
+        var vein = Structs.find(veins, v->v.type == vt);
+        return vein == null || Math.abs(z - vein.centerZ) > vein.type.rangeScale || vein.exhausted();
     }
 
     public boolean shouldWrite() {
