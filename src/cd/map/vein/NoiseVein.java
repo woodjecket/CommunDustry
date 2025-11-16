@@ -16,7 +16,7 @@ public class NoiseVein implements VeinGenerator{
         var tileA = Vars.world.tile(x,y);
         VeinEntity[] vein;
         var noise = Simplex.noise2d(114,1,1,1,x,y);
-        if(noise > 0.6){
+        if(noise > 0.06){
             vein = new VeinEntity[]{};
         }else {
         vein = new VeinEntity[]{new VeinEntity(){{

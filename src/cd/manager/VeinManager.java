@@ -27,8 +27,12 @@ public class VeinManager {
         Events.run(EventType.Trigger.draw, this::draw);
     }
 
-    public VeinTile get(Tile tile) {
-        return tile == null ? null: lazy.get(tile, ()->currentGenerator.get(tile.x, tile.y));
+    public VeinTile get(Tile tile, boolean silent) {
+        return tile == null ? null: lazy.get(tile, ()-> {
+            var got = currentGenerator.get(tile.x, tile.y);
+            got.detected = !silent;
+            return got;
+        });
     }
 
     private void draw(){

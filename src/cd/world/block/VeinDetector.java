@@ -22,7 +22,7 @@ public class VeinDetector extends Block {
                 warmup %= 1;
                 int sx = rand.nextInt(24) + tileX() -12;
                 int sy = rand.nextInt(24) + tileY() -12;
-                CDMod.vm.get(Vars.world.tile(sx,sy));
+                CDMod.vm.get(Vars.world.tile(sx,sy),false);
             }
         }
     }

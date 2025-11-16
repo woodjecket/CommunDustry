@@ -45,6 +45,8 @@ public class CDBlocks {
 
     public static VeinDetector veinDetector;
 
+    public static VeinDrill veinDrill;
+
     public static void load() {
         finiteCopper = new FiniteOre(Items.copper);
         ashWall = new StaticWall("ash-wall");
@@ -238,6 +240,11 @@ public class CDBlocks {
         }};
 
         veinDetector = new VeinDetector("vein-detector"){{
+            size = 2;
+            requirements(Category.liquid, new ItemStack[]{});
+        }};
+
+        veinDrill = new VeinDrill("vein-drill"){{
             size = 2;
             requirements(Category.liquid, new ItemStack[]{});
         }};
