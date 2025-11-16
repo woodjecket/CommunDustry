@@ -7,13 +7,13 @@ import mindustry.type.ItemStack;
 public class VeinEntity {
     public VeinType type;
     public int currentAbundance = 5;
-    public int centerZ = -30;
+    public int centerZ;
     private int seed;
     public boolean untouched;
 
     @Override
     public String toString() {
-        return type.toString() + currentAbundance + super.toString();
+        return type.toString() + "amount:" + currentAbundance + "z:"+centerZ;
     }
 
     public boolean exhausted() {

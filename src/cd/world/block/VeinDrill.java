@@ -17,8 +17,8 @@ import mindustry.world.Block;
 import java.util.Arrays;
 
 public class VeinDrill extends Block {
-    public int radius = 10;
-    public int baseDrillTime = 60;
+    public int radius = 50;
+    public int baseDrillTime = 3;
     public boolean autoSwitch = true;
 
     public VeinDrill(String name) {
@@ -32,7 +32,7 @@ public class VeinDrill extends Block {
         public ObjectMap<VeinType, Seq<VeinTile>> indices = new ObjectMap<>();
         public VeinType selected;
         public VeinEntity drilling;
-        public int currentZ = -15;
+        public int currentZ = -75;
 
         public float progress;
 
@@ -41,14 +41,14 @@ public class VeinDrill extends Block {
             super.updateTile();
             if (selected == null || indices.get(selected).allMatch(vt -> vt.exhausted(currentZ)) && autoSwitch)
                 refreshItem();
-            if(drilling == null || drilling.exhausted()) refreshDrilling();
+            if (drilling == null || drilling.exhausted()) refreshDrilling();
             updateDrilling();
         }
 
         private void updateDrilling() {
-            if(drilling == null) return;
+            if (drilling == null) return;
             progress += edelta() / baseDrillTime;
-            if(progress >= 1){
+            if (progress >= 1) {
                 progress %= 1;
                 drilling.consume();
                 offload(drilling.offload());
@@ -56,13 +56,12 @@ public class VeinDrill extends Block {
         }
 
         private void refreshDrilling() {
-            if(selected == null) {
+            if (selected == null) {
                 drilling = null;
                 return;
             }
-            var veins = indices.get(selected).find(vt->!vt.exhausted(currentZ)).veins;
-            Log.info(Arrays.toString(veins));
-            drilling = Structs.find(veins, v->v.type == selected);
+            var veins = indices.get(selected).find(vt -> !vt.exhausted(currentZ)).veins;
+            drilling = Structs.find(veins, v -> v.type == selected);
         }
 
         private void refreshItem() {
@@ -89,17 +88,17 @@ public class VeinDrill extends Block {
 
         public void loadTiles() {
             int tx = tileX(), ty = tileY();
-            Log.infoList(tx - radius / 2,tx + radius / 2,ty - radius / 2,ty + radius / 2);
-            for (int i = tx - radius / 2 ; i < tx + radius / 2; i++) {
-                for (int j = ty - radius / 2 ; j < ty + radius / 2; j++) {
-                    tiles.addUnique(CDMod.vm.get(Vars.world.tile(i,j), false));
+            for (int i = tx - radius / 2; i < tx + radius / 2; i++) {
+                for (int j = ty - radius / 2; j < ty + radius / 2; j++) {
+                    tiles.addUnique(CDMod.vm.get(Vars.world.tile(i, j), false));
                 }
             }
+            tiles.remove((VeinTile) null);
             indices.clear();
-            for (var vt: tiles){
-                for(var v: vt.veins){
+            for (var vt : tiles) {
+                for (var v : vt.veins) {
                     var s = indices.get(v.type, Seq::new);
-                    s.addUnique(vt);
+                    if (vt.veins.length > 0) s.addUnique(vt);
                 }
             }
         }

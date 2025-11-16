@@ -1,5 +1,6 @@
 package cd.map.vein;
 
+import arc.struct.Seq;
 import arc.util.Log;
 import arc.util.noise.Simplex;
 import cd.content.VeinTypes;
@@ -10,23 +11,28 @@ import mindustry.Vars;
 
 import java.util.Arrays;
 
-public class NoiseVein implements VeinGenerator{
+public class NoiseVein implements VeinGenerator {
+    public Seq<VeinType> generate = VeinType.all;
+
     @Override
     public VeinTile get(int x, int y) {
-        var tileA = Vars.world.tile(x,y);
-        VeinEntity[] vein;
-        var noise = Simplex.noise2d(114,1,1,1,x,y);
-        if(noise > 0.06){
-            vein = new VeinEntity[]{};
-        }else {
-        vein = new VeinEntity[]{new VeinEntity(){{
-            type = VeinTypes.pyrite;
-        }}};
+        var worldTile = Vars.world.tile(x, y);
+        var veins = new Seq<VeinEntity>();
+        for (var type : generate) {
+            float noise1 = Simplex.noise2d(type.id + 3900, 3, 2, 1, x, y);
+            float noise2 = Simplex.noise2d(type.id + 393900, 3, 2, 1, x, y);
+            float noise3 = Simplex.noise2d(type.id + 39393900, 3, 2, 1, x, y);
+            if (noise1 < type.threshold) {
+                var entity = new VeinEntity();
+                entity.type = type;
+                entity.currentAbundance = (int) (type.baseAbundance + (noise2 - 0.5) * type.abundanceScale);
+                entity.centerZ = (int) (type.baseZ + (noise3 - 0.5) * type.rangeScale);
+                veins.add(entity);
+            }
         }
-        Log.infoList(tileA, Arrays.toString(vein));
-        return new VeinTile(){{
-            tile = tileA;
-            veins = vein;
-        }};
+        var vtile = new VeinTile();
+        vtile.veins = veins.toArray(VeinEntity.class);
+        vtile.tile = worldTile;
+        return vtile;
     }
 }
