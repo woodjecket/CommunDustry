@@ -6,6 +6,8 @@ import mindustry.type.ItemStack;
 
 import java.util.Arrays;
 
+
+/** Denotes the flyweight of a kind of vein.*/
 public class VeinType {
     private static short idCount;
     public static Seq<VeinType> all = new Seq<>();
@@ -13,12 +15,15 @@ public class VeinType {
     public short id;
     public ItemStack[] items;
     public Color color;
-    public int baseAbundance = 5;
-    public int baseZ = -75;
 
     public float threshold = 0.16f;
-    public int rangeScale = 15;
-    public int abundanceScale = 3;
+    public int baseAmount = 5;
+    public int baseDepth = -75;
+    public int baseRange = 20;
+    public int amountScale = 3;
+    public int depthScale = 15;
+    public int rangeScale = 3;
+
 
     public VeinType() {
         id = idCount;
@@ -28,6 +33,6 @@ public class VeinType {
 
     @Override
     public String toString() {
-        return "VeinType:" + id + Arrays.toString(items);
+        return "{ VeinType: " + id + ",items: " + Arrays.toString(items) + "}";
     }
 }

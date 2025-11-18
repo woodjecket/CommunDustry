@@ -15,7 +15,6 @@ public class VeinDetector extends Block {
     }
     public class VeinDetectorBuild extends Building{
         public float warmup;
-        public Rand rand = new Rand();
         @Override
         public void updateTile() {
             super.updateTile();
@@ -26,7 +25,8 @@ public class VeinDetector extends Block {
                 for (int i = tx - radius / 2; i < tx + radius / 2; i++) {
                     for (int j = ty - radius / 2; j < ty + radius / 2; j++) {
                         if(Mathf.within(i,j,tx,ty,radius)){
-                            CDMod.vm.get(Vars.world.tile(i, j), false);
+                            var got = CDMod.vm.get(Vars.world.tile(i, j));
+                            if(got!= null)got.veins.each(ve->ve.detected = true);
                         }
                     }
                 }

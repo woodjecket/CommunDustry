@@ -15,6 +15,7 @@ public class CDItems {
             uranium, planckKit, cnt,
             //T5
             antiCryo, higgsKit;
+    public static Item stone;
     public static void load(){
         iron = new Item("iron", Color.gray);
         carbonSteel = new Item("carbon-steel",Color.gray);
@@ -33,5 +34,6 @@ public class CDItems {
         higgsKit = new Item("higgs-kit", Color.violet){{
             frames = 12;
         }};
+        stone = new Item("stone", Color.gray);
     }
 }
