@@ -1,15 +1,20 @@
 package cd.struct.vein;
 
 import arc.math.Mathf;
+import arc.util.Log;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 public class VeinEntity {
     public VeinType type;
     public int currentAbundance = 5;
     public int centerZ;
     private int seed;
-    public boolean untouched;
+    public boolean touched = false;
 
     @Override
     public String toString() {
@@ -21,7 +26,7 @@ public class VeinEntity {
     }
 
     public void consume() {
-        untouched = false;
+        touched = true;
         currentAbundance -= 1;
     }
 
@@ -43,5 +48,21 @@ public class VeinEntity {
             count += stack.amount;
         }
         return item;
+    }
+
+    public void write(DataOutput stream) throws IOException {
+        stream.writeShort(type.id);
+        stream.writeInt(currentAbundance);
+        stream.writeInt(centerZ);
+        stream.writeInt(seed);
+        stream.writeBoolean(touched);
+    }
+
+    public void read(DataInput stream) throws IOException {
+        type = VeinType.all.get(stream.readShort());
+        currentAbundance = stream.readInt();
+        centerZ = stream.readInt();
+        seed = stream.readInt();
+        touched = stream.readBoolean();
     }
 }
