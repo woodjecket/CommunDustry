@@ -8,6 +8,7 @@ import arc.util.Nullable;
 import arc.util.io.Reads;
 import cd.CDMod;
 import cd.struct.vein.VeinEntity;
+import cd.struct.vein.VeinSelector;
 import cd.struct.vein.VeinTile;
 import cd.struct.vein.VeinType;
 import mindustry.Vars;
@@ -26,16 +27,87 @@ public class VeinDrill extends Block {
     }
 
     public class VeinDrillBuild extends Building {
+        public VeinSelector selector = new RangeSelector();
         public float progress;
         public int depth = -75;
-        /**
-         * If null, just mine stones.
-         */
         public @Nullable VeinType selectedType;
         public VeinEntity drillEntity;
         public Seq<VeinTile> tiles = new Seq<>();
         public int ambientCount = 0;
         public ObjectMap<VeinType, Seq<VeinEntity>> available = new ObjectMap<>();
+
+        public class RangeSelector implements VeinSelector {
+
+            @Override
+            public void updateAvailable() {
+                available.each((vt, s)->s.clear());
+                tiles.forEach(vt -> {
+                    VeinEntity got;
+                    if ((got = vt.getEntity(depth)) != null) {
+                        if (!got.exhausted() && got.detected) {
+                            available.get(got.type, Seq::new).add(got);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void assignEntity() {
+                // 1st attempt: available
+                Log.info("1st attempt: @", available.getNull(selectedType));
+                drillEntity = available.getNull(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
+
+                // 2nd attempt: scan the tiles
+                if (drillEntity == null && ambientCount < tiles.size) {
+
+                    var vtile = tiles.get(ambientCount);
+                    ambientCount++;
+                    drillEntity = vtile.getEntity(depth);
+                    Log.info("2nd attempt: count:@, vtile:@, entity:@", ambientCount, vtile, drillEntity);
+                    if (drillEntity != null) {
+                        // Passive detection
+                        drillEntity.detected = true;
+                    }
+                }
+
+                // final: mine stones
+                if (drillEntity == null) {
+                    Log.info("final attempt: stone");
+                    drillEntity = VeinEntity.infiniteStone;
+                }
+            }
+        }
+
+        public class FootSelector implements VeinSelector {
+
+            @Override
+            public void updateAvailable() {
+                available.each((vt, s)->s.clear());
+                tiles.each(vt->{
+                    boolean[] linked = {false};
+                    VeinDrillBuild.this.tile.getLinkedTiles(t->linked[0] |= t==vt.tile);
+                    return linked[0];}, vt -> {
+                    for(var ve: vt.veins){
+                        if (!ve.exhausted()) {
+                            available.get(ve.type, Seq::new).add(ve);
+                            ve.detected = true;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void assignEntity() {
+                // 1st attempt: available
+                Log.info("1st attempt: @", available.getNull(selectedType));
+                drillEntity = available.getNull(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
+                // final: mine stones
+                if (drillEntity == null) {
+                    Log.info("final attempt: stone");
+                    drillEntity = VeinEntity.infiniteStone;
+                }
+            }
+        }
 
 
         @Override
@@ -46,7 +118,7 @@ public class VeinDrill extends Block {
         @Override
         public void updateTile() {
             super.updateTile();
-            updateAvailable();
+            selector.updateAvailable();
             if (autoSwitch && available.keys().hasNext) {
                 selectedType = available.keys().next();
                 available.keys().reset();
@@ -58,49 +130,12 @@ public class VeinDrill extends Block {
                 drillEntity = null;
             }
             if (drillEntity == null) {
-                assignEntity();
+                selector.assignEntity();
             }
 
             if (timer(timerDump, dumpTime / timeScale)) {
                 dump();
             }
-        }
-
-        private void assignEntity() {
-            // 1st attempt: available
-            Log.info("1st attempt: @", available.get(selectedType));
-            drillEntity = available.get(selectedType) != null ? available.get(selectedType).first() : null;
-
-            // 2nd attempt: scan the tiles
-            if (drillEntity == null && ambientCount < tiles.size) {
-
-                var vtile = tiles.get(ambientCount);
-                ambientCount++;
-                drillEntity = vtile.getEntity(depth);
-                Log.info("2nd attempt: count:@, vtile:@, entity:@", ambientCount, vtile, drillEntity);
-                if (drillEntity != null) {
-                    // Passive detection
-                    drillEntity.detected = true;
-                }
-            }
-
-            // final: mine stones
-            if (drillEntity == null) {
-                Log.info("final attempt: stone");
-                drillEntity = VeinEntity.infiniteStone;
-            }
-        }
-
-        private void updateAvailable() {
-            available.clear();
-            tiles.forEach(vt -> {
-                VeinEntity got;
-                if ((got = vt.getEntity(depth)) != null) {
-                    if (!got.exhausted() && got.detected) {
-                        available.get(got.type, Seq::new).add(got);
-                    }
-                }
-            });
         }
 
         @Override
@@ -119,7 +154,7 @@ public class VeinDrill extends Block {
             int tx = tileX(), ty = tileY();
             for (int i = tx - radius / 2; i < tx + radius / 2; i++) {
                 for (int j = ty - radius / 2; j < ty + radius / 2; j++) {
-                    if(Mathf.within(i,j,tx,ty,radius)) {
+                    if (Mathf.within(i, j, tx, ty, radius)) {
                         tiles.addUnique(CDMod.vm.get(Vars.world.tile(i, j)));
                     }
                 }
