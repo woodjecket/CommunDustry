@@ -1,5 +1,7 @@
 package cd.struct.vein;
 
+import arc.func.Boolf;
+import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.util.Log;
 import arc.util.Nullable;
@@ -18,6 +20,14 @@ public class VeinTile {
 
     public @Nullable VeinEntity getEntity(int depth) {
         return veins.find(ve -> Math.abs(ve.depth - depth) < ve.range);
+    }
+
+    public void getEntities(ObjectMap<VeinType, Seq<VeinEntity>> tmp, int depth, Boolf<VeinEntity> pred){
+        for(var ve: veins){
+            if(Math.abs(ve.depth - depth) < ve.range && pred.get(ve)){
+                tmp.get(ve.type, Seq::new).add(ve);
+            }
+        }
     }
 
     public boolean shouldWrite() {

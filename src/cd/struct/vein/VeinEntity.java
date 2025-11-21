@@ -21,6 +21,7 @@ public class VeinEntity {
             type = new VeinType() {{
                 color = new Color();
                 items = ItemStack.with(CDItems.stone, 1);
+                generator = (x, y) -> null;
             }};
         }
 

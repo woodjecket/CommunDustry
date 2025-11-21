@@ -40,21 +40,17 @@ public class VeinDrill extends Block {
 
             @Override
             public void updateAvailable() {
-                available.each((vt, s)->s.clear());
-                tiles.forEach(vt -> {
-                    VeinEntity got;
-                    if ((got = vt.getEntity(depth)) != null) {
-                        if (!got.exhausted() && got.detected) {
-                            available.get(got.type, Seq::new).add(got);
-                        }
-                    }
+                available.each((vt, s) -> s.clear());
+                tiles.forEach(vt -> vt.getEntities(available, depth, ve -> !ve.exhausted() && ve.detected));
+                available.each((vt, s) -> {
+                    if (s.isEmpty()) available.remove(vt);
                 });
             }
 
             @Override
             public void assignEntity() {
                 // 1st attempt: available
-                Log.info("1st attempt: @", available.getNull(selectedType));
+                Log.info("1st attempt: @", available);
                 drillEntity = available.getNull(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
 
                 // 2nd attempt: scan the tiles
@@ -67,6 +63,9 @@ public class VeinDrill extends Block {
                     if (drillEntity != null) {
                         // Passive detection
                         drillEntity.detected = true;
+                    }
+                    if (drillEntity != null && drillEntity.exhausted()) {
+                        drillEntity = null;
                     }
                 }
 
@@ -82,17 +81,21 @@ public class VeinDrill extends Block {
 
             @Override
             public void updateAvailable() {
-                available.each((vt, s)->s.clear());
-                tiles.each(vt->{
+                available.each((vt, s) -> s.clear());
+                tiles.each(vt -> {
                     boolean[] linked = {false};
-                    VeinDrillBuild.this.tile.getLinkedTiles(t->linked[0] |= t==vt.tile);
-                    return linked[0];}, vt -> {
-                    for(var ve: vt.veins){
+                    VeinDrillBuild.this.tile.getLinkedTiles(t -> linked[0] |= t == vt.tile);
+                    return linked[0];
+                }, vt -> {
+                    for (var ve : vt.veins) {
                         if (!ve.exhausted()) {
                             available.get(ve.type, Seq::new).add(ve);
                             ve.detected = true;
                         }
                     }
+                });
+                available.each((vt, s) -> {
+                    if (s.isEmpty()) available.remove(vt);
                 });
             }
 
@@ -119,7 +122,7 @@ public class VeinDrill extends Block {
         public void updateTile() {
             super.updateTile();
             selector.updateAvailable();
-            if (autoSwitch && available.keys().hasNext) {
+            if (autoSwitch && available.keys().hasNext()) {
                 selectedType = available.keys().next();
                 available.keys().reset();
             }
