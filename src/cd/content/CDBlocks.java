@@ -1,23 +1,32 @@
 package cd.content;
 
-import arc.graphics.*;
-import cd.struct.recipe.Recipe;
-import cd.world.block.*;
-import cd.world.block.environment.*;
-import mindustry.content.*;
+import arc.graphics.Color;
+import cd.world.block.MultiCrafter;
+import cd.world.block.MultiCrafterCore;
+import cd.world.block.VeinDetector;
+import cd.world.block.VeinDrill;
+import cd.world.block.environment.FiniteOre;
+import mindustry.content.Fx;
+import mindustry.content.Items;
 import mindustry.entities.bullet.LaserBulletType;
 import mindustry.entities.effect.MultiEffect;
-import mindustry.gen.*;
+import mindustry.gen.Sounds;
 import mindustry.graphics.Pal;
-import mindustry.type.*;
-import mindustry.world.*;
+import mindustry.type.Category;
+import mindustry.type.ItemStack;
+import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.distribution.Conveyor;
-import mindustry.world.blocks.environment.*;
+import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.Prop;
+import mindustry.world.blocks.environment.StaticTree;
+import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.power.Battery;
 import mindustry.world.blocks.power.SolarGenerator;
-import mindustry.world.blocks.production.*;
+import mindustry.world.blocks.production.Drill;
+import mindustry.world.blocks.production.Pump;
 import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.meta.BuildVisibility;
 
 public class CDBlocks {
     public static FiniteOre finiteCopper;
@@ -27,7 +36,7 @@ public class CDBlocks {
             graniteFloor, graniteWall, graniteBoulder,
             permafrostFloor, permafrostWall, vine;
 
-    public static CoreBlock industryCentrum;
+    public static CoreBlock industryCentrum, prismCore;
 
     public static SolarGenerator ev;
 
@@ -74,9 +83,16 @@ public class CDBlocks {
             instantDeconstruct = false;
         }};
 
-        industryCentrum = new CoreBlock("industry-centrum") {{
+        industryCentrum = new MultiCrafterCore("industry-centrum") {{
             size = 5;
-            requirements(Category.effect, new ItemStack[]{});
+            requirements(Category.effect,BuildVisibility.shown, new ItemStack[]{});
+            factory.recipes.add(CDRecipe.serpulo);
+        }};
+
+        prismCore = new MultiCrafterCore("prism-core") {{
+            size = 3;
+            requirements(Category.effect,BuildVisibility.shown, new ItemStack[]{});
+            factory.recipes.add(CDRecipe.serpulo);
         }};
 
         ev = new SolarGenerator("ev") {{
@@ -110,47 +126,19 @@ public class CDBlocks {
 
         smallFurnace = new MultiCrafter("small-furnace") {{
             size = 3;
-            factory.recipes.add(new Recipe.RecipeBuilder()
-                    .itemsIn(Items.sand, 2, Items.coal, 2)
-                    .powerIn(1f)
-                    .itemsOut(Items.silicon, 1)
-                    .build()
-            );
+            factory.recipes.add(CDRecipe.siliconSmelter);
             requirements(Category.crafting, new ItemStack[]{});
         }};
 
         smallArcFurnace = new MultiCrafter("small-arc-furnace") {{
             size = 3;
-            factory.recipes.add(
-                    new Recipe.RecipeBuilder()
-                            .itemsIn(Items.sand, 2, Items.graphite, 2)
-                            .powerIn(1f)
-                            .itemsOut(Items.silicon, 1)
-                            .build(),
-                    new Recipe.RecipeBuilder()
-                            .itemsIn(Items.sand, 2, Items.coal, 2)
-                            .powerIn(1f)
-                            .itemsOut(Items.silicon, 1)
-                            .build()
-            );
+            factory.recipes.add(CDRecipe.siliconSmelter);
             requirements(Category.crafting, new ItemStack[]{});
         }};
 
         smallPresser = new MultiCrafter("small-presser") {{
             size = 2;
-            factory.recipes.add(
-                    new Recipe.RecipeBuilder()
-                            .itemsIn(Items.coal,2)
-                            .powerIn(1f)
-                            .itemsOut(Items.graphite, 1)
-                            .parallel(2)
-                            .build(),
-                    new Recipe.RecipeBuilder()
-                            .itemsIn(Items.graphite, 2)
-                            .powerIn(1f)
-                            .itemsOut(Items.surgeAlloy,1)
-                            .build()
-            );
+            factory.recipes.add(CDRecipe.siliconSmelter);
             requirements(Category.crafting, new ItemStack[]{});
         }};
 

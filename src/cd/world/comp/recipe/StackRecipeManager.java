@@ -13,6 +13,7 @@ import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
 
+//TODO Unused by Commundustry
 public class StackRecipeManager extends AbstractRecipeManager {
     private Recipe extendRecipe;
     public final Seq<BaseStackTask> tasks = new Seq<>();

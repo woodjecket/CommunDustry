@@ -45,6 +45,7 @@ public class CDMod extends Mod{
     public void loadContent(){
         Log.info("Cosmos insight benefits well-being");
         CDItems.load();
+        CDRecipe.load();
         CDBlocks.load();
         VeinTypes.load();
         Planets.tantros.generator = new GenPlanetGenerator();

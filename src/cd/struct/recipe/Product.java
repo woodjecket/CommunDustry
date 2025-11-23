@@ -1,8 +1,6 @@
 package cd.struct.recipe;
 
 import arc.scene.Element;
-import arc.struct.Seq;
-import mindustry.ctype.Content;
 import mindustry.gen.Building;
 
 public class Product {

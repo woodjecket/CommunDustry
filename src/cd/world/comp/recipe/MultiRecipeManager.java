@@ -58,6 +58,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
     @Override
     public void buildConfigure(Table table) {
         table.table(Tex.buttonEdge1, outer -> {
+
             outer.pane(new Table(p -> {
                 for (var recipe : recipes.recipes) {
                     p.button(rb -> rb.add(recipe.equation()).grow(), Styles.togglet, () -> {
@@ -72,7 +73,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                         }
                     }).checked(rb -> selects.contains(recipe)).margin(10f).grow().row();
                 }
-            }));
+            })).growX().maxHeight(300f);
 
             outer.pane(new Table(p -> {
                 for (int i = 0; i < slots.length; i++) {

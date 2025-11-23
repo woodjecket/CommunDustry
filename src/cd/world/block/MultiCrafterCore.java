@@ -2,7 +2,6 @@ package cd.world.block;
 
 import arc.math.Mathf;
 import arc.scene.ui.layout.Table;
-import arc.struct.EnumSet;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
@@ -11,34 +10,33 @@ import cd.world.comp.IRecipeManager;
 import cd.world.comp.recipe.AbstractRecipeManager;
 import cd.world.comp.recipe.MultiRecipeManager;
 import cd.world.comp.recipe.RecipeManagerFactory;
+import mindustry.game.Team;
 import mindustry.gen.Building;
-import mindustry.gen.Sounds;
-import mindustry.type.Item;
 import mindustry.type.Liquid;
-import mindustry.world.Block;
+import mindustry.world.Tile;
 import mindustry.world.blocks.heat.HeatConsumer;
-import mindustry.world.meta.BlockFlag;
+import mindustry.world.blocks.storage.CoreBlock;
 
-public class MultiCrafter extends Block {
+/**
+ * Peculiar core crafter, but multi-selected
+ */
+public class MultiCrafterCore extends CoreBlock {
     public RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
 
-    public MultiCrafter(String name) {
+    public MultiCrafterCore(String name) {
         super(name);
         update = true;
         solid = true;
         hasItems = true;
-        ambientSound = Sounds.machine;
-        sync = true;
-        ambientSoundVolume = 0.03f;
-        flags = EnumSet.of(BlockFlag.factory);
         drawArrow = false;
         configurable = true;
         hasLiquids = true;
+        outputsLiquid = true;
         hasPower = true;
         liquidCapacity = 100f;
         //to let power generate
         outputsPower = consumesPower = true;
-        consumePowerDynamic((MultiCrafterBuild b) -> b.recipeManager.enhancer.powerIn());
+        consumePowerDynamic((MultiCrafterCoreBuild b) -> b.recipeManager.enhancer.powerIn());
         factory.registerConfig(this);
     }
 
@@ -49,18 +47,12 @@ public class MultiCrafter extends Block {
     }
 
     @Override
-    public void setBars() {
-        super.setBars();
-        // TODO how to make it?
+    public boolean canPlaceOn(Tile tile, Team team, int rotation) {
+        //For test purpose
+        return true;
     }
 
-    @Override
-    public void setStats() {
-        super.setStats();
-        factory.recipes.each(r->r.setStats(stats));
-    }
-
-    public class MultiCrafterBuild extends Building implements IHeat, HeatConsumer, IRecipeManager {
+    public class MultiCrafterCoreBuild extends CoreBuild implements IHeat, HeatConsumer, IRecipeManager {
         public AbstractRecipeManager recipeManager = factory.newManager(this);
         public float heat;
         public float[] sideHeat = new float[4];
@@ -81,6 +73,11 @@ public class MultiCrafter extends Block {
         }
 
         @Override
+        public boolean acceptLiquid(Building source, Liquid liquid) {
+            return recipeManager.enhancer.filterLiquids().contains(liquid);
+        }
+
+        @Override
         public void buildConfiguration(Table table) {
             recipeManager.buildConfigure(table);
         }
@@ -90,15 +87,6 @@ public class MultiCrafter extends Block {
             return recipeManager.getConfig();
         }
 
-        @Override
-        public boolean acceptItem(Building source, Item item) {
-            return recipeManager.enhancer.filterItems().contains(item) && items.get(item) < getMaximumAccepted(item);
-        }
-
-        @Override
-        public boolean acceptLiquid(Building source, Liquid liquid) {
-            return recipeManager.enhancer.filterLiquids().contains(liquid);
-        }
 
         @Override
         public float heat() {
@@ -145,3 +133,4 @@ public class MultiCrafter extends Block {
         }
     }
 }
+

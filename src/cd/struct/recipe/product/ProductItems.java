@@ -5,9 +5,9 @@ import arc.struct.Seq;
 import cd.struct.recipe.Product;
 import cd.struct.recipe.Recipe;
 import cd.ui.UIUtils;
-import mindustry.ctype.Content;
 import mindustry.gen.Building;
 import mindustry.type.ItemStack;
+import mindustry.world.blocks.storage.CoreBlock;
 
 public class ProductItems extends Product {
     public Seq<ItemStack> items;
@@ -38,7 +38,8 @@ public class ProductItems extends Product {
     @Override
     public boolean canOutput(Building building) {
         for(var item: items){
-            if(building.items.get(item.item) + item.amount > building.block.itemCapacity) return false;
+            var capacity = building instanceof CoreBlock.CoreBuild c ? c.storageCapacity : building.block.itemCapacity;
+            if(building.items.get(item.item) + item.amount > capacity) return false;
         }
         return true;
     }
