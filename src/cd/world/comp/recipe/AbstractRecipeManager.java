@@ -67,7 +67,7 @@ public abstract class AbstractRecipeManager {
             var recipeID = read.i();
             var progress = read.f();
             if (slots[index] != null) {
-                slots[index].pop();
+                slots[index].passivePop();
             }
             slots[index] = new RecipeSlot(Recipe.all.get(recipeID));
             slots[index].recipeEntity.progress = progress;
@@ -99,13 +99,13 @@ public abstract class AbstractRecipeManager {
                     recipeEntity.progress -= building.delta() * efficiency / recipeEntity.recipe.craftTime;
                 } else {
                     recipeEntity.runOnce();
-                    pop();
+                    passivePop();
                 }
 
             }
         }
 
-        public void pop() {
+        public void passivePop() {
             for (int i = 0; i < slots.length; i++) {
                 if (slots[i] == this) {
                     slots[i] = null;
@@ -114,11 +114,19 @@ public abstract class AbstractRecipeManager {
                 }
             }
         }
+
+        public void activePop() {
+            for (int i = 0; i < slots.length; i++) {
+                if (slots[i] == this) {
+                    recipeEntity.manager.building.configure(Float.valueOf(i));
+                }
+            }
+
+        }
     }
 
     public abstract class RecipeVanillaEnhancer {
         public AbstractRecipeManager recipeManager;
-
 
         public RecipeVanillaEnhancer(AbstractRecipeManager recipeManager) {
             this.recipeManager = recipeManager;

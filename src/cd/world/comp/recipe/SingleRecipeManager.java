@@ -102,6 +102,9 @@ public class SingleRecipeManager extends AbstractRecipeManager {
         if(object instanceof Integer i){
             chosen(Recipe.all.get(i));
         }
+        if(object instanceof Float f && slots[f.intValue()] != null){
+            slots[f.intValue()].passivePop();
+        }
     }
 
     private void chosen(Recipe recipe) {
@@ -133,6 +136,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
             block.config(Integer.class, (Building build, Integer s) -> {
                 if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
             });
+
         }
         public int getParallel() {
             return 1;

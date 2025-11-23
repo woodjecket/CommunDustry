@@ -19,6 +19,9 @@ public abstract class RecipeManagerFactory {
         block.config(IntSeq.class, (Building build, IntSeq s) -> {
             if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
         });
+        block.config(Float.class, (Building build, Float s) -> {
+            if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
+        });
     }
 
     public int getParallel() {

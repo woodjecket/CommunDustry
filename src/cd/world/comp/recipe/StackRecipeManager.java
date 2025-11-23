@@ -160,8 +160,9 @@ public class StackRecipeManager extends AbstractRecipeManager {
 
     @Override
     public void passiveConfigured(Object object) {
-        tasks.clear();
+
         if (object instanceof IntSeq seq) {
+            tasks.clear();
             for (int i = 0; i < seq.size; i += 3) {
                 var task = switch (seq.get(i)) {
                     case 0 -> new DoTimesTask(Recipe.all.get(seq.get(i + 1)), seq.get(i + 2));
@@ -171,8 +172,13 @@ public class StackRecipeManager extends AbstractRecipeManager {
                 };
                 tasks.add(task);
             }
+            rebuildFilter();
         }
-        rebuildFilter();
+
+        if(object instanceof Float f && slots[f.intValue()] != null){
+            slots[f.intValue()].passivePop();
+        }
+
     }
 
     public int getParallel() {

@@ -7,14 +7,12 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
 import cd.ui.TableBar;
-import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
-import mindustry.world.Block;
 
 public class MultiRecipeManager extends AbstractRecipeManager {
     private final Seq<Recipe> selects = new Seq<>();
@@ -25,9 +23,6 @@ public class MultiRecipeManager extends AbstractRecipeManager {
         rebuildFilter();
     }
 
-    public int getParallel() {
-        return 3;
-    }
 
     @Override
     protected void updateEnhancer() {
@@ -103,8 +98,8 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                             });
                         }
                         ));
-                        s.button(Icon.cancel,Styles.clearTogglei, ()-> {
-                            slots[finalI].pop();
+                        s.button(Icon.cancel,Styles.cleari, ()-> {
+                            slots[finalI].activePop();
                         }).width(20f).visible(()->slots[finalI] != null).grow();
                     }).grow().row();
                 }
@@ -142,13 +137,16 @@ public class MultiRecipeManager extends AbstractRecipeManager {
 
     @Override
     public void passiveConfigured(Object object) {
-        selects.clear();
         if (object instanceof IntSeq seq) {
+            selects.clear();
             for (int i : seq.items) {
                 selects.add(Recipe.all.get(i));
             }
+            rebuildFilter();
         }
-        rebuildFilter();
+        if(object instanceof Float f && slots[f.intValue()] != null){
+            slots[f.intValue()].passivePop();
+        }
     }
 
     private void activeConfigure() {
@@ -188,12 +186,6 @@ public class MultiRecipeManager extends AbstractRecipeManager {
         public AbstractRecipeManager newManager(Building build) {
             return new MultiRecipeManager(build, this) {
             };
-        }
-
-        public void registerConfig(Block block) {
-            block.config(IntSeq.class, (Building build, IntSeq s) -> {
-                if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
-            });
         }
 
         public int getParallel() {
