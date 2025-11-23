@@ -7,7 +7,7 @@ import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 
-public abstract class RecipeManagerAbstractFactory {
+public abstract class RecipeManagerFactory {
 
     public Seq<Recipe> recipes = new Seq<>();
 
@@ -19,5 +19,9 @@ public abstract class RecipeManagerAbstractFactory {
         block.config(IntSeq.class, (Building build, IntSeq s) -> {
             if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
         });
+    }
+
+    public int getParallel() {
+        return 1;
     }
 }

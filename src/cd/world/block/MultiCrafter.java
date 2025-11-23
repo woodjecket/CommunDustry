@@ -9,7 +9,8 @@ import cd.struct.recipe.Recipe;
 import cd.world.comp.IHeat;
 import cd.world.comp.IRecipeManager;
 import cd.world.comp.recipe.AbstractRecipeManager;
-import cd.world.comp.recipe.RecipeManagerAbstractFactory;
+import cd.world.comp.recipe.MultiRecipeManager;
+import cd.world.comp.recipe.RecipeManagerFactory;
 import cd.world.comp.recipe.StackRecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
@@ -20,9 +21,7 @@ import mindustry.world.blocks.heat.HeatConsumer;
 import mindustry.world.meta.BlockFlag;
 
 public class MultiCrafter extends Block {
-    public RecipeManagerAbstractFactory factory = new StackRecipeManager.StackRecipeManagerFactory();
-
-    public float heatCapacity = 10;
+    public RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
 
     public MultiCrafter(String name) {
         super(name);
@@ -38,6 +37,8 @@ public class MultiCrafter extends Block {
         hasLiquids = true;
         hasPower = true;
         liquidCapacity = 100f;
+        //to let power generate
+        outputsPower = consumesPower = true;
         consumePowerDynamic((MultiCrafterBuild b) -> b.recipeManager.enhancer.powerIn());
         factory.registerConfig(this);
     }

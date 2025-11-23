@@ -6,22 +6,25 @@ import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
+import cd.ui.TableBar;
+import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
+import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
+import mindustry.world.Block;
 
 public class MultiRecipeManager extends AbstractRecipeManager {
     private final Seq<Recipe> selects = new Seq<>();
 
-    public MultiRecipeManager(Building building, RecipeManagerAbstractFactory recipes) {
+    public MultiRecipeManager(Building building, RecipeManagerFactory recipes) {
         super(building, recipes);
         enhancer = new MultiVanillaEnhancer(this);
         rebuildFilter();
     }
 
-    @Override
     public int getParallel() {
         return 3;
     }
@@ -80,17 +83,30 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                 for (int i = 0; i < slots.length; i++) {
                     int finalI = i;
                     p.table(Tex.buttonEdge3, s -> {
-                        s.add("").width(100f).update(l -> {
-                            if (slots[finalI] == null) {
-                                l.setText("empty");
-                            } else {
-                                l.setText(slots[finalI].recipeEntity.toString());
+                        s.defaults().growX().height(30f).width(200f).pad(4);
+                        s.add(new TableBar(() -> {
+                            if (slots[finalI] != null) {
+                                return slots[finalI].recipeEntity.progress;
                             }
-                        }).self(l -> {
-                            l.get().setWrap(true);
-                            l.get().setFontScale(0.7f);
-                        });
-                    }).row();
+                            return 0f;
+                        }, () -> {
+                            if (slots[finalI] == null) return null;
+                            return slots[finalI].recipeEntity.getColor();
+                        })).get().addChild(new Table(t -> {
+                            final RecipeSlot[] ago = {null};
+                            t.update(() -> {
+                                if (slots[finalI] != ago[0] && slots[finalI] != null) {
+                                    ago[0] = slots[finalI];
+                                    t.clear();
+                                    t.add(slots[finalI].recipeEntity.recipe.equation()).grow();
+                                }
+                            });
+                        }
+                        ));
+                        s.button(Icon.cancel,Styles.clearTogglei, ()-> {
+                            slots[finalI].pop();
+                        }).width(20f).visible(()->slots[finalI] != null).grow();
+                    }).grow().row();
                 }
             }));
 
@@ -127,8 +143,8 @@ public class MultiRecipeManager extends AbstractRecipeManager {
     @Override
     public void passiveConfigured(Object object) {
         selects.clear();
-        if(object instanceof IntSeq seq){
-            for (int i: seq.items){
+        if (object instanceof IntSeq seq) {
+            for (int i : seq.items) {
                 selects.add(Recipe.all.get(i));
             }
         }
@@ -165,6 +181,24 @@ public class MultiRecipeManager extends AbstractRecipeManager {
 
         enhance.dumpItems.removeAll(enhance.filterItems);
         enhance.dumpLiquids.removeAll(enhance.filterLiquids);
+    }
+
+    public static class MultiRecipeManagerFactory extends RecipeManagerFactory {
+
+        public AbstractRecipeManager newManager(Building build) {
+            return new MultiRecipeManager(build, this) {
+            };
+        }
+
+        public void registerConfig(Block block) {
+            block.config(IntSeq.class, (Building build, IntSeq s) -> {
+                if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
+            });
+        }
+
+        public int getParallel() {
+            return 3;
+        }
     }
 
     public class MultiVanillaEnhancer extends RecipeVanillaEnhancer {

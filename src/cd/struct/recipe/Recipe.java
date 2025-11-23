@@ -3,6 +3,7 @@ package cd.struct.recipe;
 import arc.scene.Element;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
+import arc.util.Align;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.product.ProductItems;
 import cd.struct.recipe.product.ProductLiquids;
@@ -13,7 +14,6 @@ import cd.struct.recipe.reactant.ReactantPower;
 import cd.world.comp.recipe.AbstractRecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
-import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
@@ -61,11 +61,12 @@ public class Recipe{
     }
 
     public Element equation() {
-        var equation = new Table(Tex.buttonEdge2);
+        var equation = new Table();
         reactants.each(r -> equation.add(r.icon()));
         equation.image(Icon.right).size(28f);
         products.each(p -> equation.add(p.icon()));
         equation.getCells().each(c->c.margin(15f));
+        equation.align(Align.center);
         return equation;
     }
 

@@ -5,18 +5,20 @@ import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.struct.recipe.Recipe;
+import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Tex;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
+import mindustry.world.Block;
 
 public class SingleRecipeManager extends AbstractRecipeManager {
     private static final Seq<Item> emptyItem = new Seq<>();
     private static final Seq<Liquid> emptyLiquid = new Seq<>();
     private Recipe selected;
 
-    public SingleRecipeManager(Building building, RecipeManagerAbstractFactory recipes) {
+    public SingleRecipeManager(Building building, RecipeManagerFactory recipes) {
         super(building, recipes);
         selected = recipes.recipes.get(0);
         enhancer = new SingleVanillaEnhancer(this);
@@ -118,6 +120,23 @@ public class SingleRecipeManager extends AbstractRecipeManager {
         enhance.dumpItems = emptyItem;
         enhance.filterLiquids = emptyLiquid;
         enhance.dumpLiquids = emptyLiquid;
+    }
+
+    public static class SingleRecipeManagerFactory extends RecipeManagerFactory {
+
+        public AbstractRecipeManager newManager(Building build) {
+            return new SingleRecipeManager(build, this) {
+            };
+        }
+
+        public void registerConfig(Block block) {
+            block.config(Integer.class, (Building build, Integer s) -> {
+                if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
+            });
+        }
+        public int getParallel() {
+            return 1;
+        }
     }
 
     public class SingleVanillaEnhancer extends RecipeVanillaEnhancer {

@@ -14,21 +14,17 @@ import mindustry.type.Liquid;
 
 public abstract class AbstractRecipeManager {
     public final Building building;
-    public final RecipeManagerAbstractFactory recipes;
+    public final RecipeManagerFactory recipes;
     public transient RecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
     protected transient final ObjectIntMap<Recipe> count;
     protected transient final int[] items = new int[Vars.content.items().size];
 
-    public AbstractRecipeManager(Building building, RecipeManagerAbstractFactory recipes) {
+    public AbstractRecipeManager(Building building, RecipeManagerFactory recipes) {
         this.recipes = recipes;
         this.building = building;
-        slots = new RecipeSlot[getParallel()];
+        slots = new RecipeSlot[this.recipes.getParallel()];
         count = new ObjectIntMap<>(recipes.recipes.size);
-    }
-
-    public int getParallel() {
-        return 1;
     }
 
     public void update() {
@@ -93,14 +89,19 @@ public abstract class AbstractRecipeManager {
         }
 
         public void update() {
-            if (recipeEntity.noOutput()) return;
             var efficiency = recipeEntity.totalEfficiency() * recipeEntity.totalEfficiencyMultiplier();
-            recipeEntity.runWhile(efficiency);
+            if (!recipeEntity.noOutput()) {
+                recipeEntity.runWhile(efficiency);
+            }
             recipeEntity.progress += building.delta() * efficiency / recipeEntity.recipe.craftTime;
-
             if (recipeEntity.progress >= 1f) {
-                recipeEntity.runOnce();
-                pop();
+                if (recipeEntity.noOutput()) {
+                    recipeEntity.progress -= building.delta() * efficiency / recipeEntity.recipe.craftTime;
+                } else {
+                    recipeEntity.runOnce();
+                    pop();
+                }
+
             }
         }
 

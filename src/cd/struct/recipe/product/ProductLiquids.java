@@ -39,4 +39,12 @@ public class ProductLiquids extends Product {
         }
         return icons;
     }
+
+    @Override
+    public boolean canOutput(Building building) {
+        for(var liquid: liquids){
+            if(building.liquids.get(liquid.liquid) + liquid.amount > building.block.liquidCapacity) return false;
+        }
+        return true;
+    }
 }

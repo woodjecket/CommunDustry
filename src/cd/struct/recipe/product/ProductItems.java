@@ -35,4 +35,11 @@ public class ProductItems extends Product {
         return icons;
     }
 
+    @Override
+    public boolean canOutput(Building building) {
+        for(var item: items){
+            if(building.items.get(item.item) + item.amount > building.block.itemCapacity) return false;
+        }
+        return true;
+    }
 }

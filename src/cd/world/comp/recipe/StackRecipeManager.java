@@ -4,6 +4,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.IntSeq;
 import arc.struct.Seq;
 import cd.struct.recipe.Recipe;
+import cd.ui.TableBar;
 import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
 import mindustry.gen.Tex;
@@ -16,7 +17,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
     private Recipe extendRecipe;
     public final Seq<BaseStackTask> tasks = new Seq<>();
 
-    public StackRecipeManager(Building building, RecipeManagerAbstractFactory recipes) {
+    public StackRecipeManager(Building building, RecipeManagerFactory recipes) {
         super(building, recipes);
         enhancer = new StackVanillaEnhancer(this);
     }
@@ -59,14 +60,13 @@ public class StackRecipeManager extends AbstractRecipeManager {
             }));
 
             Seq<BaseStackTask> oldTasks = new Seq<>();
-            Table t = new Table(Tex.buttonEdge3);
-
-            t.update(() -> {
+            Table ta = new Table(Tex.buttonEdge3);
+            ta.update(() -> {
                 if (!tasks.equals(oldTasks)) {
-                    t.clear();
+                    ta.clear();
                     oldTasks.set(tasks);
                     for (var task : tasks) {
-                        t.table(Tex.buttonEdge3, i -> i.add(task.toString()).width(140f).
+                        ta.table(Tex.buttonEdge3, i -> i.add(task.toString()).width(140f).
                                 self(l -> {
                                     l.get().setWrap(true);
                                     l.get().setFontScale(0.7f);
@@ -74,24 +74,32 @@ public class StackRecipeManager extends AbstractRecipeManager {
                     }
                 }
             });
-            outer.pane(t).grow().width(150f);
+            outer.pane(ta).grow().width(150f);
 
 
             outer.pane(new Table(p -> {
                 for (int i = 0; i < slots.length; i++) {
                     int finalI = i;
                     p.table(Tex.buttonEdge3, s -> {
-                        s.add("").width(100f).update(l -> {
-                            if (slots[finalI] == null) {
-                                l.setText("empty");
-                            } else {
-                                l.setText(slots[finalI].recipeEntity.toString());
+                        s.defaults().growX().height(30f).width(200f).pad(4);
+                        s.add(new TableBar(() -> {
+                            if (slots[finalI] != null) {
+                                return slots[finalI].recipeEntity.progress;
                             }
-                        }).self(l -> {
-                            l.get().setWrap(true);
-                            l.get().setFontScale(0.7f);
-                        });
-                    }).row();
+                            return 0f;
+                        }, () -> {
+                            if (slots[finalI] == null) return null;
+                            return slots[finalI].recipeEntity.getColor();
+                        })).get().addChild(new Table(t -> {
+                            t.update(() -> {
+                                t.clear();
+                                if (slots[finalI] != null) {
+                                    t.add(slots[finalI].recipeEntity.recipe.equation()).grow();
+                                }
+                            });
+                        }
+                        ));
+                    }).grow().row();
                 }
             }));
 
@@ -167,7 +175,6 @@ public class StackRecipeManager extends AbstractRecipeManager {
         rebuildFilter();
     }
 
-    @Override
     public int getParallel() {
         return 5;
     }
@@ -189,7 +196,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
         enhance.efficiency = nextEfficiency;
     }
 
-    public static class StackRecipeManagerFactory extends RecipeManagerAbstractFactory {
+    public static class StackRecipeManagerFactory extends RecipeManagerFactory {
 
         public AbstractRecipeManager newManager(Building build) {
             return new StackRecipeManager(build, this) {
@@ -200,6 +207,9 @@ public class StackRecipeManager extends AbstractRecipeManager {
             block.config(IntSeq.class, (Building build, IntSeq s) -> {
                 if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
             });
+        }
+        public int getParallel() {
+            return 5;
         }
     }
 
