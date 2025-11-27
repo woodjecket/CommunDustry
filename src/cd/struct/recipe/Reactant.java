@@ -1,11 +1,10 @@
 package cd.struct.recipe;
 
 import arc.scene.Element;
-import arc.struct.Seq;
-import mindustry.ctype.Content;
 import mindustry.gen.Building;
 
 public class Reactant {
+    /** Set up the Recipe, rather than Consume#init() to set up a block */
     public void init(Recipe recipe){
 
     }

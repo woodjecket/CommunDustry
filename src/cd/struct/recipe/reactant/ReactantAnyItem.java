@@ -8,6 +8,7 @@ import mindustry.Vars;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
 
+/** Remove all items in a building as Incinerator.*/
 public class ReactantAnyItem extends Reactant {
     @Override
     public void reactOnce(Building building) {

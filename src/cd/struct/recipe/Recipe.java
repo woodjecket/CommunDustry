@@ -42,8 +42,10 @@ public class Recipe{
     public int craftTime = 60;
     public int maxParallel = 1;
 
+    /** The potential input ItemStacks is used in recipe assigning*/
     public final Seq<ItemStack> potentialInputItems = new Seq<>(), potentialOutputItems = new Seq<>();
     public final Seq<LiquidStack> potentialInputLiquids = new Seq<>(), potentialOutputLiquids = new Seq<>();
+    /** The potential input things is used to set up filterItems and filterLiquid.*/
     public final Seq<Item> potentialInputItem = new Seq<>(), potentialOutputItem = new Seq<>();
     public final Seq<Liquid> potentialInputLiquid = new Seq<>(), potentialOutputLiquid = new Seq<>();
 
@@ -92,6 +94,7 @@ public class Recipe{
         private Seq<Reactant> reactants = new Seq<>();
         private int craftTime = 60;
         private int maxParallel = 1;
+        //TODO Only builder method exists, unused in code
         private Effect craftEffect, updateEffect;
         private float updateEffectChance, updateEffectSpread;
         private int[] liquidOutputDirections;

@@ -9,6 +9,8 @@ import mindustry.gen.Building;
 import mindustry.gen.Icon;
 import mindustry.world.blocks.heat.HeatConsumer;
 
+/** Broken now
+ *  Unused by Commundustry*/
 public class ReactantHeat extends Reactant {
     public float heat;
 

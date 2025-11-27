@@ -9,7 +9,6 @@ import cd.world.comp.IHeat;
 import cd.world.comp.IRecipeManager;
 import cd.world.comp.recipe.AbstractRecipeManager;
 import cd.world.comp.recipe.MultiRecipeManager;
-import cd.world.comp.recipe.RecipeManagerFactory;
 import mindustry.game.Team;
 import mindustry.gen.Building;
 import mindustry.type.Liquid;
@@ -21,7 +20,7 @@ import mindustry.world.blocks.storage.CoreBlock;
  * Peculiar core crafter, but multi-selected
  */
 public class MultiCrafterCore extends CoreBlock {
-    public RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
+    public AbstractRecipeManager.RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
 
     public MultiCrafterCore(String name) {
         super(name);

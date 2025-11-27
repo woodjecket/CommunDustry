@@ -10,7 +10,6 @@ import cd.world.comp.IHeat;
 import cd.world.comp.IRecipeManager;
 import cd.world.comp.recipe.AbstractRecipeManager;
 import cd.world.comp.recipe.MultiRecipeManager;
-import cd.world.comp.recipe.RecipeManagerFactory;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
 import mindustry.type.Item;
@@ -20,7 +19,7 @@ import mindustry.world.blocks.heat.HeatConsumer;
 import mindustry.world.meta.BlockFlag;
 
 public class MultiCrafter extends Block {
-    public RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
+    public AbstractRecipeManager.RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
 
     public MultiCrafter(String name) {
         super(name);
