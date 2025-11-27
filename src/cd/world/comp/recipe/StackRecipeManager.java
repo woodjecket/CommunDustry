@@ -18,7 +18,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
     private Recipe extendRecipe;
     public final Seq<BaseStackTask> tasks = new Seq<>();
 
-    public StackRecipeManager(Building building, RecipeManagerFactory recipes) {
+    public StackRecipeManager(Building building, AbstractRecipeManagerFactory recipes) {
         super(building, recipes);
         enhancer = new StackVanillaEnhancer(this);
     }
@@ -203,7 +203,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
         enhance.efficiency = nextEfficiency;
     }
 
-    public static class StackRecipeManagerFactory extends RecipeManagerFactory {
+    public static class StackRecipeManagerFactory extends AbstractRecipeManagerFactory {
 
         public AbstractRecipeManager newManager(Building build) {
             return new StackRecipeManager(build, this) {
@@ -220,7 +220,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
         }
     }
 
-    public class StackVanillaEnhancer extends RecipeVanillaEnhancer {
+    public class StackVanillaEnhancer extends AbstractRecipeVanillaEnhancer {
 
         private final Seq<Item> filterItems = new Seq<>(), dumpItems = new Seq<>();
 

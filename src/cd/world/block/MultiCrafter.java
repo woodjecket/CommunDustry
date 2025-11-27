@@ -19,7 +19,7 @@ import mindustry.world.blocks.heat.HeatConsumer;
 import mindustry.world.meta.BlockFlag;
 
 public class MultiCrafter extends Block {
-    public AbstractRecipeManager.RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
+    public AbstractRecipeManager.AbstractRecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
 
     public MultiCrafter(String name) {
         super(name);

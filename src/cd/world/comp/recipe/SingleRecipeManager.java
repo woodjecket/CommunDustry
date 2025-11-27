@@ -18,7 +18,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
     private static final Seq<Liquid> emptyLiquid = new Seq<>();
     private Recipe selected;
 
-    public SingleRecipeManager(Building building, RecipeManagerFactory recipes) {
+    public SingleRecipeManager(Building building, AbstractRecipeManagerFactory recipes) {
         super(building, recipes);
         selected = recipes.recipes.get(0);
         enhancer = new SingleVanillaEnhancer(this);
@@ -125,7 +125,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
         enhance.dumpLiquids = emptyLiquid;
     }
 
-    public static class SingleRecipeManagerFactory extends RecipeManagerFactory {
+    public static class SingleRecipeManagerFactory extends AbstractRecipeManagerFactory {
 
         public AbstractRecipeManager newManager(Building build) {
             return new SingleRecipeManager(build, this) {
@@ -143,7 +143,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
         }
     }
 
-    public class SingleVanillaEnhancer extends RecipeVanillaEnhancer {
+    public class SingleVanillaEnhancer extends AbstractRecipeVanillaEnhancer {
 
         private Seq<Item> filterItems = new Seq<>(), dumpItems = new Seq<>();
 

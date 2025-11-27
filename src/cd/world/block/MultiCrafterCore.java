@@ -20,7 +20,7 @@ import mindustry.world.blocks.storage.CoreBlock;
  * Peculiar core crafter, but multi-selected
  */
 public class MultiCrafterCore extends CoreBlock {
-    public AbstractRecipeManager.RecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
+    public AbstractRecipeManager.AbstractRecipeManagerFactory factory = new MultiRecipeManager.MultiRecipeManagerFactory();
 
     public MultiCrafterCore(String name) {
         super(name);

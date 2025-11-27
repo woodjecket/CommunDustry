@@ -17,13 +17,13 @@ import mindustry.world.Block;
 
 public abstract class AbstractRecipeManager {
     public final Building building;
-    public final RecipeManagerFactory recipes;
-    public transient RecipeVanillaEnhancer enhancer;
+    public final AbstractRecipeManagerFactory recipes;
+    public transient AbstractRecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
     protected transient final ObjectIntMap<Recipe> count;
     protected transient final int[] items = new int[Vars.content.items().size];
 
-    public AbstractRecipeManager(Building building, RecipeManagerFactory recipes) {
+    public AbstractRecipeManager(Building building, AbstractRecipeManagerFactory recipes) {
         this.recipes = recipes;
         this.building = building;
         slots = new RecipeSlot[this.recipes.getParallel()];
@@ -128,7 +128,7 @@ public abstract class AbstractRecipeManager {
         }
     }
 
-    public abstract static class RecipeManagerFactory {
+    public abstract static class AbstractRecipeManagerFactory {
 
         public Seq<Recipe> recipes = new Seq<>();
 
@@ -150,10 +150,10 @@ public abstract class AbstractRecipeManager {
         }
     }
 
-    public abstract class RecipeVanillaEnhancer {
+    public abstract class AbstractRecipeVanillaEnhancer {
         public AbstractRecipeManager recipeManager;
 
-        public RecipeVanillaEnhancer(AbstractRecipeManager recipeManager) {
+        public AbstractRecipeVanillaEnhancer(AbstractRecipeManager recipeManager) {
             this.recipeManager = recipeManager;
         }
 

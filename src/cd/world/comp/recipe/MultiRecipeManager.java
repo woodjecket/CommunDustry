@@ -17,7 +17,7 @@ import mindustry.ui.Styles;
 public class MultiRecipeManager extends AbstractRecipeManager {
     private final Seq<Recipe> selects = new Seq<>();
 
-    public MultiRecipeManager(Building building, RecipeManagerFactory recipes) {
+    public MultiRecipeManager(Building building, AbstractRecipeManagerFactory recipes) {
         super(building, recipes);
         enhancer = new MultiVanillaEnhancer(this);
         rebuildFilter();
@@ -182,7 +182,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
         enhance.dumpLiquids.removeAll(enhance.filterLiquids);
     }
 
-    public static class MultiRecipeManagerFactory extends RecipeManagerFactory {
+    public static class MultiRecipeManagerFactory extends AbstractRecipeManagerFactory {
 
         public AbstractRecipeManager newManager(Building build) {
             return new MultiRecipeManager(build, this) {
@@ -194,7 +194,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
         }
     }
 
-    public class MultiVanillaEnhancer extends RecipeVanillaEnhancer {
+    public class MultiVanillaEnhancer extends AbstractRecipeVanillaEnhancer {
 
         private final Seq<Item> filterItems = new Seq<>(), dumpItems = new Seq<>();
 
