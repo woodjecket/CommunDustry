@@ -57,7 +57,7 @@ public abstract class AbstractRecipeManager {
         write.i(length);
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] != null) {
-                write.b(i);
+                write.s(i);
                 write.i(slots[i].recipeEntity.recipe.id);
                 write.f(slots[i].recipeEntity.progress);
             }
@@ -67,7 +67,7 @@ public abstract class AbstractRecipeManager {
     public void read(Reads read) {
         var length = read.i();
         for (int i = 0; i < length; i++) {
-            var index = read.b();
+            var index = read.s();
             var recipeID = read.i();
             var progress = read.f();
             if (slots[index] != null) {
