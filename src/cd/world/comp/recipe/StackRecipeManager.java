@@ -3,6 +3,7 @@ package cd.world.comp.recipe;
 import arc.scene.ui.layout.Table;
 import arc.struct.IntSeq;
 import arc.struct.Seq;
+import cd.CDMod;
 import cd.struct.recipe.Recipe;
 import cd.ui.TableBar;
 import cd.world.comp.IRecipeManager;
@@ -166,9 +167,9 @@ public class StackRecipeManager extends AbstractRecipeManager {
             tasks.clear();
             for (int i = 0; i < seq.size; i += 3) {
                 var task = switch (seq.get(i)) {
-                    case 0 -> new DoTimesTask(Recipe.all.get(seq.get(i + 1)), seq.get(i + 2));
-                    case 1 -> new ReachAmountTask(Recipe.all.get(seq.get(i + 1)), building, seq.get(i + 2));
-                    case 2 -> new LoopTask(Recipe.all.get(seq.get(i + 1)));
+                    case 0 -> new DoTimesTask(CDMod.xcontent.recipes().get(seq.get(i + 1)), seq.get(i + 2));
+                    case 1 -> new ReachAmountTask(CDMod.xcontent.recipes().get(seq.get(i + 1)), building, seq.get(i + 2));
+                    case 2 -> new LoopTask(CDMod.xcontent.recipes().get(seq.get(i + 1)));
                     default -> throw new IllegalArgumentException();
                 };
                 tasks.add(task);

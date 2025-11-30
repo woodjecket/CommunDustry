@@ -4,6 +4,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import cd.CDMod;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
@@ -88,7 +89,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
     public void read(Reads read) {
         super.read(read);
         var id = read.i();
-        selected = id == -1 ? null : Recipe.all.get(id);
+        selected = id == -1 ? null : CDMod.xcontent.recipes().get(id);
         if(!recipes.recipes.contains(selected)) selected = null;
     }
 
@@ -100,7 +101,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
     @Override
     public void passiveConfigured(Object object) {
         if(object instanceof Integer i){
-            chosen(Recipe.all.get(i));
+            chosen(CDMod.xcontent.recipes().get(i));
         }
         if(object instanceof Float f && slots[f.intValue()] != null){
             slots[f.intValue()].passivePop();

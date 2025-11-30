@@ -13,6 +13,7 @@ import mindustry.world.blocks.storage.CoreBlock;
 
 public class ProductChanceItems extends Product {
     //TODO have no idea about how it can be synced. But since it is average, nobody would notice
+    //TODO The items keeps floating
     public Rand rand = new Rand();
     public Seq<ItemStack> results;
 

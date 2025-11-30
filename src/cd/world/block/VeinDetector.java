@@ -1,7 +1,6 @@
 package cd.world.block;
 
 import arc.math.Mathf;
-import arc.math.Rand;
 import cd.CDMod;
 import mindustry.Vars;
 import mindustry.gen.Building;
@@ -14,7 +13,7 @@ public class VeinDetector extends Block {
         update = true;
     }
     public class VeinDetectorBuild extends Building{
-        public float warmup;
+        public float warmup = 1f;
         @Override
         public void updateTile() {
             super.updateTile();

@@ -6,6 +6,7 @@ import arc.scene.event.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
 import cd.content.*;
+import cd.ctype.ExtendContentLoader;
 import cd.manager.*;
 import cd.map.planets.*;
 import cd.ui.*;
@@ -27,6 +28,7 @@ import static mindustry.Vars.state;
 public class CDMod extends Mod{
 
     public static WidgetGroup galGroup = new WidgetGroup();
+    public static ExtendContentLoader xcontent = new ExtendContentLoader();
     public static FiniteOreManager fom = new FiniteOreManager();
     public static VeinManager vm = new VeinManager();
 
@@ -44,10 +46,7 @@ public class CDMod extends Mod{
     @Override
     public void loadContent(){
         Log.info("Cosmos insight benefits well-being");
-        CDItems.load();
-        CDRecipe.load();
-        CDBlocks.load();
-        VeinTypes.load();
+        xcontent.createContent();
         Planets.tantros.generator = new GenPlanetGenerator();
         PlanetDialog.debugSelect = true;
     }

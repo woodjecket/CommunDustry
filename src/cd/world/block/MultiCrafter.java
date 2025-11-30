@@ -5,7 +5,6 @@ import arc.scene.ui.layout.Table;
 import arc.struct.EnumSet;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import cd.struct.recipe.Recipe;
 import cd.world.comp.IHeat;
 import cd.world.comp.IRecipeManager;
 import cd.world.comp.recipe.AbstractRecipeManager;
@@ -39,12 +38,6 @@ public class MultiCrafter extends Block {
         outputsPower = consumesPower = true;
         consumePowerDynamic((MultiCrafterBuild b) -> b.recipeManager.enhancer.powerIn());
         factory.registerConfig(this);
-    }
-
-    @Override
-    public void init() {
-        super.init();
-        factory.recipes.each(Recipe::init);
     }
 
     @Override

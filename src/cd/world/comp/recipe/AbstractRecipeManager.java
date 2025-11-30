@@ -6,6 +6,7 @@ import arc.struct.ObjectIntMap;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import cd.CDMod;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.IRecipeManager;
@@ -72,7 +73,7 @@ public abstract class AbstractRecipeManager {
             if (slots[index] != null) {
                 slots[index].passivePop();
             }
-            slots[index] = new RecipeSlot(Recipe.all.get(recipeID));
+            slots[index] = new RecipeSlot(CDMod.xcontent.recipes().get(recipeID));
             slots[index].recipeEntity.progress = progress;
         }
     }

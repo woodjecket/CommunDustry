@@ -6,6 +6,7 @@ import cd.world.block.MultiCrafterCore;
 import cd.world.block.VeinDetector;
 import cd.world.block.VeinDrill;
 import cd.world.block.environment.FiniteOre;
+import cd.world.comp.recipe.MultiRecipeManager;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.entities.bullet.LaserBulletType;
@@ -132,6 +133,13 @@ public class CDBlocks {
 
         smallArcFurnace = new MultiCrafter("small-arc-furnace") {{
             size = 3;
+            itemCapacity = 30000;
+            factory = new MultiRecipeManager.MultiRecipeManagerFactory(){
+                @Override
+                public int getParallel() {
+                    return 258;
+                }
+            };
             factory.recipes.add(CDRecipe.siliconSmelter);
             requirements(Category.crafting, new ItemStack[]{});
         }};

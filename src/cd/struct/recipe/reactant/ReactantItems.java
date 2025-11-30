@@ -8,7 +8,6 @@ import cd.ui.UIUtils;
 import mindustry.ctype.Content;
 import mindustry.gen.Building;
 import mindustry.type.ItemStack;
-import mindustry.ui.ItemsDisplay;
 
 public class ReactantItems extends Reactant {
     public Seq<ItemStack> items;

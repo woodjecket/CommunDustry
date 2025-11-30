@@ -4,6 +4,8 @@ import arc.scene.Element;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import arc.util.Align;
+import cd.ctype.ExtendContent;
+import cd.ctype.ExtendContentType;
 import cd.entities.RecipeEntity;
 import cd.struct.recipe.product.ProductChanceItems;
 import cd.struct.recipe.product.ProductItems;
@@ -22,22 +24,8 @@ import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 import mindustry.world.meta.Stats;
 
-public class Recipe{
-    public int id;
-    private static int idCount;
-    public static final Seq<Recipe> all = new Seq<>(true);
+public class Recipe extends ExtendContent {
     public Seq<Product> products = new Seq<>();
-
-    public Recipe() {
-        id = idCount;
-        idCount++;
-    }
-
-    @Override
-    public String toString() {
-        return "id:" + id;
-    }
-
     public Seq<Reactant> reactants = new Seq<>();
     public int craftTime = 60;
     public int maxParallel = 1;
@@ -50,6 +38,15 @@ public class Recipe{
     public final Seq<Liquid> potentialInputLiquid = new Seq<>(), potentialOutputLiquid = new Seq<>();
 
     public float power, heat;
+
+    @Override
+    public ExtendContentType getExtendContentType() {
+        return ExtendContentType.recipe;
+    }
+
+    public Recipe(String name) {
+        super(name);
+    }
 
     public void init() {
         products.each(product -> product.init(this));
@@ -142,13 +139,12 @@ public class Recipe{
             return this;
         }
 
-        public Recipe build(){
-            var value = new Recipe();
+        public Recipe build(String name){
+            var value = new Recipe(name);
             value.products = products;
             value.reactants = reactants;
             value.craftTime = craftTime;
             value.maxParallel = maxParallel;
-            all.add(value);
             return value;
         }
 

@@ -1,6 +1,7 @@
 package cd.content;
 
 import arc.graphics.Color;
+import cd.CDMod;
 import mindustry.type.Item;
 
 public class CDItems {
@@ -17,7 +18,31 @@ public class CDItems {
             antiCryo, higgsKit;
     public static Item stone;
     public static void load(){
-        iron = new Item("iron", Color.gray);
+        iron = new Item("iron", Color.gray){
+            @Override
+            public void loadIcon() {
+                super.loadIcon();
+                CDMod.xcontent.loadIcon();
+            }
+
+            @Override
+            public void load() {
+                super.load();
+                CDMod.xcontent.load();
+            }
+
+            @Override
+            public void init() {
+                super.postInit();
+                CDMod.xcontent.init();
+            }
+
+            @Override
+            public void postInit() {
+                super.postInit();
+                CDMod.xcontent.postInit();
+            }
+        };
         carbonSteel = new Item("carbon-steel",Color.gray);
         quartz = new Item("quartz",Color.white);
         chromium = new Item("chromium", Color.yellow);

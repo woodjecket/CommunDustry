@@ -5,6 +5,7 @@ import arc.struct.IntSeq;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import cd.CDMod;
 import cd.struct.recipe.Recipe;
 import cd.ui.TableBar;
 import mindustry.gen.Building;
@@ -104,7 +105,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                         }).width(20f).visible(()->slots[finalI] != null).grow();
                     }).grow().row();
                 }
-            }));
+            })).maxHeight(300f);
 
         });
     }
@@ -125,7 +126,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
         var length = read.i();
         for (int i = 0; i < length; i++) {
             var id = read.i();
-            selects.add(Recipe.all.get(id));
+            selects.add(CDMod.xcontent.recipes().get(id));
         }
         selects.removeAll(r -> !recipes.recipes.contains(r));
         rebuildFilter();
@@ -141,7 +142,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
         if (object instanceof IntSeq seq) {
             selects.clear();
             for (int i : seq.items) {
-                selects.add(Recipe.all.get(i));
+                selects.add(CDMod.xcontent.recipes().get(i));
             }
             rebuildFilter();
         }
