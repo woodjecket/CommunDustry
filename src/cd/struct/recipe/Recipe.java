@@ -6,7 +6,6 @@ import arc.struct.Seq;
 import arc.util.Align;
 import cd.ctype.ExtendContent;
 import cd.ctype.ExtendContentType;
-import cd.entities.RecipeEntity;
 import cd.struct.recipe.product.ProductChanceItems;
 import cd.struct.recipe.product.ProductItems;
 import cd.struct.recipe.product.ProductLiquids;
@@ -14,7 +13,6 @@ import cd.struct.recipe.reactant.ReactantHeat;
 import cd.struct.recipe.reactant.ReactantItems;
 import cd.struct.recipe.reactant.ReactantLiquids;
 import cd.struct.recipe.reactant.ReactantPower;
-import cd.world.comp.recipe.AbstractRecipeManager;
 import mindustry.entities.Effect;
 import mindustry.gen.Building;
 import mindustry.gen.Icon;
@@ -51,14 +49,6 @@ public class Recipe extends ExtendContent {
     public void init() {
         products.each(product -> product.init(this));
         reactants.each(reactant -> reactant.init(this));
-    }
-
-    public RecipeEntity newEntity(AbstractRecipeManager manager) {
-        var entity = new RecipeEntity();
-        entity.recipe = this;
-        entity.manager = manager;
-        entity.progress = 0f;
-        return entity;
     }
 
     public Element equation() {

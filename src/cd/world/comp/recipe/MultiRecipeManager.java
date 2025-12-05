@@ -6,6 +6,7 @@ import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.CDMod;
+import cd.entities.RecipeSlot;
 import cd.struct.recipe.Recipe;
 import cd.ui.TableBar;
 import mindustry.gen.Building;
@@ -32,9 +33,9 @@ public class MultiRecipeManager extends AbstractRecipeManager {
 
         for (var slot : slots) {
             if (slot == null) continue;
-            nextPower += slot.recipeEntity.recipe.power * slot.recipeEntity.totalEfficiencyMultiplier();
-            nextHeat += slot.recipeEntity.recipe.heat * slot.recipeEntity.totalEfficiencyMultiplier();
-            nextEfficiency *= slot.recipeEntity.totalEfficiency() * slot.recipeEntity.totalEfficiencyMultiplier();
+            nextPower += slot.recipe.power * slot.totalEfficiencyMultiplier();
+            nextHeat += slot.recipe.heat * slot.totalEfficiencyMultiplier();
+            nextEfficiency *= slot.totalEfficiency() * slot.totalEfficiencyMultiplier();
         }
 
         enhance.power = nextPower;
@@ -46,11 +47,13 @@ public class MultiRecipeManager extends AbstractRecipeManager {
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] == null) {
+                boolean out = false;
                 for (var selected : selects) {
-                    if ((!selected.sufficient(building, items) || count.get(selected, 0) >= selected.maxParallel))
+                    if (out || (!selected.sufficient(building, items) || count.get(selected, 0) >= selected.maxParallel))
                         continue;
-                    slots[i] = new RecipeSlot(selected);
-                    break;
+                    slots[i] = new RecipeSlot(this, selected, i);
+                    out = true;
+                    //Cannot break here
                 }
             }
         }
@@ -83,26 +86,26 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                         s.defaults().growX().height(30f).width(200f).pad(4);
                         s.add(new TableBar(() -> {
                             if (slots[finalI] != null) {
-                                return slots[finalI].recipeEntity.progress;
+                                return slots[finalI].progress;
                             }
                             return 0f;
                         }, () -> {
                             if (slots[finalI] == null) return null;
-                            return slots[finalI].recipeEntity.getColor();
+                            return slots[finalI].getColor();
                         })).get().addChild(new Table(t -> {
                             final RecipeSlot[] ago = {null};
                             t.update(() -> {
                                 if (slots[finalI] != ago[0] && slots[finalI] != null) {
                                     ago[0] = slots[finalI];
                                     t.clear();
-                                    t.add(slots[finalI].recipeEntity.recipe.equation()).grow();
+                                    t.add(slots[finalI].recipe.equation()).grow();
                                 }
                             });
                         }
                         ));
-                        s.button(Icon.cancel,Styles.cleari, ()-> {
+                        s.button(Icon.cancel, Styles.cleari, () -> {
                             slots[finalI].activePop();
-                        }).width(20f).visible(()->slots[finalI] != null).grow();
+                        }).width(20f).visible(() -> slots[finalI] != null).grow();
                     }).grow().row();
                 }
             })).maxHeight(300f);
@@ -146,7 +149,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
             }
             rebuildFilter();
         }
-        if(object instanceof Float f && slots[f.intValue()] != null){
+        if (object instanceof Float f && slots[f.intValue()] != null) {
             slots[f.intValue()].passivePop();
         }
     }
@@ -255,8 +258,17 @@ public class MultiRecipeManager extends AbstractRecipeManager {
 
         @Override
         public void assistDump(Building building) {
-            dumpItems.each(building::dump);
-            dumpLiquids.each(building::dumpLiquid);
+            for (int i = 0; i < calcTimes(); i++) {
+                dumpItems.each(building::dump);
+                dumpLiquids.each(building::dumpLiquid);
+            }
+        }
+
+        private int calcTimes() {
+            for (int i : items) {
+                if (i > 20) return i / 10;
+            }
+            return 1;
         }
     }
 }

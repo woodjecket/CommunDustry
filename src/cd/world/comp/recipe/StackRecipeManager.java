@@ -4,6 +4,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.IntSeq;
 import arc.struct.Seq;
 import cd.CDMod;
+import cd.entities.RecipeSlot;
 import cd.struct.recipe.Recipe;
 import cd.ui.TableBar;
 import cd.world.comp.IRecipeManager;
@@ -31,7 +32,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
                 for (var task : tasks) {
                     if ((!task.recipe.sufficient(building, items) || count.get(task.recipe, 0) >= task.maxParallel || !task.running))
                         continue;
-                    slots[i] = new RecipeSlot(task.recipe);
+                    slots[i] = slots[i] = new RecipeSlot(this, task.recipe, i);
                     task.consume();
                     break;
                 }
@@ -86,17 +87,17 @@ public class StackRecipeManager extends AbstractRecipeManager {
                         s.defaults().growX().height(30f).width(200f).pad(4);
                         s.add(new TableBar(() -> {
                             if (slots[finalI] != null) {
-                                return slots[finalI].recipeEntity.progress;
+                                return slots[finalI].progress;
                             }
                             return 0f;
                         }, () -> {
                             if (slots[finalI] == null) return null;
-                            return slots[finalI].recipeEntity.getColor();
+                            return slots[finalI].getColor();
                         })).get().addChild(new Table(t -> {
                             t.update(() -> {
                                 t.clear();
                                 if (slots[finalI] != null) {
-                                    t.add(slots[finalI].recipeEntity.recipe.equation()).grow();
+                                    t.add(slots[finalI].recipe.equation()).grow();
                                 }
                             });
                         }
@@ -168,7 +169,8 @@ public class StackRecipeManager extends AbstractRecipeManager {
             for (int i = 0; i < seq.size; i += 3) {
                 var task = switch (seq.get(i)) {
                     case 0 -> new DoTimesTask(CDMod.xcontent.recipes().get(seq.get(i + 1)), seq.get(i + 2));
-                    case 1 -> new ReachAmountTask(CDMod.xcontent.recipes().get(seq.get(i + 1)), building, seq.get(i + 2));
+                    case 1 ->
+                            new ReachAmountTask(CDMod.xcontent.recipes().get(seq.get(i + 1)), building, seq.get(i + 2));
                     case 2 -> new LoopTask(CDMod.xcontent.recipes().get(seq.get(i + 1)));
                     default -> throw new IllegalArgumentException();
                 };
@@ -177,7 +179,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
             rebuildFilter();
         }
 
-        if(object instanceof Float f && slots[f.intValue()] != null){
+        if (object instanceof Float f && slots[f.intValue()] != null) {
             slots[f.intValue()].passivePop();
         }
 
@@ -194,9 +196,9 @@ public class StackRecipeManager extends AbstractRecipeManager {
 
         for (var slot : slots) {
             if (slot == null) continue;
-            nextPower += slot.recipeEntity.recipe.power * slot.recipeEntity.totalEfficiencyMultiplier();
-            nextHeat += slot.recipeEntity.recipe.heat * slot.recipeEntity.totalEfficiencyMultiplier();
-            nextEfficiency *= slot.recipeEntity.totalEfficiency() * slot.recipeEntity.totalEfficiencyMultiplier();
+            nextPower += slot.recipe.power * slot.totalEfficiencyMultiplier();
+            nextHeat += slot.recipe.heat * slot.totalEfficiencyMultiplier();
+            nextEfficiency *= slot.totalEfficiency() * slot.totalEfficiencyMultiplier();
         }
 
         enhance.power = nextPower;
@@ -216,6 +218,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
                 if (build instanceof IRecipeManager manager) manager.manager().passiveConfigured(s);
             });
         }
+
         public int getParallel() {
             return 5;
         }

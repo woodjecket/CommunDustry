@@ -7,7 +7,7 @@ import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.CDMod;
-import cd.entities.RecipeEntity;
+import cd.entities.RecipeSlot;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.IRecipeManager;
 import mindustry.Vars;
@@ -21,8 +21,8 @@ public abstract class AbstractRecipeManager {
     public final AbstractRecipeManagerFactory recipes;
     public transient AbstractRecipeVanillaEnhancer enhancer;
     public RecipeSlot[] slots;
-    protected transient final ObjectIntMap<Recipe> count;
-    protected transient final int[] items = new int[Vars.content.items().size];
+    public transient final ObjectIntMap<Recipe> count;
+    public transient final int[] items = new int[Vars.content.items().size];
 
     public AbstractRecipeManager(Building building, AbstractRecipeManagerFactory recipes) {
         this.recipes = recipes;
@@ -58,8 +58,8 @@ public abstract class AbstractRecipeManager {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] != null) {
                 write.s(i);
-                write.i(slots[i].recipeEntity.recipe.id);
-                write.f(slots[i].recipeEntity.progress);
+                write.i(slots[i].recipe.id);
+                write.f(slots[i].progress);
             }
         }
     }
@@ -73,61 +73,14 @@ public abstract class AbstractRecipeManager {
             if (slots[index] != null) {
                 slots[index].passivePop();
             }
-            slots[index] = new RecipeSlot(CDMod.xcontent.recipes().get(recipeID));
-            slots[index].recipeEntity.progress = progress;
+            slots[index] = new RecipeSlot(this, CDMod.xcontent.recipes().get(recipeID) , index);
+            slots[index].progress = progress;
         }
     }
 
     public abstract Object getConfig();
 
     public abstract void passiveConfigured(Object object);
-
-    public class RecipeSlot {
-
-        public RecipeEntity recipeEntity;
-
-        public RecipeSlot(Recipe recipe) {
-            recipeEntity = recipe.newEntity(AbstractRecipeManager.this);
-            count.increment(recipe);
-            recipe.potentialInputItems.each(s -> items[s.item.id] += s.amount);
-        }
-
-        public void update() {
-            var efficiency = recipeEntity.totalEfficiency() * recipeEntity.totalEfficiencyMultiplier();
-            if (!recipeEntity.noOutput()) {
-                recipeEntity.runWhile(efficiency);
-            }
-            recipeEntity.progress += building.delta() * efficiency / recipeEntity.recipe.craftTime;
-            if (recipeEntity.progress >= 1f) {
-                if (recipeEntity.noOutput()) {
-                    recipeEntity.progress -= building.delta() * efficiency / recipeEntity.recipe.craftTime;
-                } else {
-                    recipeEntity.runOnce();
-                    passivePop();
-                }
-
-            }
-        }
-
-        public void passivePop() {
-            for (int i = 0; i < slots.length; i++) {
-                if (slots[i] == this) {
-                    slots[i] = null;
-                    count.increment(recipeEntity.recipe, -1);
-                    recipeEntity.recipe.potentialInputItems.each(s -> items[s.item.id] -= s.amount);
-                }
-            }
-        }
-
-        public void activePop() {
-            for (int i = 0; i < slots.length; i++) {
-                if (slots[i] == this) {
-                    recipeEntity.manager.building.configure(Float.valueOf(i));
-                }
-            }
-
-        }
-    }
 
     public abstract static class AbstractRecipeManagerFactory {
 

@@ -5,6 +5,7 @@ import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import cd.CDMod;
+import cd.entities.RecipeSlot;
 import cd.struct.recipe.Recipe;
 import cd.world.comp.IRecipeManager;
 import mindustry.gen.Building;
@@ -34,9 +35,9 @@ public class SingleRecipeManager extends AbstractRecipeManager {
         for (var slot : slots) {
             if (slot == null) continue;
 
-            nextPower += slot.recipeEntity.recipe.power * slot.recipeEntity.totalEfficiencyMultiplier();
-            nextHeat += slot.recipeEntity.recipe.heat * slot.recipeEntity.totalEfficiencyMultiplier();
-            nextEfficiency *= slot.recipeEntity.totalEfficiency() * slot.recipeEntity.totalEfficiencyMultiplier();
+            nextPower += slot.recipe.power * slot.totalEfficiencyMultiplier();
+            nextHeat += slot.recipe.heat * slot.totalEfficiencyMultiplier();
+            nextEfficiency *= slot.totalEfficiency() * slot.totalEfficiencyMultiplier();
 
         }
 
@@ -50,7 +51,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] == null && selected != null && selected.sufficient(building,items)) {
-                slots[i] = new RecipeSlot(selected);
+                slots[i] = new RecipeSlot(this,selected, i);;
             }
         }
     }
