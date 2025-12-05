@@ -73,7 +73,7 @@ public abstract class AbstractRecipeManager {
             if (slots[index] != null) {
                 slots[index].passivePop();
             }
-            slots[index] = new RecipeSlot(this, CDMod.xcontent.recipes().get(recipeID) , index);
+            slots[index] = RecipeSlot.of().renew(this, CDMod.xcontent.recipes().get(recipeID) , index);
             slots[index].progress = progress;
         }
     }

@@ -51,7 +51,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                 for (var selected : selects) {
                     if (out || (!selected.sufficient(building, items) || count.get(selected, 0) >= selected.maxParallel))
                         continue;
-                    slots[i] = new RecipeSlot(this, selected, i);
+                    slots[i] = RecipeSlot.of().renew(this, selected, i);
                     out = true;
                     //Cannot break here
                 }

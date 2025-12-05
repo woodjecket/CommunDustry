@@ -32,7 +32,7 @@ public class StackRecipeManager extends AbstractRecipeManager {
                 for (var task : tasks) {
                     if ((!task.recipe.sufficient(building, items) || count.get(task.recipe, 0) >= task.maxParallel || !task.running))
                         continue;
-                    slots[i] = slots[i] = new RecipeSlot(this, task.recipe, i);
+                    slots[i] = RecipeSlot.of().renew(this, task.recipe, i);
                     task.consume();
                     break;
                 }

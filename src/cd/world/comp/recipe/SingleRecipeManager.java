@@ -51,7 +51,7 @@ public class SingleRecipeManager extends AbstractRecipeManager {
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] == null && selected != null && selected.sufficient(building,items)) {
-                slots[i] = new RecipeSlot(this,selected, i);;
+                slots[i] = RecipeSlot.of().renew(this,selected, i);;
             }
         }
     }
