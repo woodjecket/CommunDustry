@@ -4,8 +4,10 @@ import arc.scene.Element;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import arc.util.Align;
+import arc.util.pooling.Pool;
 import cd.ctype.ExtendContent;
 import cd.ctype.ExtendContentType;
+import cd.manager.PoolManager;
 import cd.struct.recipe.product.ProductChanceItems;
 import cd.struct.recipe.product.ProductItems;
 import cd.struct.recipe.product.ProductLiquids;
@@ -23,15 +25,20 @@ import mindustry.type.LiquidStack;
 import mindustry.world.meta.Stats;
 
 public class Recipe extends ExtendContent {
+    public Pool<Element> equationPool;
     public Seq<Product> products = new Seq<>();
     public Seq<Reactant> reactants = new Seq<>();
     public int craftTime = 60;
     public int maxParallel = 1;
 
-    /** The potential input ItemStacks is used in recipe assigning*/
+    /**
+     * The potential input ItemStacks is used in recipe assigning
+     */
     public final Seq<ItemStack> potentialInputItems = new Seq<>(), potentialOutputItems = new Seq<>();
     public final Seq<LiquidStack> potentialInputLiquids = new Seq<>(), potentialOutputLiquids = new Seq<>();
-    /** The potential input things is used to set up filterItems and filterLiquid.*/
+    /**
+     * The potential input things is used to set up filterItems and filterLiquid.
+     */
     public final Seq<Item> potentialInputItem = new Seq<>(), potentialOutputItem = new Seq<>();
     public final Seq<Liquid> potentialInputLiquid = new Seq<>(), potentialOutputLiquid = new Seq<>();
 
@@ -44,6 +51,7 @@ public class Recipe extends ExtendContent {
 
     public Recipe(String name) {
         super(name);
+        equationPool = PoolManager.get(this::equation);
     }
 
     public void init() {
@@ -63,10 +71,10 @@ public class Recipe extends ExtendContent {
 
     public boolean sufficient(Building building, int[] items) {
         var sufficient = building.items.has(potentialInputItems);
-        for( var is: potentialInputItems){
+        for (var is : potentialInputItems) {
             sufficient &= building.items.get(is.item) >= is.amount + items[is.item.id];
         }
-        for( var ls: potentialInputLiquids){
+        for (var ls : potentialInputLiquids) {
             sufficient &= building.liquids.get(ls.liquid) >= ls.amount;
         }
         return sufficient;
@@ -76,7 +84,7 @@ public class Recipe extends ExtendContent {
 
     }
 
-    public static class RecipeBuilder{
+    public static class RecipeBuilder {
         private Seq<Product> products = new Seq<>();
         private Seq<Reactant> reactants = new Seq<>();
         private int craftTime = 60;
@@ -86,50 +94,52 @@ public class Recipe extends ExtendContent {
         private float updateEffectChance, updateEffectSpread;
         private int[] liquidOutputDirections;
 
-        public RecipeBuilder addProduct(Product product){
+        public RecipeBuilder addProduct(Product product) {
             products.add(product);
             return this;
         }
-        public RecipeBuilder addReactants(Reactant reactant){
+
+        public RecipeBuilder addReactants(Reactant reactant) {
             reactants.add(reactant);
             return this;
         }
 
-        public RecipeBuilder time(int craftTime){
+        public RecipeBuilder time(int craftTime) {
             this.craftTime = craftTime;
             return this;
         }
 
-        public RecipeBuilder parallel(int maxParallel){
+        public RecipeBuilder parallel(int maxParallel) {
             this.maxParallel = maxParallel;
             return this;
         }
 
-        public RecipeBuilder craftEffect(Effect effect){
+        public RecipeBuilder craftEffect(Effect effect) {
             this.craftEffect = effect;
             return this;
         }
-        public RecipeBuilder updateEffect(Effect updateEffect){
+
+        public RecipeBuilder updateEffect(Effect updateEffect) {
             this.updateEffect = updateEffect;
             return this;
         }
 
-        public RecipeBuilder updateEffectChance(float updateEffectChance){
+        public RecipeBuilder updateEffectChance(float updateEffectChance) {
             this.updateEffectChance = updateEffectChance;
             return this;
         }
 
-        public RecipeBuilder updateEffectSpread(float updateEffectSpread){
+        public RecipeBuilder updateEffectSpread(float updateEffectSpread) {
             this.updateEffectSpread = updateEffectSpread;
             return this;
         }
 
-        public RecipeBuilder liquidOutputDirections(int... liquidOutputDirections){
+        public RecipeBuilder liquidOutputDirections(int... liquidOutputDirections) {
             this.liquidOutputDirections = liquidOutputDirections;
             return this;
         }
 
-        public Recipe build(String name){
+        public Recipe build(String name) {
             var value = new Recipe(name);
             value.products = products;
             value.reactants = reactants;
@@ -138,56 +148,56 @@ public class Recipe extends ExtendContent {
             return value;
         }
 
-        public RecipeBuilder itemsIn(Object... items){
+        public RecipeBuilder itemsIn(Object... items) {
             var stacks = new Seq<ItemStack>(items.length / 2);
-            for(int i = 0; i < items.length; i += 2){
-                stacks.add(new ItemStack((Item)items[i], ((Number)items[i + 1]).intValue()));
+            for (int i = 0; i < items.length; i += 2) {
+                stacks.add(new ItemStack((Item) items[i], ((Number) items[i + 1]).intValue()));
             }
             reactants.add(new ReactantItems(stacks));
             return this;
         }
 
-        public RecipeBuilder liquidsIn(Object... items){
+        public RecipeBuilder liquidsIn(Object... items) {
             var stacks = new Seq<LiquidStack>(items.length / 2);
-            for(int i = 0; i < items.length; i += 2){
-                stacks.add(new LiquidStack((Liquid)items[i], ((Number)items[i + 1]).floatValue()));
+            for (int i = 0; i < items.length; i += 2) {
+                stacks.add(new LiquidStack((Liquid) items[i], ((Number) items[i + 1]).floatValue()));
             }
             reactants.add(new ReactantLiquids(stacks));
             return this;
         }
 
-        public RecipeBuilder itemsOut(Object... items){
+        public RecipeBuilder itemsOut(Object... items) {
             var stacks = new Seq<ItemStack>(items.length / 2);
-            for(int i = 0; i < items.length; i += 2){
-                stacks.add(new ItemStack((Item)items[i], ((Number)items[i + 1]).intValue()));
+            for (int i = 0; i < items.length; i += 2) {
+                stacks.add(new ItemStack((Item) items[i], ((Number) items[i + 1]).intValue()));
             }
             products.add(new ProductItems(stacks));
             return this;
         }
 
-        public RecipeBuilder liquidsOut(Object... items){
+        public RecipeBuilder liquidsOut(Object... items) {
             var stacks = new Seq<LiquidStack>(items.length / 2);
-            for(int i = 0; i < items.length; i += 2){
-                stacks.add(new LiquidStack((Liquid)items[i], ((Number)items[i + 1]).floatValue()));
+            for (int i = 0; i < items.length; i += 2) {
+                stacks.add(new LiquidStack((Liquid) items[i], ((Number) items[i + 1]).floatValue()));
             }
             products.add(new ProductLiquids(stacks));
             return this;
         }
 
-        public RecipeBuilder powerIn(float power){
+        public RecipeBuilder powerIn(float power) {
             reactants.add(new ReactantPower(power));
             return this;
         }
 
-        public RecipeBuilder heatIn(float heat){
+        public RecipeBuilder heatIn(float heat) {
             reactants.add(new ReactantHeat(heat));
             return this;
         }
 
-        public RecipeBuilder chanceItemOut(Object... items){
+        public RecipeBuilder chanceItemOut(Object... items) {
             var stacks = new Seq<ItemStack>(items.length / 2);
-            for(int i = 0; i < items.length; i += 2){
-                stacks.add(new ItemStack((Item)items[i], ((Number)items[i + 1]).intValue()));
+            for (int i = 0; i < items.length; i += 2) {
+                stacks.add(new ItemStack((Item) items[i], ((Number) items[i + 1]).intValue()));
             }
             products.add(new ProductChanceItems(stacks));
             return this;

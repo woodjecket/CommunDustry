@@ -47,13 +47,12 @@ public class MultiRecipeManager extends AbstractRecipeManager {
     protected void refreshSlot() {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] == null) {
-                boolean out = false;
-                for (var selected : selects) {
-                    if (out || (!selected.sufficient(building, items) || count.get(selected, 0) >= selected.maxParallel))
-                        continue;
-                    slots[i] = RecipeSlot.of().renew(this, selected, i);
-                    out = true;
-                    //Cannot break here
+                for (int j = 0; j < selects.size; j++) {
+                    var selected = ((Recipe) ((Object[]) selects.items)[j]);
+                    if ((selected.sufficient(building, items) && count.get(selected, 0) < selected.maxParallel)) {
+                        slots[i] = RecipeSlot.of().renew(this, selected, i);
+                        break;
+                    }
                 }
             }
         }
@@ -97,8 +96,11 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                             t.update(() -> {
                                 if (slots[finalI] != ago[0] && slots[finalI] != null) {
                                     ago[0] = slots[finalI];
+                                    if(!t.getChildren().isEmpty()){
+                                        slots[finalI].recipe.equationPool.free(t.getChildren().first());
+                                    }
                                     t.clear();
-                                    t.add(slots[finalI].recipe.equation()).grow();
+                                    t.add(slots[finalI].recipe.equationPool.obtain()).grow();
                                 }
                             });
                         }

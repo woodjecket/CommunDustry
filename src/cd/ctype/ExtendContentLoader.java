@@ -3,7 +3,6 @@ package cd.ctype;
 import arc.func.Cons;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
-import arc.util.Log;
 import cd.content.*;
 import cd.struct.recipe.Recipe;
 
@@ -59,7 +58,7 @@ public class ExtendContentLoader {
     }
 
     public void handleExtendContent(ExtendContent xContent) {
-        Log.info("Loaded @", xContent.name);
+        //Log.info("Loaded @", xContent.name);
 
         if (xcontentNameMap[xContent.getExtendContentType().id].containsKey(xContent.name)) {
             var list = xcontentMap[xContent.getExtendContentType().id];
