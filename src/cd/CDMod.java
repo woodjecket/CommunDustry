@@ -26,7 +26,6 @@ import static mindustry.Vars.state;
 
 
 public class CDMod extends Mod{
-
     public static WidgetGroup galGroup = new WidgetGroup();
     public static ExtendContentLoader xcontent = new ExtendContentLoader();
     public static FiniteOreManager fom = new FiniteOreManager();
@@ -41,6 +40,7 @@ public class CDMod extends Mod{
     public void init(){
         super.init();
         initUI();
+        fom.init();
     }
 
     @Override

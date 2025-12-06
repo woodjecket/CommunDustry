@@ -1,15 +1,16 @@
 package cd.world.block.environment;
 
-import arc.*;
-import arc.graphics.g2d.*;
-import arc.math.*;
-import cd.manager.*;
-import mindustry.*;
-import mindustry.type.*;
-import mindustry.world.*;
-import mindustry.world.blocks.environment.*;
-
-import static mindustry.Vars.renderer;
+import arc.Core;
+import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.TextureRegion;
+import arc.math.Mathf;
+import cd.CDMod;
+import mindustry.Vars;
+import mindustry.type.Item;
+import mindustry.world.Tile;
+import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.OreBlock;
+import mindustry.world.blocks.environment.OverlayFloor;
 
 public class FiniteOre extends OreBlock{
 
@@ -48,7 +49,7 @@ public class FiniteOre extends OreBlock{
     public void drawBase(Tile tile){
         //Float division
         float slack = tile.extraData;
-        float capacity = FiniteOreManager.getTileCapacity(tile);
+        float capacity = CDMod.fom.getTileCapacity(tile);
 
         int currentStage = Mathf.floor(slack / capacity * (stage - 1));
 
@@ -64,7 +65,7 @@ public class FiniteOre extends OreBlock{
     public boolean shouldRecache(Tile tile){
         //Float division
         float slack = tile.extraData;
-        float capacity = FiniteOreManager.getTileCapacity(tile);
+        float capacity = CDMod.fom.getTileCapacity(tile);
 
         float currentStage = slack / capacity * (stage - 1);
 

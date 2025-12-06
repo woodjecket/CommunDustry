@@ -1,7 +1,6 @@
 package cd.manager;
 
 import arc.Events;
-import arc.math.geom.Position;
 import arc.struct.ObjectMap;
 import arc.util.Log;
 import cd.map.vein.NoiseVein;
@@ -9,7 +8,6 @@ import cd.map.vein.VeinGenerator;
 import cd.struct.vein.VeinTile;
 import mindustry.Vars;
 import mindustry.game.EventType;
-import mindustry.gen.Posc;
 import mindustry.io.SaveFileReader;
 import mindustry.io.SaveVersion;
 import mindustry.world.Tile;
@@ -20,11 +18,13 @@ import java.io.IOException;
 
 public class VeinManager {
     public VeinGenerator currentGenerator = new NoiseVein();
-    public VeinChunk veinChunk;
+    public VeinChunk veinChunk = new VeinChunk();
     public ObjectMap<Tile, VeinTile> lazy = new ObjectMap<>();
 
     {
-        Events.run(EventType.Trigger.draw, this::draw);
+        Events.on(EventType.ResetEvent.class, r->{
+            lazy.clear();
+        });
     }
 
     public VeinTile get(Tile tile) {
@@ -35,7 +35,7 @@ public class VeinManager {
         return get(Vars.world.tile(x, y));
     }
 
-    private void draw() {
+    public void draw() {
         for (var vein : lazy.values()) {
             vein.veins.each(ve -> ve.drawVeinEntity(vein.tile.worldx(), vein.tile.worldy()));
         }
@@ -62,7 +62,6 @@ public class VeinManager {
                     Log.info("Has written veinTile: @", v);
                     v.write(stream);
                 }
-                ;
             }
         }
 

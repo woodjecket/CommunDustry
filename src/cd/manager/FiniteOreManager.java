@@ -1,20 +1,28 @@
 package cd.manager;
 
-import arc.*;
-import arc.math.*;
-import arc.struct.*;
-import arc.util.*;
-import cd.world.block.environment.*;
-import mindustry.*;
-import mindustry.content.*;
-import mindustry.game.*;
-import mindustry.game.EventType.*;
-import mindustry.gen.*;
-import mindustry.type.*;
-import mindustry.world.*;
-import mindustry.world.blocks.production.*;
+import arc.Core;
+import arc.Events;
+import arc.math.Mathf;
+import arc.struct.IntSeq;
+import arc.struct.Seq;
+import arc.util.Time;
+import cd.CDMod;
+import cd.world.block.environment.FiniteOre;
+import mindustry.Vars;
+import mindustry.content.Blocks;
+import mindustry.game.EventType;
+import mindustry.game.EventType.TileChangeEvent;
+import mindustry.game.EventType.Trigger;
+import mindustry.gen.Building;
+import mindustry.gen.Groups;
+import mindustry.gen.Minerc;
+import mindustry.gen.Unit;
+import mindustry.type.Item;
+import mindustry.world.Tile;
+import mindustry.world.blocks.production.BeamDrill;
+import mindustry.world.blocks.production.Drill;
 
-import java.util.*;
+import java.util.Comparator;
 
 /**
  * 几个改进点：
@@ -22,16 +30,16 @@ import java.util.*;
  * 二、抽象出MockMiner为之后的兼容做准备
  * */
 public class FiniteOreManager{
-    private static final Seq<Tile> tmpTiles = new Seq<>();
-    private static Seq<Building> worldDrills = new Seq<>();
-    private static Seq<Unit> worldMiners = new Seq<>();
+    private  final Seq<Tile> tmpTiles = new Seq<>();
+    private  Seq<Building> worldDrills = new Seq<>();
+    private  Seq<Unit> worldMiners = new Seq<>();
 
-    static{
+    public void init(){
 
-        Events.run(Trigger.update, FiniteOreManager::update);
+        Events.run(Trigger.update, CDMod.fom::update);
         Events.on(EventType.TileChangeEvent.class, e -> {
             worldDrills.clear();
-            Groups.build.each(FiniteOreManager::isDrill, b -> worldDrills.add(b));
+            Groups.build.each(CDMod.fom::isDrill, b -> worldDrills.add(b));
         });
         Events.on(EventType.UnitCreateEvent.class, e -> {
             worldMiners.clear();
@@ -41,7 +49,7 @@ public class FiniteOreManager{
             Core.app.post(() -> {
                 worldDrills.clear();
                 worldMiners.clear();
-                Groups.build.each(FiniteOreManager::isDrill, b -> worldDrills.add(b));
+                Groups.build.each(CDMod.fom::isDrill, b -> worldDrills.add(b));
                 Groups.unit.each(Minerc.class::isInstance, b -> worldMiners.add(b));
             });
         });
@@ -79,16 +87,16 @@ public class FiniteOreManager{
         });
     }
 
-    public static boolean isDrill(Building building){
+    public  boolean isDrill(Building building){
         return building.block instanceof Drill || building.block instanceof BeamDrill;
     }
 
-    public static int getTileCapacity(Tile tile){
+    public  int getTileCapacity(Tile tile){
         return 100;
     }
 
     /** Mock whether there will be a mine next frame */
-    public static void update(){
+    public  void update(){
         for(Building building : worldDrills){
             if(building instanceof Drill.DrillBuild drill && !Vars.state.isPaused()){
                 var progressD = 0f;
@@ -146,7 +154,7 @@ public class FiniteOreManager{
         }
     }
 
-    private static void removeSlack(Tile drill){
+    private  void removeSlack(Tile drill){
         if(drill.block() != null || drill.block() != Blocks.air){
             drill.getLinkedTilesAs(drill.block(), tmpTiles);
         }else{

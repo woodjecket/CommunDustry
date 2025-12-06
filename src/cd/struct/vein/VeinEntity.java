@@ -88,6 +88,7 @@ public class VeinEntity {
         stream.writeInt(depth);
         stream.writeInt(seed);
         stream.writeBoolean(shouldWrite);
+        stream.writeBoolean(detected);
     }
 
     public void read(DataInput stream) throws IOException {
@@ -96,5 +97,6 @@ public class VeinEntity {
         depth = stream.readInt();
         seed = stream.readInt();
         shouldWrite = stream.readBoolean();
+        detected = stream.readBoolean();
     }
 }

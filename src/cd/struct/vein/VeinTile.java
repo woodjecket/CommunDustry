@@ -3,19 +3,16 @@ package cd.struct.vein;
 import arc.func.Boolf;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
-import arc.util.Log;
 import arc.util.Nullable;
-import arc.util.Structs;
 import mindustry.Vars;
 import mindustry.world.Tile;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class VeinTile {
-    public Seq<VeinEntity> veins;
+    public Seq<VeinEntity> veins = new Seq<>();
     public Tile tile;
 
     public @Nullable VeinEntity getEntity(int depth) {

@@ -6,6 +6,7 @@ import arc.struct.Seq;
 import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.io.Reads;
+import cd.CDConfig;
 import cd.CDMod;
 import cd.struct.vein.VeinEntity;
 import cd.struct.vein.VeinSelector;
@@ -26,10 +27,16 @@ public class VeinDrill extends Block {
         hasItems = true;
     }
 
+    @Override
+    public void drawPlace(int x, int y, int rotation, boolean valid) {
+        super.drawPlace(x, y, rotation, valid);
+        CDMod.vm.draw();
+    }
+
     public class VeinDrillBuild extends Building {
         public VeinSelector selector = new RangeSelector();
         public float progress;
-        public int depth = -75;
+        public int depth = CDConfig.defaultDepth;
         public @Nullable VeinType selectedType;
         public VeinEntity drillEntity;
         public Seq<VeinTile> tiles = new Seq<>();
@@ -112,6 +119,11 @@ public class VeinDrill extends Block {
             }
         }
 
+        @Override
+        public void drawConfigure() {
+            super.drawConfigure();
+            CDMod.vm.draw();
+        }
 
         @Override
         public boolean shouldConsume() {
