@@ -3,7 +3,6 @@ package cd.world.block;
 import arc.math.Mathf;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
-import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.io.Reads;
 import cd.CDConst;
@@ -59,7 +58,6 @@ public class VeinDrill extends Block {
             @Override
             public void assignEntity() {
                 // 1st attempt: available
-                Log.info("1st attempt: @", available);
                 drillEntity = available.getNull(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
 
                 // 2nd attempt: scan the tiles
@@ -68,7 +66,6 @@ public class VeinDrill extends Block {
                     var vtile = tiles.get(ambientCount);
                     ambientCount++;
                     drillEntity = vtile.getEntity(depth);
-                    Log.info("2nd attempt: count:@, vtile:@, entity:@", ambientCount, vtile, drillEntity);
                     if (drillEntity != null) {
                         // Passive detection
                         drillEntity.detected = true;
@@ -80,7 +77,6 @@ public class VeinDrill extends Block {
 
                 // final: mine stones
                 if (drillEntity == null) {
-                    Log.info("final attempt: stone");
                     drillEntity = VeinEntity.infiniteStone;
                 }
             }
@@ -111,11 +107,9 @@ public class VeinDrill extends Block {
             @Override
             public void assignEntity() {
                 // 1st attempt: available
-                Log.info("1st attempt: @", available.getNull(selectedType));
                 drillEntity = available.getNull(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
                 // final: mine stones
                 if (drillEntity == null) {
-                    Log.info("final attempt: stone");
                     drillEntity = VeinEntity.infiniteStone;
                 }
             }
