@@ -23,6 +23,7 @@ public class CDRecipe {
                 .itemsOut(Items.graphite, 1)
                 .itemsIn(Items.coal, 2)
                 .time(90)
+                .parallel(1024)
                 .craftEffect(Fx.pulverizeMedium)
                 .build("graphite-press");
 
@@ -40,7 +41,7 @@ public class CDRecipe {
                 .itemsIn(Items.coal, 1, Items.sand, 2)
                 .powerIn(0.50f)
                 .time(40)
-                .parallel(256)
+                .parallel(1024)
                 .craftEffect(Fx.smeltsmoke)
                 .build("silicon-smelter");
 

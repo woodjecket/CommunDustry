@@ -26,6 +26,7 @@ import mindustry.world.blocks.power.Battery;
 import mindustry.world.blocks.power.SolarGenerator;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.blocks.production.Pump;
+import mindustry.world.blocks.sandbox.ItemSource;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.meta.BuildVisibility;
 
@@ -56,6 +57,8 @@ public class CDBlocks {
     public static VeinDetector veinDetector;
 
     public static VeinDrill veinDrill;
+
+    public static ItemSource sis;
 
     public static void load() {
         finiteCopper = new FiniteOre(Items.copper);
@@ -122,7 +125,7 @@ public class CDBlocks {
 
         cdConveyor = new Conveyor("cd-conveyor") {{
             requirements(Category.distribution, new ItemStack[]{});
-            speed = 0.08f;
+            speed = 32f;
         }};
 
         smallFurnace = new MultiCrafter("small-furnace") {{
@@ -137,10 +140,10 @@ public class CDBlocks {
             factory = new MultiRecipeManager.MultiRecipeManagerFactory(){
                 @Override
                 public int getParallel() {
-                    return 258;
+                    return 2048;
                 }
             };
-            factory.recipes.add(CDRecipe.siliconSmelter);
+            factory.recipes.add(CDRecipe.siliconSmelter,CDRecipe.graphitePress);
             requirements(Category.crafting, new ItemStack[]{});
         }};
 
@@ -244,6 +247,12 @@ public class CDBlocks {
             size = 2;
             requirements(Category.liquid, new ItemStack[]{});
         }};
+
+        sis = new ItemSource("sis"){{
+            itemsPerSecond = 4096;
+            requirements(Category.distribution, new ItemStack[]{});
+        }};
+
     }
 
 }

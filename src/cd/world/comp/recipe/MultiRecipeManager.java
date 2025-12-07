@@ -61,7 +61,6 @@ public class MultiRecipeManager extends AbstractRecipeManager {
     @Override
     public void buildConfigure(Table table) {
         table.table(Tex.buttonEdge1, outer -> {
-
             outer.pane(new Table(p -> {
                 for (var recipe : recipes.recipes) {
                     p.button(rb -> rb.add(recipe.equation()).grow(), Styles.togglet, () -> {
@@ -92,6 +91,7 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                             if (slots[finalI] == null) return null;
                             return slots[finalI].getColor();
                         })).get().addChild(new Table(t -> {
+                            //Here consumes about 15KB per slot
                             final RecipeSlot[] ago = {null};
                             t.update(() -> {
                                 if (slots[finalI] != ago[0] && slots[finalI] != null) {
@@ -261,8 +261,12 @@ public class MultiRecipeManager extends AbstractRecipeManager {
         @Override
         public void assistDump(Building building) {
             for (int i = 0; i < calcTimes(); i++) {
-                dumpItems.each(building::dump);
-                dumpLiquids.each(building::dumpLiquid);
+                for(var item: dumpItems){
+                    building.dump(item);
+                }
+                for(var liquid: dumpLiquids){
+                    building.dumpLiquid(liquid);
+                }
             }
         }
 
