@@ -2,7 +2,6 @@ package cd.struct.recipe.product;
 
 import arc.scene.Element;
 import arc.struct.Seq;
-import arc.util.Log;
 import cd.struct.recipe.Product;
 import cd.struct.recipe.Recipe;
 import cd.ui.UIUtils;
@@ -21,7 +20,6 @@ public class ProductLiquids extends Product {
         super.init(recipe);
         recipe.potentialOutputLiquids.add(liquids);
         recipe.potentialOutputLiquid.add(liquids.map(s->s.liquid));
-        Log.info(recipe.potentialOutputLiquid);
     }
 
     @Override

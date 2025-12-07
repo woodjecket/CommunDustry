@@ -46,8 +46,9 @@ public class ProductChanceItems extends Product {
             count += stack.amount;
         }
 
+        var capacity = building instanceof CoreBlock.CoreBuild c ? c.storageCapacity : building.block.itemCapacity;
 
-        if (item != null && building.items.get(item) < building.block.itemCapacity) {
+        if (item != null && building.items.get(item) < capacity) {
             building.items.add(item, 1);
         }
     }

@@ -95,10 +95,10 @@ public class MultiRecipeManager extends AbstractRecipeManager {
                             final RecipeSlot[] ago = {null};
                             t.update(() -> {
                                 if (slots[finalI] != ago[0] && slots[finalI] != null) {
-                                    ago[0] = slots[finalI];
-                                    if(!t.getChildren().isEmpty()){
-                                        slots[finalI].recipe.equationPool.free(t.getChildren().first());
+                                    if(!t.getChildren().isEmpty() && ago[0].recipe != null){
+                                        ago[0].recipe.equationPool.free(t.getChildren().first());
                                     }
+                                    ago[0] = slots[finalI];
                                     t.clear();
                                     t.add(slots[finalI].recipe.equationPool.obtain()).grow();
                                 }
