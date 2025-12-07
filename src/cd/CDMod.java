@@ -45,7 +45,7 @@ public class CDMod extends Mod{
 
     @Override
     public void loadContent(){
-        Log.info("Cosmos insight benefits well-being");
+        Log.info("Cosmos insight benefits well-being!");
         xcontent.createContent();
         Planets.tantros.generator = new GenPlanetGenerator();
         PlanetDialog.debugSelect = true;

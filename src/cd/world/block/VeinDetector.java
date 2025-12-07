@@ -53,7 +53,10 @@ public class VeinDetector extends Block {
                     if (Mathf.within(i, j, tx, ty, pr)) {
                         var got = CDMod.vm.get(Vars.world.tile(i, j));
                         if (got != null) got.veins.each(ve -> {
-                            if (ve.depth <= maxDepth) ve.shouldWrite = ve.detected = true;
+                            if (ve.depth <= maxDepth) {
+                                ve.shouldWrite = true;
+                                ve.detected = true;
+                            };
                         });
                     }
                 }

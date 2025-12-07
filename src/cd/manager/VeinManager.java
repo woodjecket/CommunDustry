@@ -2,6 +2,7 @@ package cd.manager;
 
 import arc.Events;
 import arc.struct.ObjectMap;
+import arc.util.Log;
 import cd.map.vein.NoiseVein;
 import cd.map.vein.VeinGenerator;
 import cd.struct.vein.VeinTile;
@@ -22,6 +23,7 @@ public class VeinManager {
 
     {
         Events.on(EventType.ResetEvent.class, r->{
+            Log.info("cleared");
             lazy.clear();
         });
     }
@@ -41,6 +43,7 @@ public class VeinManager {
     }
 
     public class VeinChunk implements SaveFileReader.CustomChunk {
+        private boolean stay;
         {
             SaveVersion.addCustomChunk("commundustry-v5-vein", this);
         }
@@ -58,6 +61,7 @@ public class VeinManager {
                     v.write(stream);
                 }
             }
+            Log.info("written");
         }
 
         @Override
@@ -69,6 +73,7 @@ public class VeinManager {
                 vt.read(stream);
                 lazy.put(vt.tile, vt);
             }
+            Log.info("read");
         }
     }
 }

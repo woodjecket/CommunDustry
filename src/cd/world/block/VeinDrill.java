@@ -47,11 +47,13 @@ public class VeinDrill extends Block {
 
             @Override
             public void updateAvailable() {
-                available.each((vt, s) -> s.clear());
-                tiles.forEach(vt -> vt.getEntities(available, depth, ve -> !ve.exhausted() && ve.detected));
-                available.each((vt, s) -> {
-                    if (s.isEmpty()) available.remove(vt);
-                });
+                for(var entry: available){
+                    entry.value.clear();
+                }
+                tiles.each(vt -> vt.getEntities(available, depth, ve -> !ve.exhausted() && ve.detected));
+                for(var entry: available){
+                    if (entry.value.isEmpty()) available.remove(entry.key);
+                }
             }
 
             @Override

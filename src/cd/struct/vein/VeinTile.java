@@ -21,7 +21,7 @@ public class VeinTile {
 
     public void getEntities(ObjectMap<VeinType, Seq<VeinEntity>> tmp, int depth, Boolf<VeinEntity> pred){
         for(var ve: veins){
-            if(Math.abs(ve.depth - depth) < ve.range && pred.get(ve)){
+            if(Math.abs(ve.depth - depth) <= ve.range && pred.get(ve)){
                 tmp.get(ve.type, Seq::new).add(ve);
             }
         }

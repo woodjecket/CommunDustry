@@ -4,6 +4,7 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.math.Mathf;
+import arc.util.Log;
 import arc.util.Tmp;
 import cd.content.CDItems;
 import mindustry.Vars;
@@ -48,12 +49,13 @@ public class VeinEntity {
     }
 
     public boolean exhausted() {
-        return amount < 0;
+        return amount <= 0;
     }
 
     public void drawVeinEntity(float x, float y) {
         if (!detected) return;
         if (exhausted()) return;
+        Log.info(toString());
         Tmp.c1.set(type.color).a(1 - depth / -128f);
         Draw.color(Tmp.c1);
         Fill.rect(x, y, Vars.tilesize - 1, Vars.tilesize - 1);
@@ -86,6 +88,7 @@ public class VeinEntity {
         stream.writeShort(type.id);
         stream.writeInt(amount);
         stream.writeInt(depth);
+        stream.writeInt(range);
         stream.writeInt(seed);
         stream.writeBoolean(shouldWrite);
         stream.writeBoolean(detected);
@@ -95,6 +98,7 @@ public class VeinEntity {
         type = VeinType.all.get(stream.readShort());
         amount = stream.readInt();
         depth = stream.readInt();
+        range = stream.readInt();
         seed = stream.readInt();
         shouldWrite = stream.readBoolean();
         detected = stream.readBoolean();
