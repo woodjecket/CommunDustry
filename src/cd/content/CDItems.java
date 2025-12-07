@@ -7,7 +7,7 @@ import mindustry.type.Item;
 public class CDItems {
     public static Item
             //T1
-            iron, carbonSteel, quartz,
+            iron, carbonSteel, quartzGlass,
             //T2
             chromium, alloySteel, vonKit,
             //T3
@@ -44,7 +44,7 @@ public class CDItems {
             }
         };
         carbonSteel = new Item("carbon-steel",Color.gray);
-        quartz = new Item("quartz",Color.white);
+        quartzGlass = new Item("quartz-glass",Color.white);
         chromium = new Item("chromium", Color.yellow);
         alloySteel = new Item("alloy-steel", Color.gray);
         vonKit = new Item("von-kit",Color.brick);
