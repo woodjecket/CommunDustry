@@ -6,7 +6,7 @@ import arc.struct.Seq;
 import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.io.Reads;
-import cd.CDConfig;
+import cd.CDConst;
 import cd.CDMod;
 import cd.struct.vein.VeinEntity;
 import cd.struct.vein.VeinSelector;
@@ -36,7 +36,7 @@ public class VeinDrill extends Block {
     public class VeinDrillBuild extends Building {
         public VeinSelector selector = new RangeSelector();
         public float progress;
-        public int depth = CDConfig.defaultDepth;
+        public int depth = CDConst.defaultDepth;
         public @Nullable VeinType selectedType;
         public VeinEntity drillEntity;
         public Seq<VeinTile> tiles = new Seq<>();

@@ -1,6 +1,6 @@
 package cd;
 
-public class CDConfig {
+public class CDConst {
 
     public static boolean enableVeinDepth = true;
     /** When unabled, all veins goes here*/

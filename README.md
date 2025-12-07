@@ -1,13 +1,10 @@
 # CommunDustry
 
-Community, communication, communism
+## CIPs
 
-2.2.4-PRE-ALPHA: thanatus
-
-2.2.5-PRE-ALPHA: anepsion
-
-2.2.5-PRE-ALPHA: aiko
-
-3.3.6-PRE-ALPHA: *Breaking Change* Migrate the whole mod into Scala
-
-4.0-ALPHA: *Breaking Change!!!* Migrate back to Java
+- `CIP-1`: Galgame Interface
+- `CIP-2`: Finite Ore
+- `CIP-3`: Multi-crafting Factory
+- `CIP-4`: Deep Vein
+- `CIP-5`: **CENSORED**
+- `CIP-6`: Extend Research

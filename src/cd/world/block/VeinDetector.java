@@ -6,7 +6,7 @@ import arc.math.Mathf;
 import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import cd.CDConfig;
+import cd.CDConst;
 import cd.CDMod;
 import mindustry.Vars;
 import mindustry.gen.Building;
@@ -15,7 +15,7 @@ import mindustry.world.Block;
 
 public class VeinDetector extends Block {
     public int radius = 20;
-    public int maxDepth = CDConfig.defaultDepth;
+    public int maxDepth = CDConst.defaultDepth;
     private float discoveryTime = 60f * 20f;
 
     public VeinDetector(String name) {
