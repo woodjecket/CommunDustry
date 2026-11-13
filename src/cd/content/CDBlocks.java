@@ -176,7 +176,7 @@ public class CDBlocks {
             targetAir = false;
             moveWhileCharging = false;
             accurateDelay = false;
-            shootSound = Sounds.laser;
+            shootSound = Sounds.shootLaser;
             coolant = consumeCoolant(0.2f);
 
             consumePower(6f);
@@ -216,7 +216,7 @@ public class CDBlocks {
             targetAir = false;
             moveWhileCharging = false;
             accurateDelay = false;
-            shootSound = Sounds.laser;
+            shootSound = Sounds.shootLaser;
             coolant = consumeCoolant(0.2f);
 
             consumePower(6f);

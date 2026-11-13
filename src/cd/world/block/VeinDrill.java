@@ -58,7 +58,7 @@ public class VeinDrill extends Block {
             @Override
             public void assignEntity() {
                 // 1st attempt: available
-                drillEntity = available.getNull(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
+                drillEntity = selectedType != null && available.get(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
 
                 // 2nd attempt: scan the tiles
                 if (drillEntity == null && ambientCount < tiles.size) {
@@ -107,7 +107,7 @@ public class VeinDrill extends Block {
             @Override
             public void assignEntity() {
                 // 1st attempt: available
-                drillEntity = available.getNull(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
+                drillEntity = selectedType != null && available.get(selectedType) != null && !available.get(selectedType).isEmpty() ? available.get(selectedType).first() : null;
                 // final: mine stones
                 if (drillEntity == null) {
                     drillEntity = VeinEntity.infiniteStone;
